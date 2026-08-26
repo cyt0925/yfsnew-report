@@ -243,3 +243,349 @@ h2 {
     gap: 1.25rem;
   }
 }
+
+/* ─────────────────────────────────────────────
+   章節版面：瑞士網格為骨架
+   12 欄網格固定，但每個工具在網格裡的落點不同 —
+   秩序來自網格，生氣來自落點的不對稱。
+   左側窄軌放編號與標籤，一條紅線從緒論一路串到最後一個工具，
+   對應這份報告的主題本身就是「流程」而不是「區塊」。
+   ───────────────────────────────────────────── */
+
+.report {
+  --rail: 132px;
+  --gutter: 24px;
+  position: relative;
+  max-width: 1240px;
+  margin: 0 auto;
+  padding: 0 3rem 12rem;
+}
+
+/* 貫穿全報告的軸線，落在窄軌與內容欄的交界 */
+.report::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 12rem;
+  left: calc(3rem + var(--rail) - var(--gutter) / 2);
+  width: 1px;
+  background: linear-gradient(
+    180deg,
+    transparent 0,
+    var(--accent) 4rem,
+    var(--accent-dim) 55%,
+    transparent 100%
+  );
+}
+
+.thesis,
+.tool {
+  display: grid;
+  grid-template-columns: var(--rail) repeat(12, 1fr);
+  column-gap: var(--gutter);
+  align-items: start;
+}
+
+/* ── 左側窄軌 ── */
+
+.rail {
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-top: 0.6rem;
+}
+
+.rail-index {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 2.6rem;
+  line-height: 1;
+  font-weight: 500;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+
+.rail-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ── 緒論 ── */
+
+.thesis {
+  padding: 8rem 0 7rem;
+  row-gap: 3rem;
+}
+
+.thesis-body {
+  grid-column: 2 / span 7;
+}
+
+.lede {
+  font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
+  font-weight: 700;
+  font-size: clamp(1.5rem, 2.9vw, 2.5rem);
+  line-height: 1.42;
+  letter-spacing: 0.01em;
+  margin: 0 0 2rem;
+  text-wrap: balance;
+}
+
+.prose {
+  font-size: 1rem;
+  line-height: 1.95;
+  color: var(--muted);
+  max-width: 34em;
+  margin: 0;
+}
+
+.thesis-aside {
+  grid-column: 11 / span 3;
+  padding-top: 0.8rem;
+}
+
+.figures {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.figures dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.figures dd {
+  margin: 0;
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  font-weight: 700;
+  font-size: 2.6rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.figures dd span {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--muted);
+  margin-left: 0.35rem;
+}
+
+/* ── 工具章節 ── */
+
+.tool {
+  padding: 6rem 0 6.5rem;
+  row-gap: 2.75rem;
+  border-top: 1px solid var(--rule);
+}
+
+.tool-head {
+  display: flex;
+  align-items: baseline;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+
+.tool-head h2 {
+  font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
+  font-weight: 900;
+  font-size: clamp(2rem, 4.4vw, 3.4rem);
+  line-height: 1.05;
+  margin: 0;
+  letter-spacing: 0.01em;
+  color: var(--fg);
+}
+
+.status {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.14em;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid currentColor;
+  white-space: nowrap;
+}
+
+.status--live { color: var(--accent); }
+.status--wip { color: var(--muted); }
+
+.tag {
+  display: block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 0.85rem;
+}
+
+.tool-problem p,
+.tool-approach p {
+  margin: 0;
+  font-size: 1rem;
+  line-height: 1.95;
+  color: var(--muted);
+}
+
+.tool-problem p {
+  color: var(--fg);
+  font-size: 1.06rem;
+}
+
+/* 落點規則只在寬螢幕生效。
+   這些是複合選擇器（.tool--lead .tool-problem），權重高於窄螢幕的單欄設定，
+   若不用 min-width 隔開，手機版會被它們蓋掉而排成一團。
+
+   標題一律從第 2 欄起 —— 這是全篇的固定錨點，秩序由它維持；
+   變化發生在下方內容的排布，而不是把標題四處亂丟。
+   列位置全部明確指定，避免 grid 自動排版產生莫名的空洞。 */
+@media (min-width: 901px) {
+  .tool-head { grid-column: 2 / span 10; grid-row: 1; }
+  .tool-metrics { grid-row: 4; }
+
+  /* 落點 A：文字在左，圖解貼右緣與問題齊平 */
+  .tool--lead .tool-problem { grid-column: 2 / span 6; grid-row: 2; }
+  .tool--lead .tool-figure { grid-column: 9 / span 4; grid-row: 2 / span 2; }
+  .tool--lead .tool-approach { grid-column: 2 / span 5; grid-row: 3; }
+  .tool--lead .tool-metrics { grid-column: 2 / span 11; }
+
+  /* 落點 B：圖解移到左側，文字整段推到右半 —— 與 A 反向，但不是鏡射 */
+  .tool--offset .tool-figure { grid-column: 2 / span 4; grid-row: 2 / span 2; }
+  .tool--offset .tool-problem { grid-column: 7 / span 6; grid-row: 2; }
+  .tool--offset .tool-approach { grid-column: 7 / span 5; grid-row: 3; }
+  .tool--offset .tool-metrics { grid-column: 7 / span 6; }
+}
+
+.tool-figure {
+  margin: 0;
+}
+
+.iso {
+  width: 100%;
+  height: auto;
+  display: block;
+  overflow: visible;
+}
+
+.iso-plate {
+  fill: rgba(245, 242, 238, 0.05);
+  stroke: rgba(245, 242, 238, 0.35);
+  stroke-width: 1;
+}
+
+.iso-plate.iso-accent {
+  fill: rgba(209, 15, 39, 0.25);
+  stroke: var(--accent);
+}
+
+.iso-link path {
+  stroke: rgba(209, 15, 39, 0.5);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+  fill: none;
+}
+
+/* ── 數字 ── */
+
+.metrics {
+  margin: 0;
+  display: flex;
+  gap: 3.5rem;
+  flex-wrap: wrap;
+  border-top: 1px solid var(--rule);
+  padding-top: 1.5rem;
+}
+
+.metrics dt {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+.metrics dd {
+  margin: 0;
+  font-family: "Zen Kaku Gothic New", sans-serif;
+  font-weight: 700;
+  font-size: 2.4rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  display: flex;
+  align-items: baseline;
+  gap: 0.35rem;
+}
+
+.metrics .unit {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.metrics .pending {
+  color: var(--accent-dim);
+}
+
+/* ── 窄螢幕：網格收成單欄，軸線改貼左緣 ── */
+
+@media (max-width: 900px) {
+  .report {
+    --rail: 0px;
+    padding: 0 1.5rem 6rem;
+  }
+
+  .report::before {
+    left: 1.5rem;
+    bottom: 6rem;
+  }
+
+  .thesis,
+  .tool {
+    grid-template-columns: 1fr;
+    padding-left: 1.75rem;
+  }
+
+  .thesis { padding-top: 5rem; padding-bottom: 5rem; }
+  .tool { padding-top: 4rem; padding-bottom: 4rem; }
+
+  .rail {
+    flex-direction: row;
+    align-items: baseline;
+    gap: 0.9rem;
+    padding-top: 0;
+    margin-bottom: 0.5rem;
+  }
+
+  .rail-index { font-size: 1.9rem; }
+
+  .thesis-body,
+  .thesis-aside,
+  .tool-head,
+  .tool-problem,
+  .tool-approach,
+  .tool-figure,
+  .tool-metrics {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  /* 窄螢幕上標題與狀態標籤並排會把標題擠斷行，改成上下排 */
+  .tool-head {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .tool-figure { max-width: 320px; }
+
+  .figures { flex-direction: row; gap: 2.5rem; }
+
+  .metrics { gap: 2rem; }
+  .metrics dd { font-size: 1.9rem; }
+}
