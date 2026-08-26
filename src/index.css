@@ -1,0 +1,204 @@
+:root {
+  --bg: #0a0a0b;
+  --surface: #141416;
+  --fg: #f5f2ee;
+  --muted: #9a938c;
+  --accent: #d10f27;
+  --accent-dim: rgba(209, 15, 39, 0.32);
+  --rule: rgba(245, 242, 238, 0.12);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.hero {
+  position: relative;
+  min-height: 100vh;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+}
+
+.hero-sphere {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.hero-house {
+  position: absolute;
+  z-index: 1;
+  right: -6%;
+  top: 6%;
+  width: 62%;
+  height: 88%;
+  pointer-events: none;
+}
+
+.hero-house path {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 0.6;
+  opacity: 0.6;
+  vector-effect: non-scaling-stroke;
+}
+
+.hero-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    var(--bg) 0%,
+    rgba(10, 10, 11, 0.92) 32%,
+    rgba(10, 10, 11, 0.35) 58%,
+    rgba(10, 10, 11, 0.05) 78%
+  );
+}
+
+.brand-mark {
+  position: absolute;
+  top: 2.25rem;
+  left: 2.25rem;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.brand-mark img {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: block;
+}
+
+.brand-mark span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.18em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3;
+  max-width: 620px;
+  padding: 0 2.25rem;
+}
+
+.eyebrow {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.7em;
+}
+
+.eyebrow::before {
+  content: "";
+  width: 32px;
+  height: 1px;
+  background: var(--accent);
+}
+
+h1 {
+  font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.75rem, 6.2vw, 5.25rem);
+  line-height: 1.02;
+  margin: 0;
+  letter-spacing: 0.02em;
+  text-wrap: balance;
+  color: var(--fg);
+}
+
+h2 {
+  font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
+  font-weight: 500;
+  font-size: clamp(1.05rem, 2vw, 1.4rem);
+  color: var(--muted);
+  margin: 1.15rem 0 0;
+  letter-spacing: 0.03em;
+  text-wrap: balance;
+}
+
+.divider {
+  width: 44px;
+  height: 2px;
+  background: var(--accent);
+  margin: 2.4rem 0;
+  box-shadow: 0 0 14px var(--accent-dim);
+}
+
+.meta {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  display: flex;
+  gap: 2rem;
+}
+
+.meta b {
+  color: var(--fg);
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.scroll-cue {
+  position: absolute;
+  bottom: 2.25rem;
+  left: 2.25rem;
+  z-index: 3;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.scroll-cue .line {
+  width: 26px;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), transparent);
+  animation: pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.35; }
+  50% { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .scroll-cue .line { animation: none; }
+}
+
+@media (max-width: 720px) {
+  .hero-scrim {
+    background: linear-gradient(180deg, rgba(10,10,11,0.55) 0%, var(--bg) 62%);
+  }
+  .hero-content { max-width: 100%; }
+}
