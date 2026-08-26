@@ -8,6 +8,71 @@ const THREE_MODULE_URL = '/vendor/three-0.136.0.module.js';
 const SOURCE_ACCENT = /0x00E5FF/g;
 const BRAND_ACCENT = '0xD10F27';
 
+// 核心原本是一個普通長方體（THREE.BoxGeometry(2, 4, 2)），等距鏡頭下看起來像六角柱。
+// 換成永豐商店 logo 的五邊形房子外框，拉伸出立體感（ExtrudeGeometry），
+// 比例是從 logo.png 實際量出來的：屋頂三角形佔整體高度約 40%，寬高比約 163:151。
+const SOURCE_CORE_GEOMETRY = 'const coreGeo = new THREE.BoxGeometry(2, 4, 2);';
+
+// logo 房子裡的四個白色幾何（左上圓、右上圓角方、左下圓角方、右下圓）。
+// 位置與尺寸同樣是從 logo.png 量出來的像素座標換算成場景座標，
+// 貼在房子朝向鏡頭那一面（z = +houseD/2）並稍微凸出，做成嵌板的感覺。
+const SOURCE_CORE_ANCHOR = 'group.add(core);';
+const CORE_WITH_LOGO_INLAYS = `group.add(core);
+
+            // logo 內的白色幾何嵌板
+            // 鏡頭在 (20, 20, 20)，平面上是 45 度角。把核心轉 45 度，
+            // 讓房子正面（也就是 logo 那一面）正對鏡頭，四個白色幾何才不會被壓扁。
+            core.rotation.y = Math.PI / 4;
+
+            // 這一面背對主光源，受光材質會變灰。logo 的白色本來就是實心平塗，
+            // 所以用不受光的 MeshBasicMaterial，維持乾淨的純白。
+            const inlayMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+            const inlayDepth = 0.14;
+            const roundedSquareShape = function (size, radius) {
+                const s = new THREE.Shape();
+                const h = size / 2, r = Math.min(radius, h);
+                s.moveTo(-h + r, -h);
+                s.lineTo(h - r, -h);
+                s.quadraticCurveTo(h, -h, h, -h + r);
+                s.lineTo(h, h - r);
+                s.quadraticCurveTo(h, h, h - r, h);
+                s.lineTo(-h + r, h);
+                s.quadraticCurveTo(-h, h, -h, h - r);
+                s.lineTo(-h, -h + r);
+                s.quadraticCurveTo(-h, -h, -h + r, -h);
+                return s;
+            };
+            const circleShape = function (radius) {
+                const s = new THREE.Shape();
+                s.absarc(0, 0, radius, 0, Math.PI * 2, false);
+                return s;
+            };
+            const inlays = [
+                { shape: circleShape(0.527),               x: -0.606, y: 1.987 },
+                { shape: roundedSquareShape(0.922, 0.19),  x:  0.619, y: 1.974 },
+                { shape: roundedSquareShape(0.922, 0.19),  x: -0.619, y: 0.829 },
+                { shape: circleShape(0.527),               x:  0.632, y: 0.829 }
+            ];
+            inlays.forEach(function (item) {
+                const geo = new THREE.ExtrudeGeometry(item.shape, {
+                    depth: inlayDepth, bevelEnabled: false, curveSegments: 24
+                });
+                const mesh = new THREE.Mesh(geo, inlayMat);
+                // 房子的頂點座標在平移前是 y 0..houseH，平移後整體下移 houseH / 2。
+                mesh.position.set(item.x, item.y - houseH / 2, houseD / 2);
+                core.add(mesh);
+            });`;
+const HOUSE_CORE_GEOMETRY = `const houseW = 4.32, houseH = 4, houseD = 2, roofY = houseH * 0.603;
+            const houseShape = new THREE.Shape();
+            houseShape.moveTo(-houseW / 2, roofY);
+            houseShape.lineTo(0, houseH);
+            houseShape.lineTo(houseW / 2, roofY);
+            houseShape.lineTo(houseW / 2, 0);
+            houseShape.lineTo(-houseW / 2, 0);
+            houseShape.lineTo(-houseW / 2, roofY);
+            const coreGeo = new THREE.ExtrudeGeometry(houseShape, { depth: houseD, bevelEnabled: false, curveSegments: 1 });
+            coreGeo.translate(0, -houseH / 2, -houseD / 2);`;
+
 // 這份 HTML 是 @designcodeio/threeui（MIT）的 Logic Core 場景原始碼。
 // 原版是一個完整的示範網頁，執行時會去外部 CDN 抓 three.js、Tailwind、圖示與示範圖片，
 // 而 3D 場景只是頁面裡某張卡片中的一小塊（#three-canvas-container）。
@@ -72,6 +137,8 @@ export function buildLogicCoreSrcDoc() {
 
   html = html.replace('https://cdn.skypack.dev/three@0.136.0', THREE_MODULE_URL);
   html = html.replace(SOURCE_ACCENT, BRAND_ACCENT);
+  html = html.replace(SOURCE_CORE_GEOMETRY, HOUSE_CORE_GEOMETRY);
+  html = html.replace(SOURCE_CORE_ANCHOR, CORE_WITH_LOGO_INLAYS);
 
   html = html.replace(/<script[^>]*cdn\.tailwindcss\.com[^>]*><\/script>/gi, '');
   html = html.replace(/<script[^>]*code\.iconify\.design[^>]*><\/script>/gi, '');
