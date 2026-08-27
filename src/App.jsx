@@ -40,13 +40,36 @@ function Hero({ active }) {
 
 const SLIDES = ['hero', 'thesis', ...tools.map((t) => t.id)];
 const SLIDE_COUNT = SLIDES.length;
+const THESIS_INDEX = 1;
 
 export default function App() {
   const [index, setIndex] = useState(0);
+  // 「我的觀察」頁的解法區塊要按一下才浮出來，不是一次全部攤開。
+  // 離開這張投影片再回來時要重置，讓動畫重新播放一次。
+  const [thesisRevealed, setThesisRevealed] = useState(false);
 
-  const go = useCallback((delta) => {
-    setIndex((i) => Math.min(Math.max(i + delta, 0), SLIDE_COUNT - 1));
-  }, []);
+  // 每次「抵達」這張投影片就重新掛載一次，讓打字機／逐行淡入動畫重播——
+  // 光靠 CSS animation 一旦播完就定格，不會因為使用者切走又切回來自動重來。
+  const [thesisVisit, setThesisVisit] = useState(0);
+
+  useEffect(() => {
+    if (index !== THESIS_INDEX) {
+      setThesisRevealed(false);
+    } else {
+      setThesisVisit((v) => v + 1);
+    }
+  }, [index]);
+
+  const go = useCallback(
+    (delta) => {
+      if (delta > 0 && index === THESIS_INDEX && !thesisRevealed) {
+        setThesisRevealed(true);
+        return;
+      }
+      setIndex((i) => Math.min(Math.max(i + delta, 0), SLIDE_COUNT - 1));
+    },
+    [index, thesisRevealed]
+  );
 
   useEffect(() => {
     function onKeyDown(e) {
@@ -77,7 +100,7 @@ export default function App() {
       >
         <Hero active={index === 0} />
         <div className="slide">
-          <Thesis />
+          <Thesis key={thesisVisit} revealed={thesisRevealed} active={index === THESIS_INDEX} />
         </div>
         {tools.map((tool) => (
           <div className="slide" key={tool.id}>

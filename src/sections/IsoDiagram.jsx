@@ -3,7 +3,7 @@
  * before：散落、各自為政的步驟；after：收斂成一條線。
  * 純 SVG，沒有額外依賴。
  */
-export default function IsoDiagram({ variant = 'converge' }) {
+export default function IsoDiagram({ variant = 'converge', className = '' }) {
   const plate = (x, y, w = 46, h = 26, cls = 'iso-plate') => (
     <path
       className={cls}
@@ -13,7 +13,7 @@ export default function IsoDiagram({ variant = 'converge' }) {
 
   if (variant === 'scatter') {
     return (
-      <svg className="iso" viewBox="0 0 260 170" role="img" aria-label="流程散落在多個檔案之間">
+      <svg className={`iso ${className}`} viewBox="0 0 260 170" role="img" aria-label="流程散落在多個檔案之間">
         {plate(20, 60)}
         {plate(96, 34)}
         {plate(150, 92)}
@@ -30,7 +30,7 @@ export default function IsoDiagram({ variant = 'converge' }) {
   }
 
   return (
-    <svg className="iso" viewBox="0 0 260 170" role="img" aria-label="流程收斂成單一路徑">
+    <svg className={`iso ${className}`} viewBox="0 0 260 170" role="img" aria-label="流程收斂成單一路徑">
       {plate(24, 118)}
       {plate(78, 96)}
       {plate(132, 74)}
