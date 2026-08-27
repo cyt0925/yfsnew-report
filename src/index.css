@@ -2,6 +2,10 @@
   --bg: #0a0a0b;
   --surface: #141416;
   --fg: #f5f2ee;
+  /* 內文用的「可讀但非標題」色階，跟 --muted 分開。
+     --muted 只留給次要標籤（欄位名、單位那種），太多地方用它會讓正文糊在一起，
+     在流明不足的投影環境下尤其明顯——細筆畫的中文字配偏暗的灰，筆畫會直接消失。 */
+  --body: #d9d4cc;
   --muted: #9a938c;
   --accent: #d10f27;
   --accent-dim: rgba(209, 15, 39, 0.32);
@@ -32,6 +36,12 @@ body {
 
 .hero {
   position: relative;
+  /* .step 是 row 方向的 flex 容器，align-items:center 只管垂直置中，
+     水平寬度仍取決於這個元素自己的 flex-basis。以前 Hero 直接掛
+     .slide class（自帶 flex: 0 0 100vw）才撐滿寬度；拆成 .step 包一層
+     之後這個寬度沒人設，Hero 就會用 shrink-to-fit 縮到跟 .hero-content
+     的 max-width（620px）一樣窄，3D 場景跟著被壓扁。 */
+  width: 100%;
   min-height: 100vh;
   overflow: hidden;
   display: flex;
@@ -178,9 +188,9 @@ h2 {
 }
 
 /* ─────────────────────────────────────────────
-   簡報模式：橫式、一頁一頁翻，不是網頁捲動
-   .deck 固定滿版；.deck-track 把每張投影片橫向排成一列，
-   翻頁靠 transform: translateX 移動整條 track。
+   簡報模式：二維導覽，不是網頁捲動
+   左右鍵／按鈕換「章節」（.deck-track 橫向移動）；
+   上下鍵／滾輪在同一章節內換「步驟」（.chapter-track 縱向移動）。
    這是簡報，只針對桌機／投影畫面調整，不再處理手機版。
    ───────────────────────────────────────────── */
 
@@ -197,13 +207,50 @@ h2 {
   transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
 }
 
-.slide {
+.chapter {
   flex: 0 0 100vw;
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
+}
+
+.chapter-track {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.step {
+  height: 100vh;
+  width: 100%;
+  flex: none;
   display: flex;
   align-items: center;
   overflow: hidden;
+}
+
+.step-dots {
+  position: fixed;
+  top: 2.5rem;
+  right: 2.25rem;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.step-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--rule);
+  transition: background 0.25s ease, transform 0.25s ease;
+}
+
+.step-dot--active {
+  background: var(--accent);
+  transform: scale(1.5);
 }
 
 .deck-nav {
@@ -371,9 +418,10 @@ h2 {
 }
 
 .prose {
-  font-size: 1.2rem;
-  line-height: 1.9;
-  color: var(--muted);
+  font-weight: 400;
+  font-size: 1.3rem;
+  line-height: 1.85;
+  color: var(--body);
   max-width: 34em;
   margin: 0;
 }
@@ -412,15 +460,6 @@ h2 {
 
 @keyframes caret-blink {
   50% { opacity: 0; }
-}
-
-.thesis-hint {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.82rem;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-  margin: 0;
-  opacity: 0.7;
 }
 
 /* ── 工具章節 ── */
@@ -470,14 +509,15 @@ h2 {
 .tool-problem p,
 .tool-approach p {
   margin: 0;
-  font-size: 1.2rem;
-  line-height: 1.9;
-  color: var(--muted);
+  font-weight: 400;
+  font-size: 1.3rem;
+  line-height: 1.85;
+  color: var(--body);
 }
 
 .tool-problem p {
   color: var(--fg);
-  font-size: 1.28rem;
+  font-size: 1.38rem;
 }
 
 /* 落點規則只在寬螢幕生效。
@@ -572,6 +612,40 @@ h2 {
 
 .metrics .pending {
   color: var(--accent-dim);
+}
+
+/* ── 總覽（3D 路線圖） ── */
+
+.roadmap {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.roadmap-stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.roadmap-canvas,
+.roadmap-canvas canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.roadmap-rail {
+  position: relative;
+  z-index: 2;
+  padding: 3rem 0 0 2.5rem;
+  max-width: 640px;
+  pointer-events: none;
+}
+
+.roadmap-heading {
+  margin-top: 1rem;
 }
 
 /* 這是簡報，只針對桌機／投影畫面設計，窄螢幕（手機）不再另外調整。 */
