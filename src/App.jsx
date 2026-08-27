@@ -19,7 +19,7 @@ export default function App() {
         <div className="hero-scrim" />
 
         <div className="brand-mark">
-          <img src="/logo.png" alt="永豐商店" />
+          <img src="logo.png" alt="永豐商店" />
           <span>YungFeng Store</span>
         </div>
 

@@ -1,6 +1,11 @@
 import rawHtml from './source.raw.js';
 
-const THREE_MODULE_URL = '/vendor/three-0.136.0.module.js';
+// 不用開頭斜線的絕對路徑：這個 iframe 是用 srcDoc 內嵌的，沒有自己的網址，
+// 相對路徑會依外層頁面的網址解析。用絕對路徑「/vendor/...」在網站根目錄部署沒問題，
+// 但部署到 GitHub Pages 這種「網站在子路徑下」（如 /yfsnew-report/）的環境會抓錯地方。
+// ES module 的 import 路徑規格要求明確的 "./"、"../" 或 "/" 開頭，
+// 光寫 "vendor/..."（無前綴的 bare specifier）瀏覽器會直接拒絕解析。
+const THREE_MODULE_URL = './vendor/three-0.136.0.module.js';
 
 // 場景原生的重點色是青色 0x00E5FF（核心發光體、環繞方塊、點光源共用）。
 // CSS 的 hue-rotate 是矩陣近似，從青色轉到紅色會嚴重失真，
