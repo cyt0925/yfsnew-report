@@ -92,6 +92,34 @@ const HOUSE_CORE_GEOMETRY = `const houseW = 4.32, houseH = 4, houseD = 2, roofY 
             const coreGeo = new THREE.ExtrudeGeometry(houseShape, { depth: houseD, bevelEnabled: false, curveSegments: 1 });
             coreGeo.translate(0, -houseH / 2, -houseD / 2);`;
 
+// 整體構圖放大：場景本身的內容（相機視野、環繞方塊軌道半徑）不變，
+// 只把整個 group 縮放，等於「數位變焦」，畫面裡的房子跟著變大。
+const SOURCE_GROUP = `const group = new THREE.Group();
+            scene.add(group);`;
+const SCALED_GROUP = `const group = new THREE.Group();
+            group.scale.setScalar(1.5);
+            scene.add(group);`;
+
+// 房子原本直接貼在平台表面（core.position.y 剛好等於平台頂面高度），
+// 看起來像焊死在地板上。抬高基準高度、疊加一個獨立於整個場景飄移的
+// sin 波動，再補一個平台上的陰影圓盤，才有「浮在半空」而不是「飛走了」的感覺。
+const SOURCE_CORE_Y = 'core.position.y = 0.25;';
+const FLOATING_CORE_Y = `const coreBaseY = 1.7;
+            core.position.y = coreBaseY;
+
+            const shadowGeo = new THREE.CircleGeometry(2.2, 32);
+            const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.4 });
+            const coreShadow = new THREE.Mesh(shadowGeo, shadowMat);
+            coreShadow.rotation.x = -Math.PI / 2;
+            coreShadow.position.y = -1.74; // 貼在平台表面（platform 頂面在 -1.75）
+            group.add(coreShadow);`;
+
+const SOURCE_FLOAT_DRIFT = `group.position.y = Math.sin(time * 0.5) * 0.2;`;
+const ADDED_CORE_FLOAT = `group.position.y = Math.sin(time * 0.5) * 0.2;
+
+                // 房子獨立於整體場景漂浮，脫離「釘在平台上」的感覺
+                core.position.y = coreBaseY + Math.sin(time * 1.4) * 0.4;`;
+
 // 這份 HTML 是 @designcodeio/threeui（MIT）的 Logic Core 場景原始碼。
 // 原版是一個完整的示範網頁，執行時會去外部 CDN 抓 three.js、Tailwind、圖示與示範圖片，
 // 而 3D 場景只是頁面裡某張卡片中的一小塊（#three-canvas-container）。
@@ -160,6 +188,9 @@ export function buildLogicCoreSrcDoc() {
   html = html.replace(SOURCE_RESIZE_CAMERA, PANNED_RESIZE_CAMERA);
   html = html.replace(SOURCE_CORE_GEOMETRY, HOUSE_CORE_GEOMETRY);
   html = html.replace(SOURCE_CORE_ANCHOR, CORE_WITH_LOGO_INLAYS);
+  html = html.replace(SOURCE_GROUP, SCALED_GROUP);
+  html = html.replace(SOURCE_CORE_Y, FLOATING_CORE_Y);
+  html = html.replace(SOURCE_FLOAT_DRIFT, ADDED_CORE_FLOAT);
 
   html = html.replace(/<script[^>]*cdn\.tailwindcss\.com[^>]*><\/script>/gi, '');
   html = html.replace(/<script[^>]*code\.iconify\.design[^>]*><\/script>/gi, '');

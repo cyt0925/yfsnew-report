@@ -16,13 +16,18 @@ html,
 body {
   margin: 0;
   padding: 0;
+  height: 100%;
+  /* 簡報不能有捲軸：一旦出現，100vw 的計算基準會跟實際可視寬度不一致
+     （多數瀏覽器的 vw 不扣掉捲軸寬度），翻頁位移就會累積誤差，
+     翻到後面幾頁時前一張投影片的內容會從邊緣露出來。 */
+  overflow: hidden;
   background: var(--bg);
   color: var(--fg);
   font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
 }
 
 #root {
-  min-height: 100vh;
+  height: 100%;
 }
 
 .hero {
@@ -52,9 +57,10 @@ body {
 .hero-house path {
   fill: none;
   stroke: var(--accent);
-  stroke-width: 0.6;
-  opacity: 0.6;
+  stroke-width: 1.1;
+  opacity: 0.85;
   vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 0 6px var(--accent-dim));
 }
 
 .hero-scrim {
@@ -168,105 +174,104 @@ h2 {
   font-variant-numeric: tabular-nums;
 }
 
-.scroll-cue {
-  position: absolute;
-  bottom: 2.25rem;
-  left: 2.25rem;
-  z-index: 3;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.85rem;
-  letter-spacing: 0.16em;
-  color: var(--muted);
+/* ─────────────────────────────────────────────
+   簡報模式：橫式、一頁一頁翻，不是網頁捲動
+   .deck 固定滿版；.deck-track 把每張投影片橫向排成一列，
+   翻頁靠 transform: translateX 移動整條 track。
+   這是簡報，只針對桌機／投影畫面調整，不再處理手機版。
+   ───────────────────────────────────────────── */
+
+.deck {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg);
+}
+
+.deck-track {
+  display: flex;
+  height: 100vh;
+  transition: transform 0.6s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+.slide {
+  flex: 0 0 100vw;
+  width: 100vw;
+  height: 100vh;
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  overflow: hidden;
 }
 
-.scroll-cue .line {
-  width: 56px;
-  height: 1px;
-  background: linear-gradient(90deg, var(--accent), transparent);
-  animation: pulse 1.8s ease-in-out infinite;
+.deck-nav {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  width: 3.2rem;
+  height: 3.2rem;
+  border-radius: 50%;
+  border: 1px solid var(--rule);
+  background: rgba(10, 10, 11, 0.55);
+  color: var(--fg);
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: border-color 0.2s, color 0.2s, opacity 0.2s;
 }
 
-@keyframes pulse {
-  0%, 100% { opacity: 0.35; }
-  50% { opacity: 1; }
+.deck-nav:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--accent);
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .scroll-cue .line { animation: none; }
+.deck-nav:disabled {
+  opacity: 0.25;
+  cursor: default;
 }
 
-/* 手機是直式的，左右分欄會讓 3D 房子和標題疊在一起。
-   改成上下分：場景佔上半部，文字整段落在下半部。 */
-@media (max-width: 720px) {
-  .hero {
-    align-items: flex-end;
-    padding-bottom: 5.5rem;
-  }
+.deck-nav--prev { left: 1.75rem; }
+.deck-nav--next { right: 1.75rem; }
 
-  .hero-sphere {
-    bottom: 45%;
-  }
-
-  .hero-house {
-    right: auto;
-    left: 50%;
-    top: 8%;
-    width: 78%;
-    height: 42%;
-    transform: translateX(-50%);
-  }
-
-  .hero-scrim {
-    background: linear-gradient(
-      180deg,
-      rgba(10, 10, 11, 0) 0%,
-      rgba(10, 10, 11, 0) 38%,
-      rgba(10, 10, 11, 0.88) 53%,
-      var(--bg) 62%
-    );
-  }
-
-  .hero-content {
-    max-width: 100%;
-    padding: 0 1.5rem;
-  }
-
-  .brand-mark,
-  .scroll-cue {
-    left: 1.5rem;
-  }
-
-  .meta {
-    gap: 1.25rem;
-  }
+.deck-counter {
+  position: fixed;
+  bottom: 1.75rem;
+  right: 2rem;
+  z-index: 10;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums;
 }
 
 /* ─────────────────────────────────────────────
    章節版面：瑞士網格為骨架
    12 欄網格固定，但每個工具在網格裡的落點不同 —
    秩序來自網格，生氣來自落點的不對稱。
-   左側窄軌放編號與標籤，一條紅線從緒論一路串到最後一個工具，
+   左側窄軌放編號與標籤，一條紅線貫穿每張投影片的高度，
    對應這份報告的主題本身就是「流程」而不是「區塊」。
    ───────────────────────────────────────────── */
 
-.report {
+.slide-content {
   --rail: 140px;
   --gutter: 24px;
   position: relative;
+  width: 100%;
   max-width: 1600px;
   margin: 0 auto;
-  padding: 0 2rem 12rem;
+  padding: 0 2rem;
 }
 
-/* 貫穿全報告的軸線，落在窄軌與內容欄的交界 */
-.report::before {
+/* 貫穿整張投影片高度的軸線，落在窄軌與內容欄的交界 */
+.slide-content::before {
   content: "";
   position: absolute;
-  top: 0;
-  bottom: 12rem;
+  top: -8vh;
+  bottom: -8vh;
   left: calc(2rem + var(--rail) - var(--gutter) / 2);
   width: 1px;
   background: linear-gradient(
@@ -317,7 +322,6 @@ h2 {
 /* ── 緒論 ── */
 
 .thesis {
-  padding: 8rem 0 7rem;
   row-gap: 3rem;
 }
 
@@ -382,9 +386,7 @@ h2 {
 /* ── 工具章節 ── */
 
 .tool {
-  padding: 6rem 0 6.5rem;
   row-gap: 2.75rem;
-  border-top: 1px solid var(--rule);
 }
 
 .tool-head {
@@ -532,60 +534,4 @@ h2 {
   color: var(--accent-dim);
 }
 
-/* ── 窄螢幕：網格收成單欄，軸線改貼左緣 ── */
-
-@media (max-width: 900px) {
-  .report {
-    --rail: 0px;
-    padding: 0 1.5rem 6rem;
-  }
-
-  .report::before {
-    left: 1.5rem;
-    bottom: 6rem;
-  }
-
-  .thesis,
-  .tool {
-    grid-template-columns: 1fr;
-    padding-left: 1.75rem;
-  }
-
-  .thesis { padding-top: 5rem; padding-bottom: 5rem; }
-  .tool { padding-top: 4rem; padding-bottom: 4rem; }
-
-  .rail {
-    flex-direction: row;
-    align-items: baseline;
-    gap: 0.9rem;
-    padding-top: 0;
-    margin-bottom: 0.5rem;
-  }
-
-  .rail-index { font-size: 1.9rem; }
-
-  .thesis-body,
-  .thesis-aside,
-  .tool-head,
-  .tool-problem,
-  .tool-approach,
-  .tool-figure,
-  .tool-metrics {
-    grid-column: 1;
-    grid-row: auto;
-  }
-
-  /* 窄螢幕上標題與狀態標籤並排會把標題擠斷行，改成上下排 */
-  .tool-head {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .tool-figure { max-width: 320px; }
-
-  .figures { flex-direction: row; gap: 2.5rem; }
-
-  .metrics { gap: 2rem; }
-  .metrics dd { font-size: 1.9rem; }
-}
+/* 這是簡報，只針對桌機／投影畫面設計，窄螢幕（手機）不再另外調整。 */

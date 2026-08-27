@@ -22,7 +22,7 @@ function Metrics({ items }) {
 
 export default function ToolSection({ tool }) {
   return (
-    <section className={`tool tool--${tool.layout}`}>
+    <section className={`tool tool--${tool.layout} slide-content`}>
       <div className="rail">
         <span className="rail-index">{tool.index}</span>
         <span className="rail-label">{tool.kicker}</span>

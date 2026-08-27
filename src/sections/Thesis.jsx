@@ -1,6 +1,6 @@
 export default function Thesis() {
   return (
-    <section className="thesis">
+    <section className="thesis slide-content">
       <div className="rail">
         <span className="rail-label">緒論</span>
       </div>
