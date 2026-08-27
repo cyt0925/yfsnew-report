@@ -2,7 +2,7 @@ export default function Thesis() {
   return (
     <section className="thesis slide-content">
       <div className="rail">
-        <span className="rail-label">緒論</span>
+        <span className="rail-label">我的觀察</span>
       </div>
 
       <div className="thesis-body">
@@ -14,19 +14,6 @@ export default function Thesis() {
           先把它拆開看清楚，再決定哪一段值得交給工具處理。工具本身不是重點，
           流程被縮短了多少才是。
         </p>
-      </div>
-
-      <div className="thesis-aside">
-        <dl className="figures">
-          <div>
-            <dt>切入流程</dt>
-            <dd>4</dd>
-          </div>
-          <div>
-            <dt>試用期間</dt>
-            <dd>3<span>個月</span></dd>
-          </div>
-        </dl>
       </div>
     </section>
   );

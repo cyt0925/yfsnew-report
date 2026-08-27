@@ -27,7 +27,7 @@ function Hero({ active }) {
 
       <div className="hero-content">
         <p className="eyebrow">儲備幹部試用期報告</p>
-        <h1>敏捷營運</h1>
+        <h1>AI 流程再造</h1>
         <h2>永豐商店 SOP 優化與實務落地</h2>
         <div className="divider" />
         <div className="meta">
