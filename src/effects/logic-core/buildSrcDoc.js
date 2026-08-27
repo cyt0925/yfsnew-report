@@ -13,6 +13,20 @@ const THREE_MODULE_URL = './vendor/three-0.136.0.module.js';
 const SOURCE_ACCENT = /0x00E5FF/g;
 const BRAND_ACCENT = '0xD10F27';
 
+// 場景原本正中央構圖，但畫面上疊了一個偏右側的紅色房子外框（見 App.jsx 的
+// .hero-house），構圖沒有對齊那個框，房子模型看起來偏中間、沒有「住」進框裡。
+// 用正交相機的 left/right 平移（camera pan）把構圖往右挪，而不是移動 DOM 容器，
+// 這樣旋轉、環繞方塊等场景座標都還是對的，純粹是鏡頭觀看的窗口平移。
+// 平移量是負值：正交相機的可視窗口左移，等同畫面內容整體右移。
+const CAMERA_PAN_X = -9.6;
+const SOURCE_CAMERA = 'const camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);';
+const PANNED_CAMERA = `const panX = ${CAMERA_PAN_X};
+            const camera = new THREE.OrthographicCamera(-d * aspect + panX, d * aspect + panX, d, -d, 1, 1000);`;
+const SOURCE_RESIZE_CAMERA = `camera.left = -d * newAspect;
+                camera.right = d * newAspect;`;
+const PANNED_RESIZE_CAMERA = `camera.left = -d * newAspect + panX;
+                camera.right = d * newAspect + panX;`;
+
 // 核心原本是一個普通長方體（THREE.BoxGeometry(2, 4, 2)），等距鏡頭下看起來像六角柱。
 // 換成永豐商店 logo 的五邊形房子外框，拉伸出立體感（ExtrudeGeometry），
 // 比例是從 logo.png 實際量出來的：屋頂三角形佔整體高度約 40%，寬高比約 163:151。
@@ -142,6 +156,8 @@ export function buildLogicCoreSrcDoc() {
 
   html = html.replace('https://cdn.skypack.dev/three@0.136.0', THREE_MODULE_URL);
   html = html.replace(SOURCE_ACCENT, BRAND_ACCENT);
+  html = html.replace(SOURCE_CAMERA, PANNED_CAMERA);
+  html = html.replace(SOURCE_RESIZE_CAMERA, PANNED_RESIZE_CAMERA);
   html = html.replace(SOURCE_CORE_GEOMETRY, HOUSE_CORE_GEOMETRY);
   html = html.replace(SOURCE_CORE_ANCHOR, CORE_WITH_LOGO_INLAYS);
 

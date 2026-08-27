@@ -92,7 +92,7 @@ body {
 
 .brand-mark span {
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.72rem;
+  font-size: 0.92rem;
   letter-spacing: 0.18em;
   color: var(--muted);
   text-transform: uppercase;
@@ -107,7 +107,7 @@ body {
 
 .eyebrow {
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.78rem;
+  font-size: 1rem;
   letter-spacing: 0.28em;
   text-transform: uppercase;
   color: var(--accent);
@@ -119,7 +119,7 @@ body {
 
 .eyebrow::before {
   content: "";
-  width: 32px;
+  width: 64px;
   height: 1px;
   background: var(--accent);
 }
@@ -127,7 +127,7 @@ body {
 h1 {
   font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
   font-weight: 900;
-  font-size: clamp(2.75rem, 6.2vw, 5.25rem);
+  font-size: clamp(3.4rem, 7.4vw, 6.6rem);
   line-height: 1.02;
   margin: 0;
   letter-spacing: 0.02em;
@@ -138,7 +138,7 @@ h1 {
 h2 {
   font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
   font-weight: 500;
-  font-size: clamp(1.05rem, 2vw, 1.4rem);
+  font-size: clamp(1.3rem, 2.4vw, 1.75rem);
   color: var(--muted);
   margin: 1.15rem 0 0;
   letter-spacing: 0.03em;
@@ -146,7 +146,7 @@ h2 {
 }
 
 .divider {
-  width: 44px;
+  width: 96px;
   height: 2px;
   background: var(--accent);
   margin: 2.4rem 0;
@@ -155,7 +155,7 @@ h2 {
 
 .meta {
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.72rem;
+  font-size: 0.92rem;
   letter-spacing: 0.06em;
   color: var(--muted);
   display: flex;
@@ -174,7 +174,7 @@ h2 {
   left: 2.25rem;
   z-index: 3;
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.68rem;
+  font-size: 0.85rem;
   letter-spacing: 0.16em;
   color: var(--muted);
   display: flex;
@@ -183,7 +183,7 @@ h2 {
 }
 
 .scroll-cue .line {
-  width: 26px;
+  width: 56px;
   height: 1px;
   background: linear-gradient(90deg, var(--accent), transparent);
   animation: pulse 1.8s ease-in-out infinite;
@@ -253,12 +253,12 @@ h2 {
    ───────────────────────────────────────────── */
 
 .report {
-  --rail: 132px;
+  --rail: 140px;
   --gutter: 24px;
   position: relative;
-  max-width: 1240px;
+  max-width: 1600px;
   margin: 0 auto;
-  padding: 0 3rem 12rem;
+  padding: 0 2rem 12rem;
 }
 
 /* 貫穿全報告的軸線，落在窄軌與內容欄的交界 */
@@ -267,7 +267,7 @@ h2 {
   position: absolute;
   top: 0;
   bottom: 12rem;
-  left: calc(3rem + var(--rail) - var(--gutter) / 2);
+  left: calc(2rem + var(--rail) - var(--gutter) / 2);
   width: 1px;
   background: linear-gradient(
     180deg,
@@ -299,7 +299,7 @@ h2 {
 
 .rail-index {
   font-family: "IBM Plex Mono", monospace;
-  font-size: 2.6rem;
+  font-size: 3.2rem;
   line-height: 1;
   font-weight: 500;
   color: var(--accent);
@@ -308,7 +308,7 @@ h2 {
 
 .rail-label {
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.68rem;
+  font-size: 0.85rem;
   letter-spacing: 0.2em;
   color: var(--muted);
   white-space: nowrap;
@@ -328,7 +328,7 @@ h2 {
 .lede {
   font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
   font-weight: 700;
-  font-size: clamp(1.5rem, 2.9vw, 2.5rem);
+  font-size: clamp(1.85rem, 3.4vw, 3.1rem);
   line-height: 1.42;
   letter-spacing: 0.01em;
   margin: 0 0 2rem;
@@ -336,8 +336,8 @@ h2 {
 }
 
 .prose {
-  font-size: 1rem;
-  line-height: 1.95;
+  font-size: 1.2rem;
+  line-height: 1.9;
   color: var(--muted);
   max-width: 34em;
   margin: 0;
@@ -357,7 +357,7 @@ h2 {
 
 .figures dt {
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.66rem;
+  font-size: 0.85rem;
   letter-spacing: 0.18em;
   color: var(--muted);
   margin-bottom: 0.35rem;
@@ -367,13 +367,13 @@ h2 {
   margin: 0;
   font-family: "Zen Kaku Gothic New", sans-serif;
   font-weight: 700;
-  font-size: 2.6rem;
+  font-size: 3.4rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
 }
 
 .figures dd span {
-  font-size: 0.85rem;
+  font-size: 1.05rem;
   font-weight: 400;
   color: var(--muted);
   margin-left: 0.35rem;
@@ -397,7 +397,7 @@ h2 {
 .tool-head h2 {
   font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
   font-weight: 900;
-  font-size: clamp(2rem, 4.4vw, 3.4rem);
+  font-size: clamp(2.5rem, 5.2vw, 4.2rem);
   line-height: 1.05;
   margin: 0;
   letter-spacing: 0.01em;
@@ -406,7 +406,7 @@ h2 {
 
 .status {
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.66rem;
+  font-size: 0.82rem;
   letter-spacing: 0.14em;
   padding: 0.3rem 0.6rem;
   border: 1px solid currentColor;
@@ -419,7 +419,7 @@ h2 {
 .tag {
   display: block;
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.66rem;
+  font-size: 0.85rem;
   letter-spacing: 0.2em;
   color: var(--accent);
   margin-bottom: 0.85rem;
@@ -428,14 +428,14 @@ h2 {
 .tool-problem p,
 .tool-approach p {
   margin: 0;
-  font-size: 1rem;
-  line-height: 1.95;
+  font-size: 1.2rem;
+  line-height: 1.9;
   color: var(--muted);
 }
 
 .tool-problem p {
   color: var(--fg);
-  font-size: 1.06rem;
+  font-size: 1.28rem;
 }
 
 /* 落點規則只在寬螢幕生效。
@@ -504,7 +504,7 @@ h2 {
 
 .metrics dt {
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.66rem;
+  font-size: 0.85rem;
   letter-spacing: 0.16em;
   color: var(--muted);
   margin-bottom: 0.5rem;
@@ -514,7 +514,7 @@ h2 {
   margin: 0;
   font-family: "Zen Kaku Gothic New", sans-serif;
   font-weight: 700;
-  font-size: 2.4rem;
+  font-size: 3rem;
   line-height: 1;
   font-variant-numeric: tabular-nums;
   display: flex;
@@ -523,7 +523,7 @@ h2 {
 }
 
 .metrics .unit {
-  font-size: 0.8rem;
+  font-size: 1rem;
   font-weight: 400;
   color: var(--muted);
 }
