@@ -785,25 +785,70 @@ h2 {
   100% { opacity: 0; transform: translateY(100%); }
 }
 
-/* 結語那一步：右側放 Claude Code 的 logo，置中、留白多一點，
-   讓它是一個收尾的落款，不是又一張說明圖。 */
+/* 結語那一步：右側放 Claude Code 的 logo。不要置中，往右靠——
+   留白集中在左邊，logo 更貼近畫面右緣，跟它背後的光暈一起构成
+   收尾的落款。 */
 .ai-figure--logo {
   aspect-ratio: 4 / 3;
-  display: grid;
-  place-items: center;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .ai-figure--logo img {
-  width: 78%;
+  width: 80%;
   height: auto;
   display: block;
   filter: drop-shadow(0 0 42px rgba(217, 119, 87, 0.28));
   opacity: 1;
+  position: relative;
+  z-index: 1;
+}
+
+/* logo 背後的環境光暈：跟 CRT 那一步的機殼光暈同一個語彙，
+   讓通電不只是「圖案本身變亮」，是「這一整塊區域被點亮」。
+   平常就有一點微光，通電瞬間炸開一次，再收回穩定的呼吸。 */
+.ai-figure--logo::before {
+  content: "";
+  position: absolute;
+  inset: -14% -6% -14% 6%;
+  z-index: 0;
+  background: radial-gradient(
+    58% 58% at 66% 50%,
+    rgba(217, 119, 87, 0.34),
+    rgba(217, 119, 87, 0.12) 45%,
+    transparent 74%
+  );
+  filter: blur(30px);
+  opacity: 0.18;
+  pointer-events: none;
+}
+
+.ai-figure--logo.is-active::before {
+  animation:
+    claude-bloom-burst 0.9s ease-out var(--ignite-delay, 0s) both,
+    claude-bloom-breathe 4.5s ease-in-out calc(var(--ignite-delay, 0s) + 0.9s) infinite;
+}
+
+@keyframes claude-bloom-burst {
+  0%   { opacity: 0.18; }
+  4%   { opacity: 1; }
+  7%   { opacity: 0.1; }
+  10%  { opacity: 0.9; }
+  18%  { opacity: 0.25; }
+  32%  { opacity: 0.75; }
+  100% { opacity: 0.6; }
+}
+
+@keyframes claude-bloom-breathe {
+  0%, 100% { opacity: 0.6; }
+  50%      { opacity: 0.95; }
 }
 
 /* 通電閃爍：跟結語那句話同一個時間點一起亮起，收尾那句話跟
-   logo 一起「啪」地成立，不是各做各的兩個元素。抖幾下才穩定，
-   穩定之後接一段很慢的輝光呼吸，畫面才不會死掉。
+   logo 一起「啪」地成立，不是各做各的兩個元素。抖幾下、帶一次
+   明顯的過曝爆閃才穩定，穩定之後接一段輝光呼吸，畫面才不會死掉。
    兩層動畫的起點都用同一個 --ignite-delay（JS 算出的同一個數字），
    第二層（輝光呼吸）延後 0.9s，正好接在通電閃爍結束的那一刻。 */
 .ai-figure--logo.is-active img {
@@ -817,18 +862,20 @@ h2 {
 }
 
 @keyframes claude-logo-power-on {
-  0%   { opacity: 0; }
-  4%   { opacity: 1; }
-  7%   { opacity: 0.15; }
-  11%  { opacity: 1; }
-  15%  { opacity: 0.2; }
-  20%  { opacity: 1; }
-  100% { opacity: 1; }
+  0%   { opacity: 0;    filter: brightness(1)   drop-shadow(0 0 0 rgba(217, 119, 87, 0)); }
+  4%   { opacity: 1;    filter: brightness(2.6) drop-shadow(0 0 74px rgba(217, 119, 87, 0.7)); }
+  7%   { opacity: 0.08; filter: brightness(0.8) drop-shadow(0 0 8px rgba(217, 119, 87, 0.2)); }
+  11%  { opacity: 1;    filter: brightness(2.2) drop-shadow(0 0 62px rgba(217, 119, 87, 0.6)); }
+  15%  { opacity: 0.12; }
+  20%  { opacity: 1;    filter: brightness(1.7) drop-shadow(0 0 52px rgba(217, 119, 87, 0.5)); }
+  27%  { opacity: 0.35; }
+  36%  { opacity: 1;    filter: brightness(1.1) drop-shadow(0 0 44px rgba(217, 119, 87, 0.34)); }
+  100% { opacity: 1;    filter: brightness(1)   drop-shadow(0 0 42px rgba(217, 119, 87, 0.28)); }
 }
 
 @keyframes claude-logo-glow {
-  0%, 100% { filter: drop-shadow(0 0 42px rgba(217, 119, 87, 0.28)); }
-  50%      { filter: drop-shadow(0 0 60px rgba(217, 119, 87, 0.44)); }
+  0%, 100% { filter: drop-shadow(0 0 44px rgba(217, 119, 87, 0.3)); }
+  50%      { filter: drop-shadow(0 0 82px rgba(217, 119, 87, 0.58)); }
 }
 
 .ai-closing {
@@ -845,6 +892,10 @@ h2 {
 .ai-closing b {
   color: var(--claude);
   font-weight: 900;
+}
+
+.claude-accent {
+  color: var(--claude);
 }
 
 /* 機殼：讓終端機從「一塊會發光的矩形」變成「桌上一台監視器」。

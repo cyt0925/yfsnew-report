@@ -20,7 +20,14 @@ export default function AiImportance3({ active }) {
 
       <div className="ai-body">
         <h2 className="thesis-heading">
-          <Typewriter text="善用Claude Code將想法變成即戰力" active={active} />
+          <Typewriter
+            segments={[
+              { text: '善用' },
+              { text: 'Claude Code', className: 'claude-accent', nowrapWith: true },
+              { text: '將想法變成即戰力' },
+            ]}
+            active={active}
+          />
         </h2>
         <RevealLines lines={LINES} startDelay={0.5} active={active} />
         <p
