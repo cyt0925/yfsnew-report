@@ -9,6 +9,9 @@ const LINES = [
 ];
 
 export default function AiImportance3({ active }) {
+  // logo 通電閃爍跟這句話同一刻一起亮起，兩個元素共用同一個延遲數字。
+  const closingDelay = 0.5 + LINES.length * 0.28 + 0.35;
+
   return (
     <section className="ai slide-content">
       <div className="rail">
@@ -17,18 +20,21 @@ export default function AiImportance3({ active }) {
 
       <div className="ai-body">
         <h2 className="thesis-heading">
-          <Typewriter text="善用Claude Code，將想法變成即戰力" active={active} />
+          <Typewriter text="善用Claude Code將想法變成即戰力" active={active} />
         </h2>
         <RevealLines lines={LINES} startDelay={0.5} active={active} />
         <p
           className="ai-closing reveal-line"
-          style={active ? { animationDelay: `${0.5 + LINES.length * 0.28 + 0.35}s` } : { opacity: 1, animation: 'none' }}
+          style={active ? { animationDelay: `${closingDelay}s` } : { opacity: 1, animation: 'none' }}
         >
           藉由 <b>CC</b> 輔助，加速自動化邁進。
         </p>
       </div>
 
-      <figure className="ai-figure ai-figure--logo">
+      <figure
+        className={`ai-figure ai-figure--logo${active ? ' is-active' : ''}`}
+        style={active ? { '--ignite-delay': `${closingDelay}s` } : undefined}
+      >
         <img src="claude-code-logo.png" alt="Claude Code" />
       </figure>
     </section>

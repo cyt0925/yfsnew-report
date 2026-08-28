@@ -31,7 +31,7 @@ const TERMINAL_STYLE = {
   gain: 1.34,
   halo: 0.10,
   sheen: [1.0, 0.55, 0.58],
-  room: [0.032, 0.012, 0.015],
+  room: [0.058, 0.020, 0.024],
   background: '#120404',
   filtering: 'linear',
   redrawMs: 0,
@@ -47,19 +47,18 @@ const dots = (count) => '·'.repeat(count);
 // 我們自己的開機日誌：不是駭客任務的 ZION 開機畫面，是這個頁面在講的
 // 那套「半自動化中繼平台」的 pipeline —— 卡住的地方（平台沒有 API、
 // 報表得手動匯出）用琥珀色標出來，跑得動的環節用白色的 OK/READY 收尾。
+// 日誌從 13 行精簡到 8 行：字級是用「容器高度 / 行數」和
+// 「容器寬度 / 最長那一行的字元數」兩者取小值換算出來的，
+// 行數少、行也短，兩邊的字級上限都會拉高，容器不用變大，
+// 裡面的字就先大一輪——這是放大 CRT 觀感的第一步，
+// 詳見 index.css 裡 .ai--terminal .ai-figure 的出血與機殼樣式。
 const LOG = [
-  [segment('YFS OPERATIONS AI'), segment('   v1.0', 'd')],
-  [segment('Claude Code', 'd'), segment('  ·  Human-in-the-Loop', 'd')],
+  [segment('YFS OPERATIONS AI'), segment('  v1.0', 'd')],
+  [segment('Claude Code', 'd'), segment(' · HITL', 'd')],
   [],
-  [segment('Platform API '), segment(`${dots(16)} `, 'd'), segment('UNAVAILABLE', 'h')],
-  [segment('Raw report export '), segment(`${dots(10)} `, 'd'), segment('MANUAL', 'h')],
-  [],
-  [segment('Order matching '), segment(`${dots(12)} `, 'd'), segment('OK', 'a')],
-  [segment('Deduplication '), segment(`${dots(13)} `, 'd'), segment('OK', 'a')],
-  [segment('SKU / conversion mapping '), segment(`${dots(3)} `, 'd'), segment('OK', 'a')],
-  [],
-  [segment('Web console '), segment(`${dots(15)} `, 'd'), segment('READY', 'a')],
-  [segment('Audit trail '), segment(`${dots(15)} `, 'd'), segment('ON', 'a')],
+  [segment('Platform API '), segment(`${dots(4)} `, 'd'), segment('UNAVAILABLE', 'h')],
+  [segment('Match · Dedup · SKU '), segment(`${dots(2)} `, 'd'), segment('OK', 'a')],
+  [segment('Console '), segment(`${dots(3)} `, 'd'), segment('READY', 'a')],
   [],
   [segment('no api required.')],
 ];

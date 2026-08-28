@@ -23,8 +23,9 @@ export default function AiImportance1({ active }) {
       </div>
 
       {/* 右側原本是空的。放上痛點示意圖：等距視角、純紅光在黑底上，
-          跟整份簡報的配色是同一套，不用另外做色彩處理。 */}
-      <figure className="ai-figure ai-figure--image">
+          跟整份簡報的配色是同一套，不用另外做色彩處理。
+          進場走掃描式揭露，穩定後接不規則閃爍與慢速 3D 浮動。 */}
+      <figure className={`ai-figure ai-figure--image${active ? ' is-active' : ''}`}>
         <img src="bottleneck.png" alt="散落在各處的檔案與重複性作業" />
       </figure>
     </section>
