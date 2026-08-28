@@ -648,4 +648,97 @@ h2 {
   margin-top: 1rem;
 }
 
+/* ── AI 的重要性 ── */
+
+.ai {
+  display: grid;
+  grid-template-columns: var(--rail) repeat(12, 1fr);
+  column-gap: var(--gutter);
+  align-items: start;
+  row-gap: 2.75rem;
+}
+
+.ai-body {
+  grid-column: 2 / span 6;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.ai--wide .ai-body {
+  grid-column: 2 / span 9;
+  max-width: 46em;
+}
+
+.ai-figure {
+  grid-column: 8 / span 5;
+  position: relative;
+  aspect-ratio: 4 / 3;
+  align-self: center;
+}
+
+.ai-closing {
+  font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
+  font-weight: 900;
+  font-size: clamp(2.2rem, 4vw, 3.4rem);
+  line-height: 1.4;
+  color: var(--fg);
+  margin: 0;
+  text-wrap: balance;
+  word-break: keep-all;
+}
+
+.ai-closing b {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+/* CRT 終端機容器：對照原始 threeui.css 的 .threeui-background，
+   host 撐滿 .ai-figure，canvas 絕對定位鋪滿 host。 */
+.crt-terminal {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  border-radius: 6px;
+}
+
+.crt-terminal canvas {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.ai-figure .claude-badge {
+  position: absolute;
+  right: 0.9rem;
+  bottom: 0.8rem;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.4rem 0.7rem;
+  background: rgba(10, 10, 11, 0.66);
+  border: 1px solid rgba(245, 242, 238, 0.14);
+  border-radius: 5px;
+  backdrop-filter: blur(6px);
+}
+
+.claude-badge img {
+  height: 14px;
+  width: auto;
+  display: block;
+}
+
+.claude-badge span {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
 /* 這是簡報，只針對桌機／投影畫面設計，窄螢幕（手機）不再另外調整。 */

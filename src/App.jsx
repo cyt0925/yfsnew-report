@@ -2,6 +2,9 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import LogicCore from './effects/logic-core/LogicCore.jsx';
 import ThesisPain from './sections/ThesisPain.jsx';
 import ThesisSolution from './sections/ThesisSolution.jsx';
+import AiImportance1 from './sections/AiImportance1.jsx';
+import AiImportance2 from './sections/AiImportance2.jsx';
+import AiImportance3 from './sections/AiImportance3.jsx';
 import RoadmapOverview from './sections/RoadmapOverview.jsx';
 import ToolSection from './sections/ToolSection.jsx';
 import { tools } from './data/tools.js';
@@ -46,6 +49,7 @@ function Hero({ active }) {
 const CHAPTERS = [
   { id: 'hero', steps: 1 },
   { id: 'thesis', steps: 2 },
+  { id: 'ai-importance', steps: 3 },
   { id: 'roadmap', steps: 1 },
   ...tools.map((t) => ({ id: t.id, steps: 1 })),
 ];
@@ -192,9 +196,21 @@ export default function App() {
           </div>
         </Chapter>
 
+        <Chapter stepCount={3} localStep={pos.chapter === 2 ? pos.step : 0}>
+          <div className="step">
+            <AiImportance1 key={visitKey(2, 0)} active={pos.chapter === 2 && pos.step === 0} />
+          </div>
+          <div className="step">
+            <AiImportance2 key={visitKey(2, 1)} active={pos.chapter === 2 && pos.step === 1} />
+          </div>
+          <div className="step">
+            <AiImportance3 key={visitKey(2, 2)} active={pos.chapter === 2 && pos.step === 2} />
+          </div>
+        </Chapter>
+
         <Chapter stepCount={1} localStep={0}>
           <div className="step">
-            <RoadmapOverview active={pos.chapter === 2} />
+            <RoadmapOverview active={pos.chapter === 3} />
           </div>
         </Chapter>
 
