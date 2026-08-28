@@ -20,8 +20,17 @@ const BRAND_ACCENT = '0xD10F27';
 // 平移量是負值：正交相機的可視窗口左移，等同畫面內容整體右移。
 const CAMERA_PAN_X = -9.6;
 const SOURCE_CAMERA = 'const camera = new THREE.OrthographicCamera(-d * aspect, d * aspect, d, -d, 1, 1000);';
+// 原本 near/far 是 1~1000，但整個場景（含 1.5 倍縮放後）只佔鏡頭方向大概
+// 22~47 個單位的深度範圍，等於把深度緩衝 999 格的精度，拿 97% 去描述
+// 場景根本不存在的空間。地板（y=-1.75）跟陰影圓盤（y=-1.74）中間只差
+// 0.015 個世界單位，在 16-bit 深度緩衝上這個間隙還不到一格，
+// 兩個面的深度值常常四捨五入成同一格，深度測試變成擲骰子——
+// 陰影才會一下蓋在地板上面、一下被地板蓋過去，隨著場景晃動閃爍。
+// 收緊到 15~55（留了餘裕給場景本身 0.2~0.4 的浮動振幅），
+// 同樣的緩衝格數集中在窄很多的範圍，那 0.015 的間隙就有幾百格厚，
+// 深度測試不會再猜錯。
 const PANNED_CAMERA = `const panX = ${CAMERA_PAN_X};
-            const camera = new THREE.OrthographicCamera(-d * aspect + panX, d * aspect + panX, d, -d, 1, 1000);`;
+            const camera = new THREE.OrthographicCamera(-d * aspect + panX, d * aspect + panX, d, -d, 15, 55);`;
 const SOURCE_RESIZE_CAMERA = `camera.left = -d * newAspect;
                 camera.right = d * newAspect;`;
 const PANNED_RESIZE_CAMERA = `camera.left = -d * newAspect + panX;
@@ -108,10 +117,13 @@ const FLOATING_CORE_Y = `const coreBaseY = 1.7;
             core.position.y = coreBaseY;
 
             const shadowGeo = new THREE.CircleGeometry(2.2, 32);
-            const shadowMat = new THREE.MeshBasicMaterial({ color: 0x000000, transparent: true, opacity: 0.4 });
+            const shadowMat = new THREE.MeshBasicMaterial({
+                color: 0x000000, transparent: true, opacity: 0.4, depthWrite: false
+            });
             const coreShadow = new THREE.Mesh(shadowGeo, shadowMat);
             coreShadow.rotation.x = -Math.PI / 2;
-            coreShadow.position.y = -1.74; // 貼在平台表面（platform 頂面在 -1.75）
+            coreShadow.position.y = -1.7; // 貼在平台表面（platform 頂面在 -1.75）
+            coreShadow.renderOrder = 1;
             group.add(coreShadow);`;
 
 const SOURCE_FLOAT_DRIFT = `group.position.y = Math.sin(time * 0.5) * 0.2;`;
@@ -131,6 +143,18 @@ const ADDED_CORE_FLOAT = `group.position.y = Math.sin(time * 0.5) * 0.2;
 //      所以是「搬出來」而不是直接隱藏外層）
 //   3. 搬完觸發一次 resize，讓場景依新的尺寸重算相機與畫布
 
+// 這份示範網頁原本整頁都是行銷用的 UI（一張寫著 Alex／Sam／Me 的協作
+// 游標示意卡片、藍色虛線框等等），我們只要裡面的 3D 場景。原本的做法是
+// 「等場景 canvas 掛好、搬到 body 底下之後，才用 [data-yfs-isolated]
+// 這個屬性把其他東西隱藏」——但從瀏覽器畫出第一幀、到那個屬性被 JS
+// 加上去，中間有一段空窗期，這段時間選擇器什麼都沒選中，那整份行銷頁面
+// 會完整地閃現一次。每次這個場景卸載又重新掛載（例如離開首頁又回來）
+// 都會重播一次這個閃爍。
+// 修法是把「隱藏」變成 body 的預設狀態，而不是事後才補上：body 一開始
+// 就是 visibility:hidden，等 JS 標記完成才切回 visible。用 visibility
+// 而不是 display，是因為 three.js 用 container.clientWidth/clientHeight
+// 算相機參數，display:none 的元素尺寸是 0，visibility:hidden 仍然保留
+// 版面的實際尺寸。
 const ISOLATION_STYLE = `
   <style data-yfs-isolation>
     html, body {
@@ -140,6 +164,12 @@ const ISOLATION_STYLE = `
       height: 100%;
       overflow: hidden;
       background: #050505;
+    }
+    body {
+      visibility: hidden;
+    }
+    body[data-yfs-isolated] {
+      visibility: visible;
     }
     body[data-yfs-isolated] > *:not(#three-canvas-container) {
       display: none !important;
