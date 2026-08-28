@@ -9,6 +9,8 @@
   --muted: #9a938c;
   --accent: #d10f27;
   --accent-dim: rgba(209, 15, 39, 0.32);
+  /* Claude Code logo 的赭紅／陶土色，直接取樣自 claude-code-logo.png */
+  --claude: #d97757;
   --rule: rgba(245, 242, 238, 0.12);
 }
 
@@ -403,7 +405,7 @@ h2 {
   font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
   font-weight: 700;
   font-size: clamp(1.85rem, 3.2vw, 2.85rem);
-  line-height: 1.35;
+  line-height: 1.5;
   letter-spacing: 0.01em;
   margin: 0 0 1.4rem;
   text-wrap: balance;
@@ -677,11 +679,56 @@ h2 {
   align-self: center;
 }
 
+/* 終端機那一步（步驟 2）走另一種分欄：文字收成 5 欄、畫面吃 7 欄，
+   比例也從 4:3 改成 16:10。畫面面積約放大到原本的 1.7 倍，
+   但欄位邊界仍然落在同一套 12 欄格線上，排版骨架沒有被打破。
+   CRT 的字級是在 crtRenderer 的 layout() 依 canvas 寬高換算的，
+   所以容器放大，終端機裡的字也跟著等比放大，不會變成一片糊。 */
+.ai--terminal .ai-body {
+  grid-column: 2 / span 5;
+}
+
+.ai--terminal .ai-figure {
+  grid-column: 7 / span 7;
+  aspect-ratio: 16 / 10;
+}
+
+/* 痛點示意圖：圖本身就是黑底紅光，四邊做一點遮罩讓它融進頁面，
+   而不是硬生生一塊矩形貼在上面。 */
+.ai-figure--image {
+  aspect-ratio: 3 / 2;
+}
+
+.ai-figure--image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 6px;
+  -webkit-mask-image: radial-gradient(120% 120% at 50% 50%, #000 55%, transparent 100%);
+  mask-image: radial-gradient(120% 120% at 50% 50%, #000 55%, transparent 100%);
+}
+
+/* 結語那一步：右側放 Claude Code 的 logo，置中、留白多一點，
+   讓它是一個收尾的落款，不是又一張說明圖。 */
+.ai-figure--logo {
+  aspect-ratio: 4 / 3;
+  display: grid;
+  place-items: center;
+}
+
+.ai-figure--logo img {
+  width: 78%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 0 42px rgba(217, 119, 87, 0.28));
+}
+
 .ai-closing {
   font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
   font-weight: 900;
-  font-size: clamp(2.2rem, 4vw, 3.4rem);
-  line-height: 1.4;
+  font-size: clamp(1.9rem, 2.7vw, 2.7rem);
+  line-height: 1.45;
   color: var(--fg);
   margin: 0;
   text-wrap: balance;
@@ -689,7 +736,7 @@ h2 {
 }
 
 .ai-closing b {
-  color: var(--accent);
+  color: var(--claude);
   font-weight: 900;
 }
 
