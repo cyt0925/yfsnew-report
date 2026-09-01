@@ -25,7 +25,18 @@ export default function SopTitle({ active }) {
         </p>
       </div>
 
-      <figure className="sop-title-figure">
+      {/* 這張是單一張平面 PNG，裡面的房子、資料夾、放大鏡沒辦法各自動起來。
+          但畫面本來就有一圈紅色循環箭頭，所以與其讓整張圖漂來漂去，
+          不如把那圈箭頭延伸成真的會轉的軌道：兩圈反向緩轉的虛線環，
+          外圈掛一顆巡弋的紅點——那就是「檢索」這件事的視覺化。 */}
+      <figure className={`sop-title-figure${active ? ' is-active' : ''}`}>
+        <svg className="sop-orbit" viewBox="0 0 200 200" aria-hidden="true">
+          <circle className="sop-orbit-ring sop-orbit-ring--outer" cx="100" cy="100" r="95" />
+          <circle className="sop-orbit-ring sop-orbit-ring--inner" cx="100" cy="100" r="80" />
+          <g className="sop-orbit-scanner">
+            <circle cx="100" cy="5" r="3" />
+          </g>
+        </svg>
         <img src="sop-hero.png" alt="SOP 檢索網站" />
       </figure>
     </section>

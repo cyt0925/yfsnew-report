@@ -1340,12 +1340,139 @@ h2 {
   grid-column: 9 / span 4;
   align-self: center;
   margin: 0;
+  position: relative;
+  aspect-ratio: 1;
+  display: grid;
+  place-items: center;
+}
+
+/* 圖後面的紅色光暈：讓它自己會發光，而不是貼在黑底上的一張貼紙 */
+.sop-title-figure::before {
+  content: "";
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(209, 15, 39, 0.26),
+    rgba(209, 15, 39, 0.08) 48%,
+    transparent 72%
+  );
+  filter: blur(26px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.sop-title-figure.is-active::before {
+  animation: sop-bloom-breathe 6s ease-in-out infinite;
+}
+
+@keyframes sop-bloom-breathe {
+  0%, 100% { opacity: 0.7; transform: scale(0.97); }
+  50%      { opacity: 1; transform: scale(1.03); }
 }
 
 .sop-title-figure img {
-  width: 100%;
+  position: relative;
+  z-index: 2;
+  width: 84%;
   height: auto;
   display: block;
+}
+
+/* 進場淡入與持續浮動分成兩層：一層只動 opacity、一層只動 transform，
+   不會互相蓋掉（同一個屬性被兩個 animation 搶，後者會直接覆蓋前者）。 */
+.sop-title-figure.is-active img {
+  animation:
+    sop-hero-in 0.7s ease 0.2s both,
+    sop-hero-float 9s ease-in-out 0.9s infinite;
+}
+
+@keyframes sop-hero-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes sop-hero-float {
+  0%, 100% { transform: perspective(1200px) rotateX(1.2deg) rotateY(-1.8deg) translateY(0); }
+  50%      { transform: perspective(1200px) rotateX(-1deg) rotateY(1.5deg) translateY(-10px); }
+}
+
+/* ── 檢索軌道：兩圈反向緩轉的虛線環 ＋ 一顆巡弋的紅點 ── */
+
+.sop-orbit {
+  position: absolute;
+  inset: -2%;
+  width: 104%;
+  height: 104%;
+  z-index: 1;
+  overflow: visible;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.sop-title-figure.is-active .sop-orbit {
+  animation: sop-orbit-in 0.9s ease 0.35s both;
+}
+
+@keyframes sop-orbit-in {
+  from { opacity: 0; transform: scale(0.88); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.sop-orbit-ring {
+  fill: none;
+  stroke: var(--accent);
+  transform-origin: 50% 50%;
+}
+
+.sop-orbit-ring--outer {
+  stroke-width: 0.7;
+  stroke-dasharray: 10 7;
+  opacity: 0.45;
+}
+
+.sop-orbit-ring--inner {
+  stroke-width: 0.5;
+  stroke-dasharray: 2 6;
+  opacity: 0.3;
+}
+
+/* 兩圈反向轉，速度也不同——同向同速看起來會像整張圖在轉 */
+.sop-title-figure.is-active .sop-orbit-ring--outer {
+  animation: sop-spin 46s linear infinite;
+}
+
+.sop-title-figure.is-active .sop-orbit-ring--inner {
+  animation: sop-spin 32s linear infinite reverse;
+}
+
+.sop-orbit-scanner {
+  transform-origin: 50% 50%;
+}
+
+.sop-orbit-scanner circle {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 4px rgba(209, 15, 39, 0.9));
+}
+
+.sop-title-figure.is-active .sop-orbit-scanner {
+  animation: sop-spin 12s linear infinite;
+}
+
+@keyframes sop-spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sop-title-figure.is-active img,
+  .sop-title-figure.is-active::before,
+  .sop-title-figure.is-active .sop-orbit-ring--outer,
+  .sop-title-figure.is-active .sop-orbit-ring--inner,
+  .sop-title-figure.is-active .sop-orbit-scanner {
+    animation: none;
+  }
 }
 
 /* ── 判斷頁右側：那疊還在用的 Word 檔 ──
