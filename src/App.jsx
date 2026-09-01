@@ -7,6 +7,7 @@ import AiImportance2 from './sections/AiImportance2.jsx';
 import AiImportance3 from './sections/AiImportance3.jsx';
 import RoadmapOverview from './sections/RoadmapOverview.jsx';
 import ToolSection from './sections/ToolSection.jsx';
+import SopTitle from './sections/sop/SopTitle.jsx';
 import SopPain from './sections/sop/SopPain.jsx';
 import SopJudgement from './sections/sop/SopJudgement.jsx';
 import SopCollect from './sections/sop/SopCollect.jsx';
@@ -54,7 +55,7 @@ function Hero({ active }) {
 // SOP 檢索網站不再走通用的 ToolSection 單頁模板——它的內容量本身就是
 // 一段完整的敘事（觀察→判斷→做法→維護），所以獨立成一個五步驟的章節。
 // 其餘工具維持通用模板，之後要展開再比照這個結構拆。
-const SOP_STEPS = 5;
+const SOP_STEPS = 6;
 const CHAPTERS = [
   { id: 'hero', steps: 1 },
   { id: 'thesis', steps: 2 },
@@ -231,19 +232,22 @@ export default function App() {
             return (
               <Chapter key={tool.id} stepCount={SOP_STEPS} localStep={step}>
                 <div className="step">
-                  <SopPain key={visitKey(chapterIndex, 0)} active={on(0)} />
+                  <SopTitle key={visitKey(chapterIndex, 0)} active={on(0)} />
                 </div>
                 <div className="step">
-                  <SopJudgement key={visitKey(chapterIndex, 1)} active={on(1)} />
+                  <SopPain key={visitKey(chapterIndex, 1)} active={on(1)} />
                 </div>
                 <div className="step">
-                  <SopCollect key={visitKey(chapterIndex, 2)} active={on(2)} />
+                  <SopJudgement key={visitKey(chapterIndex, 2)} active={on(2)} />
                 </div>
                 <div className="step">
-                  <SopCompare key={visitKey(chapterIndex, 3)} active={on(3)} />
+                  <SopCollect key={visitKey(chapterIndex, 3)} active={on(3)} />
                 </div>
                 <div className="step">
-                  <SopMaintain key={visitKey(chapterIndex, 4)} active={on(4)} />
+                  <SopCompare key={visitKey(chapterIndex, 4)} active={on(4)} />
+                </div>
+                <div className="step">
+                  <SopMaintain key={visitKey(chapterIndex, 5)} active={on(5)} />
                 </div>
               </Chapter>
             );

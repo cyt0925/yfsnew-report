@@ -15,20 +15,20 @@ export default function SopJudgement({ active }) {
 
       <div className="sop-head">
         <h2 className="thesis-heading">
-          <Typewriter text="所以我的判斷是" active={active} />
+          <Typewriter text="我個人的想法是" active={active} />
         </h2>
       </div>
 
       <div className="verdict">
         <p className="verdict-line reveal-line" style={delay(0)}>
-          問題不在於「有沒有文件」，
+          現有資料其實夠多了，
           <br />
-          而在於<b>文件能不能真的被使用</b>。
+          重點在於<b>能不能真的發揮作用</b>。
         </p>
         <p className="verdict-line verdict-line--sub reveal-line" style={delay(1)}>
-          我們缺的不是更多檔案，而是一個
+          如果能有一個方便<em>查找</em>、<em>比對</em>和<em>修改</em>的
           <br />
-          <em>查得到</em>、<em>比得出</em>、而且<em>改得動</em>的入口。
+          統整入口，大家處理起來會順手很多。
         </p>
       </div>
     </section>

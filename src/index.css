@@ -1313,3 +1313,33 @@ h2 {
   line-height: 1.75;
   color: var(--body);
 }
+
+/* ── 步驟 0（開場）：大標題左、圖右 ── */
+
+.sop-title {
+  align-content: center;
+}
+
+.sop-title-body {
+  grid-column: 2 / span 6;
+  display: flex;
+  flex-direction: column;
+  gap: 1.6rem;
+}
+
+.sop-title-lede {
+  font-size: 1.25rem;
+  max-width: 30em;
+}
+
+.sop-title-figure {
+  grid-column: 9 / span 4;
+  align-self: center;
+  margin: 0;
+}
+
+.sop-title-figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
