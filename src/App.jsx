@@ -7,6 +7,11 @@ import AiImportance2 from './sections/AiImportance2.jsx';
 import AiImportance3 from './sections/AiImportance3.jsx';
 import RoadmapOverview from './sections/RoadmapOverview.jsx';
 import ToolSection from './sections/ToolSection.jsx';
+import SopPain from './sections/sop/SopPain.jsx';
+import SopJudgement from './sections/sop/SopJudgement.jsx';
+import SopCollect from './sections/sop/SopCollect.jsx';
+import SopCompare from './sections/sop/SopCompare.jsx';
+import SopMaintain from './sections/sop/SopMaintain.jsx';
 import { tools } from './data/tools.js';
 import './index.css';
 
@@ -46,12 +51,16 @@ function Hero({ active }) {
 // 每個章節（橫向）底下可以有好幾個步驟（縱向）。
 // 目前只有「我的觀察」有兩步（痛點／解法），其餘章節都是單步，
 // 但整套導覽邏輯是通用的，之後要幫任何章節加子頁面，不用改導覽本身。
+// SOP 檢索網站不再走通用的 ToolSection 單頁模板——它的內容量本身就是
+// 一段完整的敘事（觀察→判斷→做法→維護），所以獨立成一個五步驟的章節。
+// 其餘工具維持通用模板，之後要展開再比照這個結構拆。
+const SOP_STEPS = 5;
 const CHAPTERS = [
   { id: 'hero', steps: 1 },
   { id: 'thesis', steps: 2 },
   { id: 'ai-importance', steps: 3 },
   { id: 'roadmap', steps: 1 },
-  ...tools.map((t) => ({ id: t.id, steps: 1 })),
+  ...tools.map((t) => ({ id: t.id, steps: t.id === 'sop-search' ? SOP_STEPS : 1 })),
 ];
 const CHAPTER_COUNT = CHAPTERS.length;
 
@@ -214,13 +223,39 @@ export default function App() {
           </div>
         </Chapter>
 
-        {tools.map((tool) => (
-          <Chapter key={tool.id} stepCount={1} localStep={0}>
-            <div className="step">
-              <ToolSection tool={tool} />
-            </div>
-          </Chapter>
-        ))}
+        {tools.map((tool, ti) => {
+          const chapterIndex = 4 + ti;
+          if (tool.id === 'sop-search') {
+            const step = pos.chapter === chapterIndex ? pos.step : 0;
+            const on = (i) => pos.chapter === chapterIndex && pos.step === i;
+            return (
+              <Chapter key={tool.id} stepCount={SOP_STEPS} localStep={step}>
+                <div className="step">
+                  <SopPain key={visitKey(chapterIndex, 0)} active={on(0)} />
+                </div>
+                <div className="step">
+                  <SopJudgement key={visitKey(chapterIndex, 1)} active={on(1)} />
+                </div>
+                <div className="step">
+                  <SopCollect key={visitKey(chapterIndex, 2)} active={on(2)} />
+                </div>
+                <div className="step">
+                  <SopCompare key={visitKey(chapterIndex, 3)} active={on(3)} />
+                </div>
+                <div className="step">
+                  <SopMaintain key={visitKey(chapterIndex, 4)} active={on(4)} />
+                </div>
+              </Chapter>
+            );
+          }
+          return (
+            <Chapter key={tool.id} stepCount={1} localStep={0}>
+              <div className="step">
+                <ToolSection tool={tool} />
+              </div>
+            </Chapter>
+          );
+        })}
       </div>
 
       {currentSteps > 1 && (
