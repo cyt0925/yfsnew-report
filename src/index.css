@@ -1343,3 +1343,59 @@ h2 {
   height: auto;
   display: block;
 }
+
+/* ── 痛點第三欄：散落的資料夾證據 ── */
+
+.finding-evidence {
+  position: relative;
+  margin-top: 1.3rem;
+  height: 230px;
+}
+
+.evidence-thumb,
+.evidence-folder {
+  position: absolute;
+  height: auto;
+  display: block;
+  border-radius: 4px;
+  border: 1px solid rgba(245, 242, 238, 0.14);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.55);
+  opacity: 0;
+  transform: rotate(var(--rotate, 0deg)) translateY(14px) scale(0.94);
+}
+
+.finding-evidence.is-active .evidence-thumb,
+.finding-evidence.is-active .evidence-folder {
+  animation: evidence-fan-in 0.55s cubic-bezier(0.16, 0.84, 0.44, 1) var(--evidence-delay, 0s) both;
+}
+
+@keyframes evidence-fan-in {
+  from { opacity: 0; transform: rotate(var(--rotate, 0deg)) translateY(14px) scale(0.94); }
+  to   { opacity: 1; transform: rotate(var(--rotate, 0deg)) translateY(0) scale(1); }
+}
+
+/* 六張已經在存檔階段就模糊處理過（見 SopPain.jsx 註解），這裡只再退淡
+   一點點份量，讓母資料夾自然成為視覺焦點，不用額外再擋內容。 */
+.evidence-thumb {
+  z-index: 1;
+  opacity: 0.92;
+}
+
+.finding-evidence.is-active .evidence-thumb {
+  animation-name: evidence-fan-in-dim;
+}
+
+@keyframes evidence-fan-in-dim {
+  from { opacity: 0; transform: rotate(var(--rotate, 0deg)) translateY(14px) scale(0.94); }
+  to   { opacity: 0.85; transform: rotate(var(--rotate, 0deg)) translateY(0) scale(1); }
+}
+
+.evidence-folder {
+  top: 24%;
+  left: 30%;
+  width: 34%;
+  --rotate: -2deg;
+  z-index: 2;
+  border-color: rgba(209, 15, 39, 0.55);
+  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(209, 15, 39, 0.2);
+}
