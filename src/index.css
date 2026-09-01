@@ -1071,8 +1071,12 @@ h2 {
 }
 
 .verdict {
-  grid-column: 2 / span 10;
+  grid-column: 2 / span 6;
   margin-top: 1rem;
+}
+
+.sop-head--narrow {
+  grid-column: 2 / span 6;
 }
 
 .verdict-line {
@@ -1344,58 +1348,51 @@ h2 {
   display: block;
 }
 
-/* ── 痛點第三欄：散落的資料夾證據 ── */
+/* ── 判斷頁右側：那疊還在用的 Word 檔 ──
+   母資料夾清晰、加紅框當焦點；六份檔案清單（檔名已在存檔階段就糊掉，
+   只留左邊那條 Word 圖示）散在它周圍。母資料夾先出現，六張再一張一張
+   散出來，「資料其實夠多了」這句話才不是空口說的。 */
 
-.finding-evidence {
+.doc-pile {
+  grid-column: 8 / span 6;
   position: relative;
-  margin-top: 1.3rem;
-  height: 230px;
+  height: 455px;
+  margin: 0;
+  align-self: center;
 }
 
-.evidence-thumb,
-.evidence-folder {
+.doc-pile-folder,
+.doc-pile-sheet {
   position: absolute;
   height: auto;
   display: block;
   border-radius: 4px;
-  border: 1px solid rgba(245, 242, 238, 0.14);
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.55);
+  border: 1px solid rgba(245, 242, 238, 0.16);
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.6);
   opacity: 0;
-  transform: rotate(var(--rotate, 0deg)) translateY(14px) scale(0.94);
 }
 
-.finding-evidence.is-active .evidence-thumb,
-.finding-evidence.is-active .evidence-folder {
-  animation: evidence-fan-in 0.55s cubic-bezier(0.16, 0.84, 0.44, 1) var(--evidence-delay, 0s) both;
+.doc-pile.is-active .doc-pile-folder,
+.doc-pile.is-active .doc-pile-sheet {
+  animation: doc-pile-in 0.6s cubic-bezier(0.16, 0.84, 0.44, 1) var(--pile-delay, 0s) both;
 }
 
-@keyframes evidence-fan-in {
-  from { opacity: 0; transform: rotate(var(--rotate, 0deg)) translateY(14px) scale(0.94); }
+@keyframes doc-pile-in {
+  from { opacity: 0; transform: rotate(var(--rotate, 0deg)) translateY(18px) scale(0.93); }
   to   { opacity: 1; transform: rotate(var(--rotate, 0deg)) translateY(0) scale(1); }
 }
 
-/* 六張已經在存檔階段就模糊處理過（見 SopPain.jsx 註解），這裡只再退淡
-   一點點份量，讓母資料夾自然成為視覺焦點，不用額外再擋內容。 */
-.evidence-thumb {
+.doc-pile-sheet {
   z-index: 1;
-  opacity: 0.92;
 }
 
-.finding-evidence.is-active .evidence-thumb {
-  animation-name: evidence-fan-in-dim;
-}
-
-@keyframes evidence-fan-in-dim {
-  from { opacity: 0; transform: rotate(var(--rotate, 0deg)) translateY(14px) scale(0.94); }
-  to   { opacity: 0.85; transform: rotate(var(--rotate, 0deg)) translateY(0) scale(1); }
-}
-
-.evidence-folder {
-  top: 24%;
-  left: 30%;
-  width: 34%;
-  --rotate: -2deg;
-  z-index: 2;
-  border-color: rgba(209, 15, 39, 0.55);
-  box-shadow: 0 18px 34px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(209, 15, 39, 0.2);
+/* 母資料夾是這一疊的入口，也是唯一清晰可讀的一張，所以壓在最上面 */
+.doc-pile-folder {
+  top: 0;
+  left: 4%;
+  width: 44%;
+  --rotate: -3deg;
+  z-index: 3;
+  border-color: rgba(209, 15, 39, 0.6);
+  box-shadow: 0 22px 40px rgba(0, 0, 0, 0.66), 0 0 0 1px rgba(209, 15, 39, 0.22);
 }
