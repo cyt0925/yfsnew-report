@@ -1116,7 +1116,7 @@ h2 {
 }
 
 .sop-blocks {
-  grid-column: 2 / span 6;
+  grid-column: 2 / span 5;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -1137,7 +1137,7 @@ h2 {
 /* 右邊那支示範影片：跟封面那支同一套框（描邊＋紅色光暈），
    但內容是寬螢幕的網站操作畫面，不是方形的 icon，所以另外開一組尺寸。 */
 .sop-collect-figure {
-  grid-column: 8 / span 5;
+  grid-column: 7 / span 7;
   align-self: center;
   margin: 0;
   position: relative;
