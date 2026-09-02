@@ -44,42 +44,7 @@ export default function SopTitle({ active }) {
 
           <div className="sop-title-webmock-layer" aria-hidden="true">
             <div className="wm">
-              <div className="wm-header">
-                <span className="wm-header-icon" />
-                <div className="wm-header-text">
-                  <span className="wm-title" />
-                  <span className="wm-sub" />
-                </div>
-                <div className="wm-stats">
-                  <span /><span /><span /><span />
-                </div>
-              </div>
-              <div className="wm-toolbar">
-                <span className="wm-search" />
-                <span className="wm-tab wm-tab--active" />
-                <span className="wm-tab" />
-              </div>
-              <div className="wm-body">
-                <div className="wm-sidebar">
-                  <span className="wm-filter-title" />
-                  <span className="wm-chip" />
-                  <span className="wm-chip" />
-                  <span className="wm-chip" />
-                  <span className="wm-filter-title" />
-                  <span className="wm-chip" />
-                  <span className="wm-chip" />
-                </div>
-                <div className="wm-list">
-                  {[0, 1, 2, 3, 4].map((i) => (
-                    <div className="wm-row" key={i}>
-                      <span className="wm-row-title" style={{ '--w': `${72 - i * 6}%` }} />
-                      <span className="wm-tag wm-tag--a" />
-                      <span className="wm-tag wm-tag--b" />
-                      {i % 2 === 0 && <span className="wm-tag wm-tag--c" />}
-                    </div>
-                  ))}
-                </div>
-              </div>
+              <img src="sop-webview.png" alt="" />
             </div>
           </div>
         </div>
