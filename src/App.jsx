@@ -6,6 +6,10 @@ import AiImportance1 from './sections/AiImportance1.jsx';
 import AiImportance2 from './sections/AiImportance2.jsx';
 import AiImportance3 from './sections/AiImportance3.jsx';
 import RoadmapOverview from './sections/RoadmapOverview.jsx';
+import RoadmapGap from './sections/roadmap/RoadmapGap.jsx';
+import RoadmapObserved from './sections/roadmap/RoadmapObserved.jsx';
+import RoadmapFeedback from './sections/roadmap/RoadmapFeedback.jsx';
+import RoadmapDecision from './sections/roadmap/RoadmapDecision.jsx';
 import ToolSection from './sections/ToolSection.jsx';
 import SopTitle from './sections/sop/SopTitle.jsx';
 import SopPain from './sections/sop/SopPain.jsx';
@@ -15,6 +19,8 @@ import SopCompare from './sections/sop/SopCompare.jsx';
 import SopMaintain from './sections/sop/SopMaintain.jsx';
 import { tools } from './data/tools.js';
 import './index.css';
+
+const coupangTool = tools.find((t) => t.id === 'coupang-oms');
 
 function Hero({ active }) {
   return (
@@ -50,20 +56,25 @@ function Hero({ active }) {
 }
 
 // 每個章節（橫向）底下可以有好幾個步驟（縱向）。
-// 目前只有「我的觀察」有兩步（痛點／解法），其餘章節都是單步，
-// 但整套導覽邏輯是通用的，之後要幫任何章節加子頁面，不用改導覽本身。
-// SOP 檢索網站不再走通用的 ToolSection 單頁模板——它的內容量本身就是
-// 一段完整的敘事（觀察→判斷→做法→維護），所以獨立成一個五步驟的章節。
-// 其餘工具維持通用模板，之後要展開再比照這個結構拆。
+// 「全貌」章節刻意排在 SOP 檢索網站後面、酷澎系統前面：它不是目錄，
+// 是轉場——先講完 SOP 檢索網站做了什麼，再講我在自己做的網站上讀 SOP
+// 時看到了什麼問題，帶出「所以決定做酷澎系統」這個決定，敘事是連著的。
+// SOP 檢索網站跟全貌都不走通用的 ToolSection 單頁模板——內容量本身
+// 就是一段完整的敘事，所以各自獨立成多步驟章節。酷澎系統目前仍是
+// 通用模板，之後要展開再比照這個結構拆。
 const SOP_STEPS = 6;
+const ROADMAP_STEPS = 5;
 const CHAPTERS = [
   { id: 'hero', steps: 1 },
   { id: 'thesis', steps: 2 },
   { id: 'ai-importance', steps: 3 },
-  { id: 'roadmap', steps: 1 },
-  ...tools.map((t) => ({ id: t.id, steps: t.id === 'sop-search' ? SOP_STEPS : 1 })),
+  { id: 'sop-search', steps: SOP_STEPS },
+  { id: 'roadmap', steps: ROADMAP_STEPS },
+  { id: 'coupang-oms', steps: 1 },
 ];
 const CHAPTER_COUNT = CHAPTERS.length;
+const SOP_CHAPTER = 3;
+const ROADMAP_CHAPTER = 4;
 
 function Chapter({ stepCount, localStep, children }) {
   return (
@@ -218,48 +229,62 @@ export default function App() {
           </div>
         </Chapter>
 
-        <Chapter stepCount={1} localStep={0}>
-          <div className="step">
-            <RoadmapOverview active={pos.chapter === 3} />
-          </div>
-        </Chapter>
-
-        {tools.map((tool, ti) => {
-          const chapterIndex = 4 + ti;
-          if (tool.id === 'sop-search') {
-            const step = pos.chapter === chapterIndex ? pos.step : 0;
-            const on = (i) => pos.chapter === chapterIndex && pos.step === i;
-            return (
-              <Chapter key={tool.id} stepCount={SOP_STEPS} localStep={step}>
-                <div className="step">
-                  <SopTitle key={visitKey(chapterIndex, 0)} active={on(0)} />
-                </div>
-                <div className="step">
-                  <SopPain key={visitKey(chapterIndex, 1)} active={on(1)} />
-                </div>
-                <div className="step">
-                  <SopJudgement key={visitKey(chapterIndex, 2)} active={on(2)} />
-                </div>
-                <div className="step">
-                  <SopCollect key={visitKey(chapterIndex, 3)} active={on(3)} />
-                </div>
-                <div className="step">
-                  <SopCompare key={visitKey(chapterIndex, 4)} active={on(4)} />
-                </div>
-                <div className="step">
-                  <SopMaintain key={visitKey(chapterIndex, 5)} active={on(5)} />
-                </div>
-              </Chapter>
-            );
-          }
+        {(() => {
+          const step = pos.chapter === SOP_CHAPTER ? pos.step : 0;
+          const on = (i) => pos.chapter === SOP_CHAPTER && pos.step === i;
           return (
-            <Chapter key={tool.id} stepCount={1} localStep={0}>
+            <Chapter stepCount={SOP_STEPS} localStep={step}>
               <div className="step">
-                <ToolSection tool={tool} />
+                <SopTitle key={visitKey(SOP_CHAPTER, 0)} active={on(0)} />
+              </div>
+              <div className="step">
+                <SopPain key={visitKey(SOP_CHAPTER, 1)} active={on(1)} />
+              </div>
+              <div className="step">
+                <SopJudgement key={visitKey(SOP_CHAPTER, 2)} active={on(2)} />
+              </div>
+              <div className="step">
+                <SopCollect key={visitKey(SOP_CHAPTER, 3)} active={on(3)} />
+              </div>
+              <div className="step">
+                <SopCompare key={visitKey(SOP_CHAPTER, 4)} active={on(4)} />
+              </div>
+              <div className="step">
+                <SopMaintain key={visitKey(SOP_CHAPTER, 5)} active={on(5)} />
               </div>
             </Chapter>
           );
-        })}
+        })()}
+
+        {(() => {
+          const step = pos.chapter === ROADMAP_CHAPTER ? pos.step : 0;
+          const on = (i) => pos.chapter === ROADMAP_CHAPTER && pos.step === i;
+          return (
+            <Chapter stepCount={ROADMAP_STEPS} localStep={step}>
+              <div className="step">
+                <RoadmapOverview active={on(0)} />
+              </div>
+              <div className="step">
+                <RoadmapGap key={visitKey(ROADMAP_CHAPTER, 1)} active={on(1)} />
+              </div>
+              <div className="step">
+                <RoadmapObserved key={visitKey(ROADMAP_CHAPTER, 2)} active={on(2)} />
+              </div>
+              <div className="step">
+                <RoadmapFeedback key={visitKey(ROADMAP_CHAPTER, 3)} active={on(3)} />
+              </div>
+              <div className="step">
+                <RoadmapDecision key={visitKey(ROADMAP_CHAPTER, 4)} active={on(4)} />
+              </div>
+            </Chapter>
+          );
+        })()}
+
+        <Chapter stepCount={1} localStep={0}>
+          <div className="step">
+            <ToolSection tool={coupangTool} />
+          </div>
+        </Chapter>
       </div>
 
       {currentSteps > 1 && (

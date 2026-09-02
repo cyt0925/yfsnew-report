@@ -336,7 +336,8 @@ h2 {
 }
 
 .thesis,
-.tool {
+.tool,
+.roadmap-detail {
   display: grid;
   grid-template-columns: var(--rail) repeat(12, 1fr);
   column-gap: var(--gutter);
@@ -648,6 +649,122 @@ h2 {
 
 .roadmap-heading {
   margin-top: 1rem;
+}
+
+/* ── 全貌延伸：從 SOP 檢索網站看出來的問題，帶到酷澎系統的決定 ──
+   跟 SOP 章節共用同一套 13 欄網格與元件（.sop-head、.findings、
+   .verdict、.compare-panel），這裡只補這幾頁自己需要的版面。 */
+
+.roadmap-detail {
+  row-gap: 2rem;
+  align-content: center;
+}
+
+.roadmap-lead {
+  grid-column: 2 / span 10;
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.roadmap-lead .thesis-heading {
+  margin-bottom: 0.2rem;
+}
+
+/* PO 流程鏈：一整排步驟名稱用箭頭串起來，中間那個沒有系統撐著的
+   環節（PO彙總統合）用底色跟粗體標出來，不用額外畫圖也看得出重點。 */
+.flow-chain {
+  margin: 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.98rem;
+  line-height: 2.1;
+  color: var(--muted);
+}
+
+.flow-step {
+  display: inline-block;
+}
+
+.flow-step--key {
+  color: var(--fg);
+  font-weight: 700;
+  background: rgba(209, 15, 39, 0.16);
+  border: 1px solid rgba(209, 15, 39, 0.4);
+  border-radius: 4px;
+  padding: 0.1em 0.5em;
+}
+
+.flow-arrow {
+  color: var(--accent-dim);
+}
+
+.roadmap-detail-lede {
+  grid-column: 2 / span 12;
+}
+
+.roadmap-detail-lede .prose {
+  max-width: none;
+}
+
+/* 兩張截圖是矮寬的長條圖（流程總覽、步驟細節），並排放、各自封頂寬度，
+   不然照 12 欄的滿版寬度硬撐，原生解析度撐不住會糊。 */
+.roadmap-evidence {
+  grid-column: 2 / span 12;
+  display: flex;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.roadmap-evidence .compare-panel {
+  flex: 1 1 26rem;
+  max-width: 34rem;
+}
+
+.roadmap-split-body {
+  grid-column: 2 / span 5;
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+.roadmap-split-body .thesis-heading {
+  margin-bottom: 0.2rem;
+}
+
+.point-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.point-line {
+  margin: 0;
+  padding-left: 1.1rem;
+  position: relative;
+  font-size: 1.05rem;
+  line-height: 1.7;
+  color: var(--body);
+}
+
+.point-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.65em;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.roadmap-evidence-solo {
+  grid-column: 7 / span 7;
+  align-self: start;
+  margin: 0;
+}
+
+.verdict-tagline {
+  margin-top: 0.6rem;
 }
 
 /* ── AI 的重要性 ── */
