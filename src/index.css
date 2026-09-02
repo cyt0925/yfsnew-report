@@ -1109,18 +1109,23 @@ h2 {
   padding-bottom: 0.1em;
 }
 
-/* ── 步驟 3：集中 ＋ 查得到 ── */
+/* ── 步驟 3：精準檢索，多維篩選 ── */
+
+.sop-collect {
+  align-content: center;
+}
 
 .sop-blocks {
-  grid-column: 2 / span 8;
+  grid-column: 2 / span 6;
   display: flex;
   flex-direction: column;
-  gap: 2.2rem;
+  gap: 2rem;
+  margin-top: 1rem;
 }
 
 .sop-block p {
   margin: 0 0 0.6rem;
-  font-size: 1.18rem;
+  font-size: 1.14rem;
   line-height: 1.85;
   color: var(--body);
 }
@@ -1129,42 +1134,67 @@ h2 {
   margin-bottom: 0;
 }
 
-.sop-stats {
-  grid-column: 11 / span 3;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  padding-top: 0.4rem;
+/* 右邊那支示範影片：跟封面那支同一套框（描邊＋紅色光暈），
+   但內容是寬螢幕的網站操作畫面，不是方形的 icon，所以另外開一組尺寸。 */
+.sop-collect-figure {
+  grid-column: 8 / span 5;
+  align-self: center;
+  margin: 0;
+  position: relative;
 }
 
-.sop-stat {
-  border-left: 2px solid var(--accent);
-  padding-left: 1.1rem;
+.sop-collect-figure::before {
+  content: "";
+  position: absolute;
+  inset: -8%;
+  border-radius: 24px;
+  background: radial-gradient(
+    circle at 50% 50%,
+    rgba(209, 15, 39, 0.2),
+    rgba(209, 15, 39, 0.06) 52%,
+    transparent 74%
+  );
+  filter: blur(30px);
+  z-index: 0;
+  pointer-events: none;
 }
 
-.sop-stat-value {
+.sop-collect-figure.is-active::before {
+  animation: sop-bloom-breathe 6s ease-in-out infinite;
+}
+
+.sop-collect-video {
+  position: relative;
+  z-index: 1;
   display: block;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 3.4rem;
-  line-height: 1;
-  font-weight: 500;
-  color: var(--fg);
-  font-variant-numeric: tabular-nums;
+  width: 100%;
+  aspect-ratio: 1600 / 760;
+  object-fit: cover;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: #101820;
+  box-shadow:
+    0 0 0 1px rgba(209, 15, 39, 0.14),
+    0 30px 60px -20px rgba(0, 0, 0, 0.65);
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
 }
 
-.sop-stat-unit {
-  font-size: 1.1rem;
-  color: var(--muted);
-  margin-left: 0.35rem;
+.sop-collect-figure.is-active .sop-collect-video {
+  opacity: 1;
+  transform: translateY(0);
+  transition-delay: 0.2s;
 }
 
-.sop-stat-label {
-  display: block;
-  margin-top: 0.6rem;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.82rem;
-  letter-spacing: 0.16em;
-  color: var(--muted);
+@media (prefers-reduced-motion: reduce) {
+  .sop-collect-figure.is-active::before {
+    animation: none;
+  }
+
+  .sop-collect-video {
+    transition: none;
+  }
 }
 
 /* ── 步驟 4：八階段對照表（本章主視覺） ── */

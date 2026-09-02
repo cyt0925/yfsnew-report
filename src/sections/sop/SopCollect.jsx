@@ -1,31 +1,41 @@
+import { useEffect, useRef } from 'react';
 import Typewriter from '../../components/Typewriter.jsx';
 
-// 「集中」跟「查得到」放同一頁：這兩件事是基礎工程，
-// 真正的差異點在下一頁的「比得出」，所以這裡不佔兩張投影片的篇幅。
-// 46 / 500 兩個數字獨立出來放大——那是這一頁唯一需要被記住的東西。
+// 文案本身就是示範內容的講解，所以不再另外放一組骨架文字——
+// 右邊那支影片錄的正是「打 MARS、疊加 CPG、再疊竹運，四筆瞬間收斂成三筆」
+// 這段真實操作，文字負責把畫面裡發生的事講清楚。
 const BLOCKS = [
   {
-    tag: '集中',
+    tag: '查找',
     lines: [
-      '把部門散落各處的作業流程，收攏成一套統一結構：目的、角色職責、逐步驟操作、附圖、異常處理。',
-      '不是把 Word 貼上網，是拆成一致的格式——格式一致，內容才搜得到、才比得了。',
+      '完整收錄現有的 46 份 SOP 與 500 多張操作截圖，支援關鍵字（如：退貨、補貨、嘜頭、EIP）直接定位到具體步驟。',
     ],
   },
   {
-    tag: '查得到',
+    tag: '篩選',
     lines: [
-      '打關鍵字就找：退貨、補貨、嘜頭、EIP、缺貨，直接跳到那一步。',
-      '也能依品牌、通路、出貨模式、物流方式篩選。想知道走竹運的有哪幾份，兩個點擊就出來。',
+      '同時可依品牌、通路、出貨與物流型態交叉篩選，例如快速調出所有「竹運」相關的 SOP，大幅縮短翻找時間。',
     ],
   },
-];
-
-const STATS = [
-  { value: '46', unit: '份', label: '收錄 SOP' },
-  { value: '500', unit: '張+', label: '操作截圖' },
 ];
 
 export default function SopCollect({ active }) {
+  const videoRef = useRef(null);
+
+  // 跟其他章節一致：只有這一頁在台上時才播，切走就暫停、切回來從頭放，
+  // 不然背景一直跑白白吃解碼資源。這支影片開頭就是內容（沒有空白格），
+  // 用原生 loop 直接接龍即可，不用像封面那支特別跳過起始幀。
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return;
+    if (active) {
+      v.currentTime = 0;
+      v.play().catch(() => {});
+    } else {
+      v.pause();
+    }
+  }, [active]);
+
   return (
     <section className="sop sop-collect slide-content">
       <div className="rail">
@@ -33,9 +43,9 @@ export default function SopCollect({ active }) {
         <span className="rail-label">SOP檢索網站</span>
       </div>
 
-      <div className="sop-head">
+      <div className="sop-head sop-head--narrow">
         <h2 className="thesis-heading">
-          <Typewriter text="先做「集中」，才有後面的事" active={active} />
+          <Typewriter text="精準檢索，多維篩選" active={active} />
         </h2>
       </div>
 
@@ -54,21 +64,18 @@ export default function SopCollect({ active }) {
         ))}
       </div>
 
-      <div className="sop-stats">
-        {STATS.map((s, i) => (
-          <div
-            key={s.label}
-            className="sop-stat reveal-line"
-            style={active ? { animationDelay: `${1.5 + i * 0.22}s` } : { opacity: 1, animation: 'none' }}
-          >
-            <span className="sop-stat-value">
-              {s.value}
-              <span className="sop-stat-unit">{s.unit}</span>
-            </span>
-            <span className="sop-stat-label">{s.label}</span>
-          </div>
-        ))}
-      </div>
+      <figure className={`sop-collect-figure${active ? ' is-active' : ''}`}>
+        <video
+          ref={videoRef}
+          className="sop-collect-video"
+          src="sop-collect-demo.webm"
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-label="多維篩選操作示範"
+        />
+      </figure>
     </section>
   );
 }
