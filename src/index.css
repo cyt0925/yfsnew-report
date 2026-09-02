@@ -710,18 +710,13 @@ h2 {
    不然照 12 欄的滿版寬度硬撐，原生解析度撐不住會糊。 */
 .roadmap-evidence {
   grid-column: 2 / span 12;
-  display: flex;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
   gap: 1.5rem;
-  flex-wrap: wrap;
-}
-
-.roadmap-evidence .compare-panel {
-  flex: 1 1 26rem;
-  max-width: 34rem;
 }
 
 .roadmap-split-body {
-  grid-column: 2 / span 5;
+  grid-column: 2 / span 4;
   display: flex;
   flex-direction: column;
   gap: 1.3rem;
@@ -758,13 +753,20 @@ h2 {
 }
 
 .roadmap-evidence-solo {
-  grid-column: 7 / span 7;
+  grid-column: 6 / span 8;
   align-self: start;
   margin: 0;
 }
 
 .verdict-tagline {
   margin-top: 0.6rem;
+}
+
+/* 收尾頁字級大、行數多，原本沿用判斷頁的窄欄（span 6）會讓左邊擠成一團、
+   右邊整片空著。這裡放寬到 span 9，只在全貌章節生效，不動判斷頁本身。 */
+.roadmap-detail .sop-head--narrow,
+.roadmap-detail .verdict {
+  grid-column: 2 / span 9;
 }
 
 /* ── AI 的重要性 ── */

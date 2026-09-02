@@ -24,10 +24,10 @@ export default function RoadmapGap({ active }) {
 
       <div className="roadmap-lead">
         <h2 className="thesis-heading">
-          <Typewriter text="PO彙總統合，底下沒有系統" active={active} />
+          <Typewriter text="PO單彙總，底下沒有系統" active={active} />
         </h2>
         <p className="prose reveal-line" style={delay(0)}>
-          做 SOP 檢索網站的時候，酷澎 PO 單確認作業流程（SOP-CP-CP-001）這份文件我讀了很多次。
+          營運人員和我反應，需要反覆在 Excel 表上不斷操作、疊加紀錄。
         </p>
 
         <p className="flow-chain reveal-line" style={delay(1)}>
@@ -42,7 +42,7 @@ export default function RoadmapGap({ active }) {
         </p>
 
         <p className="prose prose--accent reveal-line" style={delay(2)}>
-          PO彙總統合這六個字，底下沒有系統。步驟寫的是打開公槽那個 PO 總表 Excel，把新單抄進去。
+          酷澎 PO 單確認作業流程（SOP-CP-CP-001）這份文件，步驟寫的是打開公槽那個 PO 總表 Excel，把新單抄進去，這是必須解決的問題。
         </p>
       </div>
 

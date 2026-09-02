@@ -22,19 +22,16 @@ export default function RoadmapFeedback({ active }) {
         <h2 className="thesis-heading">
           <Typewriter text="結構有洞" active={active} />
         </h2>
-        <p className="prose reveal-line" style={delay(0)}>
-          營運端同事也反映過，SOP 上看不出來的是這幾件事。
-        </p>
 
         <div className="point-list">
           {POINTS.map((p, i) => (
-            <p key={p} className="point-line reveal-line" style={delay(1 + i)}>
+            <p key={p} className="point-line reveal-line" style={delay(i)}>
               {p}
             </p>
           ))}
         </div>
 
-        <p className="prose prose--accent reveal-line" style={delay(4)}>
+        <p className="prose prose--accent reveal-line" style={delay(3)}>
           這三件事背後其實是同一個原因，流程本身沒有留下可以追的軌跡。
         </p>
       </div>

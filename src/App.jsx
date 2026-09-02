@@ -7,7 +7,6 @@ import AiImportance2 from './sections/AiImportance2.jsx';
 import AiImportance3 from './sections/AiImportance3.jsx';
 import RoadmapOverview from './sections/RoadmapOverview.jsx';
 import RoadmapGap from './sections/roadmap/RoadmapGap.jsx';
-import RoadmapObserved from './sections/roadmap/RoadmapObserved.jsx';
 import RoadmapFeedback from './sections/roadmap/RoadmapFeedback.jsx';
 import RoadmapDecision from './sections/roadmap/RoadmapDecision.jsx';
 import ToolSection from './sections/ToolSection.jsx';
@@ -63,7 +62,7 @@ function Hero({ active }) {
 // 就是一段完整的敘事，所以各自獨立成多步驟章節。酷澎系統目前仍是
 // 通用模板，之後要展開再比照這個結構拆。
 const SOP_STEPS = 6;
-const ROADMAP_STEPS = 5;
+const ROADMAP_STEPS = 4;
 const CHAPTERS = [
   { id: 'hero', steps: 1 },
   { id: 'thesis', steps: 2 },
@@ -268,13 +267,10 @@ export default function App() {
                 <RoadmapGap key={visitKey(ROADMAP_CHAPTER, 1)} active={on(1)} />
               </div>
               <div className="step">
-                <RoadmapObserved key={visitKey(ROADMAP_CHAPTER, 2)} active={on(2)} />
+                <RoadmapFeedback key={visitKey(ROADMAP_CHAPTER, 2)} active={on(2)} />
               </div>
               <div className="step">
-                <RoadmapFeedback key={visitKey(ROADMAP_CHAPTER, 3)} active={on(3)} />
-              </div>
-              <div className="step">
-                <RoadmapDecision key={visitKey(ROADMAP_CHAPTER, 4)} active={on(4)} />
+                <RoadmapDecision key={visitKey(ROADMAP_CHAPTER, 3)} active={on(3)} />
               </div>
             </Chapter>
           );
