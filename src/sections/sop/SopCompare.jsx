@@ -1,24 +1,24 @@
 import Typewriter from '../../components/Typewriter.jsx';
 
-// 這一章的主視覺。「比得出」是這個網站跟一個資料夾最大的差別，
-// 所以它獨佔一頁，而且不是用文字講，是直接把那張對照表畫出來——
-// 講到「缺了哪個階段畫面上就是空的」的時候，台下要能同時看到那個空格。
-const STAGES = [
-  '接單確認',
-  '建立文件',
-  '系統下採',
-  '通知窗口',
-  '竹運核對',
-  '製作嘜頭',
-  '出貨文件確認',
-  '發送與登記',
-];
-
-// 覆蓋狀況為示意，實際內容由網站從試算表即時產生。
+// 這四張都是真的畫面截圖（不是我畫的示意圖）：46 份文件人工讀過一輪後，
+// 歸納出「一般出貨」「酷澎出貨」兩條主幹，每條主幹配一張主線圖（共用步驟
+// 一條串到底）跟一張細節圖（比對哪個通路缺了什麼步驟／酷澎那條特有的
+// PO 生命週期怎麼跟主幹接上）。兩條主幹用同一個節奏排版，方便對照著看。
 const ROWS = [
-  { name: '通路 A', cover: [1, 1, 1, 1, 1, 1, 1, 1] },
-  { name: '通路 B', cover: [1, 1, 1, 0, 1, 1, 1, 1] },
-  { name: '通路 C', cover: [1, 1, 1, 1, 0, 0, 1, 1] },
+  {
+    tag: '一般出貨',
+    panels: [
+      { src: 'general-main.png', caption: '主線圖：27 份通路出貨 SOP 共用的 8 個步驟' },
+      { src: 'general-compare.png', caption: '比對圖：哪個通路多了或少了哪一步，一眼看出來' },
+    ],
+  },
+  {
+    tag: '酷澎出貨',
+    panels: [
+      { src: 'coupang-main.png', caption: '主線圖：酷澎訂單獨有的 PO 生命週期' },
+      { src: 'coupang-stage.png', caption: '階段圖：單一階段的細節與延伸文件' },
+    ],
+  },
 ];
 
 export default function SopCompare({ active }) {
@@ -33,49 +33,37 @@ export default function SopCompare({ active }) {
 
       <div className="sop-head">
         <h2 className="thesis-heading">
-          <Typewriter text="比得出：27 份出貨 SOP，同一條主幹" active={active} />
+          <Typewriter text="視覺化跨線對比，釐清核心邏輯" active={active} />
         </h2>
       </div>
 
       <div className="sop-compare-body">
         <p className="prose reveal-line" style={delay(0)}>
-          品牌與通路各不相同，但主幹是同一條。我把它歸納成八個階段，
-          每一份文件都對到這八格——哪個通路多了什麼、少了什麼，一眼看得出來。
+          比對 27 份出貨 SOP，把各通路和品牌的做法收斂成「一般出貨」與「酷澎出貨」兩大主幹，先建立共同基準。
         </p>
         <p className="prose reveal-line" style={delay(1)}>
-          對代理人來說這正是最需要的：我熟的那條線是這樣走，
-          我要代理的這條線差在哪裡，畫面上直接看得到。
+          用視覺化把大家負責的線別攤開對照，呈現哪個通路多了特殊步驟、哪份漏了某個環節，目標概念是像一張流程體檢表，能更精準抓出可以優化的地方。
         </p>
         <p className="prose prose--accent reveal-line" style={delay(2)}>
-          哪一份缺了某個階段沒寫，畫面上就是空的——等於一張自動產生的體檢表。
+          （先以手邊現有資料做第一輪對照，部分細節若有出入，會再找負責的同仁核對調整。）
         </p>
       </div>
 
-      <figure className="stage-matrix reveal-line" style={delay(3)}>
-        <div className="stage-track">
-          {STAGES.map((s, i) => (
-            <div key={s} className="stage-node">
-              <span className="stage-num">{String(i + 1).padStart(2, '0')}</span>
-              <span className="stage-name">{s}</span>
+      <div className="compare-gallery">
+        {ROWS.map((row, ri) => (
+          <div key={row.tag} className="compare-row reveal-line" style={delay(3 + ri)}>
+            <span className="tag">{row.tag}</span>
+            <div className="compare-imgs">
+              {row.panels.map((p) => (
+                <figure key={p.src} className="compare-panel">
+                  <img src={p.src} alt={p.caption} />
+                  <figcaption>{p.caption}</figcaption>
+                </figure>
+              ))}
             </div>
-          ))}
-        </div>
-
-        <div className="stage-rows">
-          {ROWS.map((row) => (
-            <div key={row.name} className="stage-row">
-              <span className="stage-row-name">{row.name}</span>
-              <div className="stage-cells">
-                {row.cover.map((c, i) => (
-                  <span key={i} className={`stage-cell${c ? ' stage-cell--on' : ''}`} />
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <figcaption>覆蓋狀況為示意；實際內容由網站依試算表即時產生</figcaption>
-      </figure>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }

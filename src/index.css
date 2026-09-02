@@ -1205,17 +1205,21 @@ h2 {
 
 /* ── 步驟 4：八階段對照表（本章主視覺） ── */
 
+.sop-compare {
+  row-gap: 1.1rem;
+}
+
 .sop-compare-body {
   grid-column: 2 / span 12;
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  max-width: 62em;
+  gap: 0.35rem;
+  max-width: 74em;
 }
 
 .sop-compare-body .prose {
-  font-size: 1.15rem;
-  line-height: 1.8;
+  font-size: 1rem;
+  line-height: 1.6;
   max-width: none;
 }
 
@@ -1224,90 +1228,51 @@ h2 {
   font-weight: 500;
 }
 
-.stage-matrix {
+/* 兩條主幹（一般出貨／酷澎出貨）各配一張主線圖＋一張細節圖，
+   都是網站裡的真實截圖，不是重畫的示意圖——所以版面只負責把它們
+   排整齊、配上標籤，畫面本身已經有內容了。 */
+.compare-gallery {
   grid-column: 2 / span 12;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.compare-row .tag {
+  margin-bottom: 0.5rem;
+}
+
+.compare-imgs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.compare-panel {
   margin: 0;
-}
-
-.stage-track {
-  display: grid;
-  grid-template-columns: 7rem repeat(8, 1fr);
-  gap: 0.5rem;
-  align-items: end;
-  padding-bottom: 0.9rem;
-  border-bottom: 1px solid var(--rule);
-}
-
-/* 第一格空著，讓八個階段跟下面的通路名稱欄對齊 */
-.stage-track::before {
-  content: "";
-}
-
-.stage-node {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  overflow: hidden;
+  background: #101820;
+  box-shadow: 0 16px 30px -20px rgba(0, 0, 0, 0.6);
 }
 
-.stage-num {
+.compare-panel img {
+  display: block;
+  width: 100%;
+  height: 15.5rem;
+  object-fit: contain;
+  object-position: top;
+}
+
+.compare-panel figcaption {
+  padding: 0.45rem 0.9rem;
+  border-top: 1px solid var(--rule);
   font-family: "IBM Plex Mono", monospace;
-  font-size: 0.78rem;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-}
-
-.stage-name {
-  font-size: 0.92rem;
-  line-height: 1.35;
-  color: var(--fg);
-  word-break: keep-all;
-}
-
-.stage-rows {
-  display: flex;
-  flex-direction: column;
-}
-
-.stage-row {
-  display: grid;
-  grid-template-columns: 7rem 1fr;
-  gap: 0.5rem;
-  align-items: center;
-  padding: 0.85rem 0;
-  border-bottom: 1px solid rgba(245, 242, 238, 0.06);
-}
-
-.stage-row-name {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.88rem;
-  letter-spacing: 0.1em;
-  color: var(--muted);
-}
-
-.stage-cells {
-  display: grid;
-  grid-template-columns: repeat(8, 1fr);
-  gap: 0.5rem;
-}
-
-/* 有寫＝實心紅；沒寫＝空格。整排掃過去，缺口自己會跳出來 */
-.stage-cell {
-  height: 10px;
-  border-radius: 2px;
-  background: transparent;
-  border: 1px solid rgba(245, 242, 238, 0.16);
-}
-
-.stage-cell--on {
-  background: var(--accent);
-  border-color: var(--accent);
-}
-
-.stage-matrix figcaption {
-  margin-top: 0.9rem;
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
   color: var(--muted);
 }
 
