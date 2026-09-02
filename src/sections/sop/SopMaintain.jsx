@@ -24,13 +24,12 @@ export default function SopMaintain({ active }) {
         <span className="rail-label">SOP檢索網站</span>
       </div>
 
-      <div className="sop-head">
+      {/* 標題跟文字收進同一個容器，讓它跟右邊的圖庫是「同一列」的兩個格子，
+          頂端才會自然對齊（跟前面「查找」那頁影片是同一個做法）。 */}
+      <div className="sop-maintain-body">
         <h2 className="thesis-heading">
           <Typewriter text="前端操作，網站可編輯" active={active} />
         </h2>
-      </div>
-
-      <div className="sop-maintain-body">
         {LINES.map((line, i) => (
           <p key={line} className="prose reveal-line" style={delay(i)}>
             {line}
