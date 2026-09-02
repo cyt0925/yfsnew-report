@@ -1,11 +1,58 @@
+import { useEffect, useRef, useState } from 'react';
 import { tools } from '../../data/tools.js';
 
 const tool = tools.find((t) => t.id === 'sop-search');
 
-// 章節的開場：大標題在左、圖在右。原本的「卡住的地方／怎麼解」
-// 是 ToolSection 通用模板的欄位，SOP 這一章已經拆成五步驟自己講完
-// 那個故事，這裡不用再重複，開場只留標題、狀態、跟一句最短的定位。
+// 影片開頭有幾格白畫面，在全黑的簡報上會閃一下，所以每輪都從這裡起跳。
+const START = 0.45;
+// 給「不要動畫」的觀眾看的定格：這個時間點畫面已經是完整的網站。
+const STILL = 3;
+
+// 章節的開場：大標題在左、示範影片在右。
+// 影片本身就是那段動畫——品牌 logo 縮到左上角，實際的 SOP 檢索網站
+// 從那裡長出來，最後淡出、接回下一輪。等於是在說「這不是示意圖，
+// 是一個做出來、打得開的東西」。
 export default function SopTitle({ active }) {
+  const videoRef = useRef(null);
+  // 影片的第一格是白的。在跳到 START 之前先不要顯示，不然一進這頁會閃一下白。
+  const [ready, setReady] = useState(false);
+
+  // 只有這一頁在台上時才播：整份簡報的章節都掛在 DOM 上（只是被平移到
+  // 畫面外），不控制的話影片會在背景一直跑，白白吃掉解碼資源。
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return undefined;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!active) {
+      v.pause();
+      return undefined;
+    }
+
+    const start = () => {
+      try {
+        v.currentTime = reduced ? STILL : START;
+      } catch {
+        /* metadata 還沒好就設 currentTime 會丟例外，交給下面的事件再試一次 */
+      }
+      if (!reduced) v.play().catch(() => {});
+    };
+
+    if (v.readyState >= 1) start();
+    else v.addEventListener('loadedmetadata', start, { once: true });
+
+    return () => v.removeEventListener('loadedmetadata', start);
+  }, [active]);
+
+  // 不用 loop 屬性：那會從第 0 秒重播，白畫面每一輪都會閃一次。
+  const replay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.currentTime = START;
+    v.play().catch(() => {});
+  };
+
   return (
     <section className="sop sop-title slide-content">
       <div className="rail">
@@ -25,29 +72,18 @@ export default function SopTitle({ active }) {
         </p>
       </div>
 
-      {/* 圖示本身不會動，所以拿它當「入口」：一圈虛線軌道先轉起來，
-          接著整個圖示縮小、飛向左上角，同一個位置長出真正的網站介面——
-          等於是在說「這不是一張示意圖，是一個做出來的東西」。停留幾秒後
-          再收回圖示，循環播放，不需要真人操作也能看懂那句「查得到」。 */}
       <figure className={`sop-title-figure${active ? ' is-active' : ''}`}>
-        <div className="sop-title-stage">
-          <div className="sop-title-icon-layer">
-            <svg className="sop-orbit" viewBox="0 0 200 200" aria-hidden="true">
-              <circle className="sop-orbit-ring sop-orbit-ring--outer" cx="100" cy="100" r="95" />
-              <circle className="sop-orbit-ring sop-orbit-ring--inner" cx="100" cy="100" r="80" />
-              <g className="sop-orbit-scanner">
-                <circle cx="100" cy="5" r="3" />
-              </g>
-            </svg>
-            <img src="sop-hero.png" alt="SOP 檢索網站" />
-          </div>
-
-          <div className="sop-title-webmock-layer" aria-hidden="true">
-            <div className="wm">
-              <img src="sop-webview.png" alt="" />
-            </div>
-          </div>
-        </div>
+        <video
+          ref={videoRef}
+          className={`sop-title-video${ready ? ' is-ready' : ''}`}
+          src="sop-loop.webm"
+          muted
+          playsInline
+          preload="auto"
+          onSeeked={() => setReady(true)}
+          onEnded={replay}
+          aria-label="SOP 檢索網站介面展示"
+        />
       </figure>
     </section>
   );

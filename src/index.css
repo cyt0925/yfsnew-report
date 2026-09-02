@@ -1337,28 +1337,25 @@ h2 {
 }
 
 .sop-title-figure {
-  grid-column: 9 / span 4;
+  grid-column: 8 / span 5;
   align-self: center;
   margin: 0;
   position: relative;
-  aspect-ratio: 1;
-  display: grid;
-  place-items: center;
 }
 
-/* 圖後面的紅色光暈：讓它自己會發光，而不是貼在黑底上的一張貼紙 */
+/* 影片後面的紅色光暈：讓那塊畫面自己會發光，而不是黑底上貼了一張矩形貼紙 */
 .sop-title-figure::before {
   content: "";
   position: absolute;
-  inset: 4%;
-  border-radius: 50%;
+  inset: -8%;
+  border-radius: 24px;
   background: radial-gradient(
     circle at 50% 50%,
-    rgba(209, 15, 39, 0.26),
-    rgba(209, 15, 39, 0.08) 48%,
-    transparent 72%
+    rgba(209, 15, 39, 0.2),
+    rgba(209, 15, 39, 0.06) 52%,
+    transparent 74%
   );
-  filter: blur(26px);
+  filter: blur(30px);
   z-index: 0;
   pointer-events: none;
 }
@@ -1368,195 +1365,46 @@ h2 {
 }
 
 @keyframes sop-bloom-breathe {
-  0%, 100% { opacity: 0.7; transform: scale(0.97); }
-  50%      { opacity: 1; transform: scale(1.03); }
+  0%, 100% { opacity: 0.7; transform: scale(0.98); }
+  50%      { opacity: 1; transform: scale(1.02); }
 }
 
-.sop-title-stage {
+/* 縮放動畫本身錄在影片裡（logo 縮到左上角、網站頁面長出來），
+   所以這裡不再自己做一套 CSS 動畫——只負責把那塊畫面框好、進場淡入。
+   播放與循環的時機交給 SopTitle.jsx：只有這一頁在台上時才播，
+   而且每輪從 0.45 秒起跳，跳過影片開頭那幾格白畫面。 */
+.sop-title-video {
   position: relative;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-}
-
-.sop-title-icon-layer,
-.sop-title-webmock-layer {
-  grid-area: 1 / 1;
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-}
-
-.sop-title-icon-layer {
-  position: relative;
-  transform-origin: 12% 10%;
-}
-
-.sop-title-icon-layer img {
-  position: relative;
-  z-index: 2;
-  width: 84%;
-  height: auto;
+  z-index: 1;
   display: block;
-}
-
-/* 進場淡入與持續浮動分成兩層：一層只動 opacity、一層只動 transform，
-   不會互相蓋掉（同一個屬性被兩個 animation 搶，後者會直接覆蓋前者）。 */
-.sop-title-figure.is-active .sop-title-icon-layer img {
-  animation:
-    sop-hero-in 0.7s ease 0.2s both,
-    sop-hero-float 9s ease-in-out 0.9s infinite;
-}
-
-@keyframes sop-hero-in {
-  from { opacity: 0; }
-  to   { opacity: 1; }
-}
-
-@keyframes sop-hero-float {
-  0%, 100% { transform: perspective(1200px) rotateX(1.2deg) rotateY(-1.8deg) translateY(0); }
-  50%      { transform: perspective(1200px) rotateX(-1deg) rotateY(1.5deg) translateY(-10px); }
-}
-
-/* 圖示外層再包一層縮放動畫：跟浮動動畫分屬不同 DOM 節點，
-   transform 各管各的，不會互相覆蓋。圖示縮小飛向左上角淡出的同時，
-   下面的網頁介面從同一個角落放大淡入接手，感覺是同一顆 icon「展開」的。 */
-.sop-title-figure.is-active .sop-title-icon-layer {
-  animation: sop-icon-cycle 13s cubic-bezier(0.65, 0, 0.35, 1) 1.2s infinite;
-}
-
-@keyframes sop-icon-cycle {
-  0%, 5%    { opacity: 1; transform: scale(1); }
-  16%       { opacity: 0; transform: scale(0.2); }
-  86%       { opacity: 0; transform: scale(0.2); }
-  96%, 100% { opacity: 1; transform: scale(1); }
-}
-
-/* ── 圖示展開後的網站介面：純 CSS 骨架示意，不是真的截圖，
-   目的是讓觀眾一眼看出「這是個可以操作的網站」，不需要逐字看清 ── */
-
-.sop-title-webmock-layer {
-  position: absolute;
-  inset: 0;
-  transform-origin: 12% 10%;
-  pointer-events: none;
-}
-
-.sop-title-figure.is-active .sop-title-webmock-layer {
-  animation: sop-webmock-cycle 13s cubic-bezier(0.65, 0, 0.35, 1) 1.2s infinite;
-}
-
-@keyframes sop-webmock-cycle {
-  0%, 14%   { opacity: 0; transform: scale(0.14); }
-  27%, 75%  { opacity: 1; transform: scale(1); }
-  88%, 100% { opacity: 0; transform: scale(0.14); }
-}
-
-.wm {
-  width: 108%;
+  width: 100%;
   aspect-ratio: 16 / 10;
+  object-fit: cover;
   border: 1px solid var(--rule);
   border-radius: 10px;
-  overflow: hidden;
-  background: #0a0a0b;
-  box-shadow: 0 0 0 1px rgba(209, 15, 39, 0.15), 0 30px 60px -20px rgba(0, 0, 0, 0.6);
-}
-
-.wm img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top;
-}
-
-/* ── 檢索軌道：兩圈反向緩轉的虛線環 ＋ 一顆巡弋的紅點 ── */
-
-.sop-orbit {
-  position: absolute;
-  inset: -2%;
-  width: 104%;
-  height: 104%;
-  z-index: 1;
-  overflow: visible;
+  background: #101820;
+  box-shadow:
+    0 0 0 1px rgba(209, 15, 39, 0.14),
+    0 30px 60px -20px rgba(0, 0, 0, 0.65);
+  /* 先藏著。影片的第一格是白的，要等 SopTitle.jsx 確認已經跳過那一格
+     （seeked）才淡入，不然一進這頁會閃一下白。 */
   opacity: 0;
-  pointer-events: none;
+  transform: translateY(10px);
+  transition: opacity 0.55s ease, transform 0.55s ease;
 }
 
-.sop-title-figure.is-active .sop-orbit {
-  animation: sop-orbit-in 0.9s ease 0.35s both;
-}
-
-@keyframes sop-orbit-in {
-  from { opacity: 0; transform: scale(0.88); }
-  to   { opacity: 1; transform: scale(1); }
-}
-
-.sop-orbit-ring {
-  fill: none;
-  stroke: var(--accent);
-  transform-origin: 50% 50%;
-}
-
-.sop-orbit-ring--outer {
-  stroke-width: 0.7;
-  stroke-dasharray: 10 7;
-  opacity: 0.45;
-}
-
-.sop-orbit-ring--inner {
-  stroke-width: 0.5;
-  stroke-dasharray: 2 6;
-  opacity: 0.3;
-}
-
-/* 兩圈反向轉，速度也不同——同向同速看起來會像整張圖在轉 */
-.sop-title-figure.is-active .sop-orbit-ring--outer {
-  animation: sop-spin 46s linear infinite;
-}
-
-.sop-title-figure.is-active .sop-orbit-ring--inner {
-  animation: sop-spin 32s linear infinite reverse;
-}
-
-.sop-orbit-scanner {
-  transform-origin: 50% 50%;
-}
-
-.sop-orbit-scanner circle {
-  fill: var(--accent);
-  filter: drop-shadow(0 0 4px rgba(209, 15, 39, 0.9));
-}
-
-.sop-title-figure.is-active .sop-orbit-scanner {
-  animation: sop-spin 12s linear infinite;
-}
-
-@keyframes sop-spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+.sop-title-video.is-ready {
+  opacity: 1;
+  transform: translateY(0);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .sop-title-figure.is-active .sop-title-icon-layer img,
-  .sop-title-figure.is-active .sop-title-icon-layer,
-  .sop-title-figure.is-active .sop-title-webmock-layer,
-  .sop-title-figure.is-active::before,
-  .sop-title-figure.is-active .sop-orbit-ring--outer,
-  .sop-title-figure.is-active .sop-orbit-ring--inner,
-  .sop-title-figure.is-active .sop-orbit-scanner {
+  .sop-title-figure.is-active::before {
     animation: none;
   }
 
-  .sop-title-figure.is-active .sop-title-icon-layer {
-    opacity: 1;
-    transform: none;
-  }
-
-  .sop-title-figure.is-active .sop-title-webmock-layer {
-    opacity: 0;
+  .sop-title-video {
+    transition: none;
   }
 }
 
