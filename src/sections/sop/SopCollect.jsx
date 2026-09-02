@@ -43,25 +43,27 @@ export default function SopCollect({ active }) {
         <span className="rail-label">SOP檢索網站</span>
       </div>
 
-      <div className="sop-head sop-head--narrow">
+      {/* 標題跟兩個 tag 區塊收進同一個容器，讓它跟右邊影片是「同一列」的兩個
+          格子——這樣兩邊的頂端自然對齊，不用另外算 margin 去湊。 */}
+      <div className="sop-collect-body">
         <h2 className="thesis-heading">
           <Typewriter text="精準檢索，多維篩選" active={active} />
         </h2>
-      </div>
 
-      <div className="sop-blocks">
-        {BLOCKS.map((b, i) => (
-          <div
-            key={b.tag}
-            className="sop-block reveal-line"
-            style={active ? { animationDelay: `${0.55 + i * 0.4}s` } : { opacity: 1, animation: 'none' }}
-          >
-            <span className="tag">{b.tag}</span>
-            {b.lines.map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </div>
-        ))}
+        <div className="sop-blocks">
+          {BLOCKS.map((b, i) => (
+            <div
+              key={b.tag}
+              className="sop-block reveal-line"
+              style={active ? { animationDelay: `${0.55 + i * 0.4}s` } : { opacity: 1, animation: 'none' }}
+            >
+              <span className="tag">{b.tag}</span>
+              {b.lines.map((line) => (
+                <p key={line}>{line}</p>
+              ))}
+            </div>
+          ))}
+        </div>
       </div>
 
       <figure className={`sop-collect-figure${active ? ' is-active' : ''}`}>
