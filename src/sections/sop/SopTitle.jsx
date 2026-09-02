@@ -25,19 +25,64 @@ export default function SopTitle({ active }) {
         </p>
       </div>
 
-      {/* 這張是單一張平面 PNG，裡面的房子、資料夾、放大鏡沒辦法各自動起來。
-          但畫面本來就有一圈紅色循環箭頭，所以與其讓整張圖漂來漂去，
-          不如把那圈箭頭延伸成真的會轉的軌道：兩圈反向緩轉的虛線環，
-          外圈掛一顆巡弋的紅點——那就是「檢索」這件事的視覺化。 */}
+      {/* 圖示本身不會動，所以拿它當「入口」：一圈虛線軌道先轉起來，
+          接著整個圖示縮小、飛向左上角，同一個位置長出真正的網站介面——
+          等於是在說「這不是一張示意圖，是一個做出來的東西」。停留幾秒後
+          再收回圖示，循環播放，不需要真人操作也能看懂那句「查得到」。 */}
       <figure className={`sop-title-figure${active ? ' is-active' : ''}`}>
-        <svg className="sop-orbit" viewBox="0 0 200 200" aria-hidden="true">
-          <circle className="sop-orbit-ring sop-orbit-ring--outer" cx="100" cy="100" r="95" />
-          <circle className="sop-orbit-ring sop-orbit-ring--inner" cx="100" cy="100" r="80" />
-          <g className="sop-orbit-scanner">
-            <circle cx="100" cy="5" r="3" />
-          </g>
-        </svg>
-        <img src="sop-hero.png" alt="SOP 檢索網站" />
+        <div className="sop-title-stage">
+          <div className="sop-title-icon-layer">
+            <svg className="sop-orbit" viewBox="0 0 200 200" aria-hidden="true">
+              <circle className="sop-orbit-ring sop-orbit-ring--outer" cx="100" cy="100" r="95" />
+              <circle className="sop-orbit-ring sop-orbit-ring--inner" cx="100" cy="100" r="80" />
+              <g className="sop-orbit-scanner">
+                <circle cx="100" cy="5" r="3" />
+              </g>
+            </svg>
+            <img src="sop-hero.png" alt="SOP 檢索網站" />
+          </div>
+
+          <div className="sop-title-webmock-layer" aria-hidden="true">
+            <div className="wm">
+              <div className="wm-header">
+                <span className="wm-header-icon" />
+                <div className="wm-header-text">
+                  <span className="wm-title" />
+                  <span className="wm-sub" />
+                </div>
+                <div className="wm-stats">
+                  <span /><span /><span /><span />
+                </div>
+              </div>
+              <div className="wm-toolbar">
+                <span className="wm-search" />
+                <span className="wm-tab wm-tab--active" />
+                <span className="wm-tab" />
+              </div>
+              <div className="wm-body">
+                <div className="wm-sidebar">
+                  <span className="wm-filter-title" />
+                  <span className="wm-chip" />
+                  <span className="wm-chip" />
+                  <span className="wm-chip" />
+                  <span className="wm-filter-title" />
+                  <span className="wm-chip" />
+                  <span className="wm-chip" />
+                </div>
+                <div className="wm-list">
+                  {[0, 1, 2, 3, 4].map((i) => (
+                    <div className="wm-row" key={i}>
+                      <span className="wm-row-title" style={{ '--w': `${72 - i * 6}%` }} />
+                      <span className="wm-tag wm-tag--a" />
+                      <span className="wm-tag wm-tag--b" />
+                      {i % 2 === 0 && <span className="wm-tag wm-tag--c" />}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </figure>
     </section>
   );
