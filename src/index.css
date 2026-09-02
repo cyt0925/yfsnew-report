@@ -1115,8 +1115,13 @@ h2 {
   align-content: center;
 }
 
+.sop-collect .sop-head {
+  grid-row: 1;
+}
+
 .sop-blocks {
   grid-column: 2 / span 5;
+  grid-row: 2;
   display: flex;
   flex-direction: column;
   gap: 2rem;
@@ -1138,8 +1143,9 @@ h2 {
    但內容是寬螢幕的網站操作畫面，不是方形的 icon，所以另外開一組尺寸。 */
 .sop-collect-figure {
   grid-column: 7 / span 7;
-  align-self: center;
-  margin: 0;
+  grid-row: 2;
+  align-self: start;
+  margin: 1rem 0 0;
   position: relative;
 }
 
