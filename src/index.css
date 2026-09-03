@@ -661,7 +661,7 @@ h2 {
 }
 
 .roadmap-lead {
-  grid-column: 2 / span 10;
+  grid-column: 2 / span 12;
   display: flex;
   flex-direction: column;
   gap: 1.3rem;
@@ -669,6 +669,12 @@ h2 {
 
 .roadmap-lead .thesis-heading {
   margin-bottom: 0.2rem;
+}
+
+/* .prose 預設封頂在 34em，這裡要跟底下滿版的證據圖對齊寬度，
+   換行點要拉到跟圖同一個右邊界，不能提早收窄。 */
+.roadmap-lead .prose {
+  max-width: none;
 }
 
 /* PO 流程鏈：一整排步驟名稱用箭頭串起來，中間那個沒有系統撐著的
@@ -720,12 +726,15 @@ h2 {
 .roadmap-evidence-below {
   grid-column: 2 / span 12;
   margin: 0;
-  max-width: 56rem;
 }
 
-.roadmap-evidence-below img {
+/* 用複合選擇器（兩個 class 疊在同一個元素上）確保這裡的尺寸設定
+   贏過 .compare-panel img 的預設值，不用管兩條規則誰寫在檔案後面。 */
+.roadmap-evidence-below.compare-panel img {
   width: 100%;
-  height: auto;
+  height: 21rem;
+  object-fit: cover;
+  object-position: top;
 }
 
 .verdict-tagline {
