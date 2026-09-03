@@ -18,6 +18,8 @@ export const FEATURES = [
       { lead: '全有全無', text: '匯入中任何一列格式有誤，整批即時退回，不會卡在一半造成帳目失真。' },
     ],
     tip: '一張 PO 實務上最多涵蓋 29 個 SKU。如果當初把 PO 單號設成唯一值，系統會默默吃掉 80% 的品項明細。',
+    video: 'oms-upload-demo.webm',
+    videoLabel: '上傳整合表操作示範',
   },
   {
     n: '02',

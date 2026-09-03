@@ -1,15 +1,59 @@
+import { useEffect, useRef, useState } from 'react';
 import Typewriter from '../../components/Typewriter.jsx';
 import { tools } from '../../data/tools.js';
 
 const tool = tools.find((t) => t.id === 'coupang-oms');
 
-// 章節開場：先把整個系統的兩條作業動線攤開，再往下逐一展開五個功能。
+// 影片開頭有幾格白畫面，在全黑的簡報上會閃一下，所以每輪都從這裡起跳。
+const START = 0.45;
+// 給「不要動畫」的觀眾看的定格：這個時間點畫面已經是完整的網站。
+const STILL = 3;
+
+// 章節開場：跟 SOP 檢索網站那頁同一個概念——logo 縮到左上角，
+// 酷澎訂單管理系統的畫面從那裡長出來，右邊放這支示範影片，
+// 左邊把整個系統的兩條作業動線攤開，再往下逐一展開五個功能。
 // 「驗收單簽名」跟「採購表轉換」刻意不畫進這條動線——它們是左右鍵
 // 才切得到的獨立章節，這裡只用一句話帶過去，不搶這頁的焦點。
 const FLOW = ['上傳整合表', '首頁 PO 總表', '編輯出貨數量', '匯出給倉庫', '驗收狀態自動判定'];
 
 export default function OmsTitle({ active }) {
   const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.3}s` } : { opacity: 1, animation: 'none' });
+
+  const videoRef = useRef(null);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const v = videoRef.current;
+    if (!v) return undefined;
+
+    const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    if (!active) {
+      v.pause();
+      return undefined;
+    }
+
+    const start = () => {
+      try {
+        v.currentTime = reduced ? STILL : START;
+      } catch {
+        /* metadata 還沒好就設 currentTime 會丟例外，交給下面的事件再試一次 */
+      }
+      if (!reduced) v.play().catch(() => {});
+    };
+
+    if (v.readyState >= 1) start();
+    else v.addEventListener('loadedmetadata', start, { once: true });
+
+    return () => v.removeEventListener('loadedmetadata', start);
+  }, [active]);
+
+  const replay = () => {
+    const v = videoRef.current;
+    if (!v) return;
+    v.currentTime = START;
+    v.play().catch(() => {});
+  };
 
   return (
     <section className="oms oms-title slide-content">
@@ -23,9 +67,6 @@ export default function OmsTitle({ active }) {
           <h2>
             <Typewriter text={tool.name} active={active} />
           </h2>
-          <span className={`status status--${tool.status === '已上線' ? 'live' : 'wip'}`}>
-            {tool.status}
-          </span>
         </header>
         <p className="prose reveal-line" style={delay(0)}>
           不談抽象的技術模組，跟著 OP 每天的作業動線走：上傳、比對、編輯、匯出，
@@ -46,6 +87,20 @@ export default function OmsTitle({ active }) {
           左右鍵可以直接切過去看。
         </p>
       </div>
+
+      <figure className={`oms-title-figure${active ? ' is-active' : ''}`}>
+        <video
+          ref={videoRef}
+          className={`oms-title-video${ready ? ' is-ready' : ''}`}
+          src="oms-loop.webm"
+          muted
+          playsInline
+          preload="auto"
+          onSeeked={() => setReady(true)}
+          onEnded={replay}
+          aria-label="酷澎訂單管理系統介面展示"
+        />
+      </figure>
     </section>
   );
 }
