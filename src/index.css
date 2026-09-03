@@ -1830,7 +1830,15 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  align-self: start;
+  /* 拉滿整列高度，影片卡下緣才會跟左欄文字的下緣切齊 */
+  align-self: stretch;
+}
+
+.oms-col-right > .oms-block {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .oms-col-left .oms-block,
@@ -1842,6 +1850,9 @@ h2 {
 .oms-video-figure {
   margin: 0;
   position: relative;
+  display: flex;
+  flex: 1;
+  min-height: 0;
 }
 
 .oms-video-figure::before {
@@ -1869,6 +1880,9 @@ h2 {
 .oms-video-card {
   position: relative;
   z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
   border: 1px solid var(--rule);
   border-radius: 10px;
   overflow: hidden;
@@ -1879,6 +1893,8 @@ h2 {
 .oms-video {
   display: block;
   width: 100%;
+  /* 影片維持原比例，不跟著卡片一起被拉長 */
+  flex: none;
   aspect-ratio: 1600 / 900;
   object-fit: cover;
 }
@@ -1893,6 +1909,10 @@ h2 {
   counter-reset: oms-step;
   display: flex;
   flex-direction: column;
+  /* 卡片被拉高時多出來的空間全給字幕條，步驟平均散開，
+     不會在影片下面留一塊莫名其妙的空白。 */
+  flex: 1;
+  justify-content: space-evenly;
   gap: 0.4rem;
 }
 
