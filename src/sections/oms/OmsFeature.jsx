@@ -6,10 +6,11 @@ import Typewriter from '../../components/Typewriter.jsx';
 // 每條有粗體的一句話標題 + 一句補充說明，不用另外畫圖或截圖也讀得快。
 //
 // 有 video 的功能頁（目前只有「上傳整合表」）改走左右分欄：左邊放
-// 為什麼要做／做到了什麼，右邊把「怎麼操作」跟示範影片放在一起——
-// 操作步驟本來就是影片裡發生的事，文字負責講清楚畫面在做什麼。
+// 為什麼要做／做到了什麼，右邊是示範影片，操作步驟直接掛在影片下緣
+// 當字幕條——步驟講的就是畫面正在做的事，兩者貼在一起讀最省版面，
+// 也不用再為「怎麼操作」單獨留一整塊。
 export default function OmsFeature({
-  n, kicker = '酷澎訂單管理系統', title, why, how, points, tip, note, video, videoLabel, active,
+  n, kicker = '酷澎訂單管理系統', title, why, how, points, note, video, videoLabel, active,
 }) {
   const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.2}s` } : { opacity: 1, animation: 'none' });
   const howSteps = Array.isArray(how) ? how : null;
@@ -61,9 +62,7 @@ export default function OmsFeature({
   const pointsBlock = (
     <div className="oms-block oms-block--points reveal-line" style={delay(video ? 1 : 2)}>
       <span className="tag">做到了什麼</span>
-      {/* 有影片的頁面文字全擠在左半邊，條列改成雙欄小卡，同樣的內容
-          少吃一半的直向高度。沒有影片的頁面版面本來就寬，維持單欄。 */}
-      <ul className={`oms-points${video ? ' oms-points--grid' : ''}`}>
+      <ul className="oms-points">
         {points.map((p) => (
           <li key={p.lead} className="oms-point">
             <b>{p.lead}</b>{p.text}
@@ -71,15 +70,6 @@ export default function OmsFeature({
         ))}
       </ul>
     </div>
-  );
-
-  // 現場亮點原本是一個有框有底色的提示框，光是框線跟內距就吃掉一整行的
-  // 高度。降級成一行帶標籤的小字，講的事情一樣，但不再跟主要條列搶版面。
-  const tipBlock = tip && (
-    <p className="oms-tip reveal-line" style={delay(video ? 2 : 3)}>
-      <span className="oms-tip-label">現場亮點</span>
-      {tip}
-    </p>
   );
 
   if (video) {
@@ -95,23 +85,36 @@ export default function OmsFeature({
         <div className="oms-col-left">
           {whyBlock}
           {pointsBlock}
-          {tipBlock}
         </div>
 
         <div className="oms-col-right">
-          {howBlock}
-          <figure className={`oms-video-figure${active ? ' is-active' : ''}`}>
-            <video
-              ref={videoRef}
-              className="oms-video"
-              src={video}
-              muted
-              loop
-              playsInline
-              preload="auto"
-              aria-label={videoLabel || `${title}操作示範`}
-            />
-          </figure>
+          <div className="oms-block reveal-line" style={delay(0)}>
+            <span className="tag">怎麼操作</span>
+            <figure className={`oms-video-figure${active ? ' is-active' : ''}`}>
+              <div className="oms-video-card">
+                <video
+                  ref={videoRef}
+                  className="oms-video"
+                  src={video}
+                  muted
+                  loop
+                  playsInline
+                  preload="auto"
+                  aria-label={videoLabel || `${title}操作示範`}
+                />
+                {/* 步驟編號用 CSS counter 產生，不寫死在文字裡：條目增減
+                    都不用回來改號碼。 */}
+                {howSteps && (
+                  <ol className="oms-video-steps">
+                    {howSteps.map((step) => (
+                      <li key={step}>{step}</li>
+                    ))}
+                  </ol>
+                )}
+              </div>
+            </figure>
+          </div>
+          {!howSteps && howBlock}
         </div>
       </section>
     );
@@ -128,7 +131,6 @@ export default function OmsFeature({
       {whyBlock}
       {howBlock}
       {pointsBlock}
-      {tipBlock}
     </section>
   );
 }

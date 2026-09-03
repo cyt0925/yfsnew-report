@@ -1673,8 +1673,8 @@ h2 {
 }
 
 .oms-block .prose {
-  font-size: 1.2rem;
-  line-height: 1.65;
+  font-size: 1.3rem;
+  line-height: 1.7;
   max-width: none;
 }
 
@@ -1684,8 +1684,8 @@ h2 {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  font-size: 1.2rem;
-  line-height: 1.6;
+  font-size: 1.3rem;
+  line-height: 1.65;
   color: var(--body);
 }
 
@@ -1703,23 +1703,9 @@ h2 {
   gap: 0.5rem;
 }
 
-/* 雙欄小卡：給文字被擠在半邊版面的功能頁用。條列不再一條一行往下疊，
-   而是左右排開，同樣的內容大約只吃一半的直向高度。 */
-.oms-points--grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.8rem 1.6rem;
-}
-
-/* 條列數是奇數時，最後一條會落單在半欄裡被擠成好幾行，右邊還空著。
-   讓它橫跨整列，讀起來順、也少吃兩行高度。 */
-.oms-points--grid > li:last-child:nth-child(odd) {
-  grid-column: 1 / -1;
-}
-
 .oms-point {
-  font-size: 1.2rem;
-  line-height: 1.6;
+  font-size: 1.3rem;
+  line-height: 1.65;
   color: var(--body);
   padding-left: 1.1em;
   position: relative;
@@ -1743,25 +1729,6 @@ h2 {
 
 .oms-point b::after {
   content: "：";
-}
-
-/* 一行小字，不再是有框有底的提示框——框線跟內距本身就吃掉一整行高度，
-   而這句話的份量不需要那麼強的視覺重量。 */
-.oms-tip {
-  grid-column: 2 / span 10;
-  margin: 0;
-  font-size: 1.02rem;
-  line-height: 1.55;
-  color: var(--muted);
-}
-
-.oms-tip-label {
-  font-family: "IBM Plex Mono", monospace;
-  font-size: 0.74rem;
-  letter-spacing: 0.14em;
-  color: var(--accent);
-  white-space: nowrap;
-  margin-right: 0.7em;
 }
 
 /* 章節開場頁：跟 SOP 檢索網站的開場同一個概念——左邊文字＋動線圖，
@@ -1888,15 +1855,52 @@ h2 {
   animation: sop-bloom-breathe 6s ease-in-out infinite;
 }
 
-.oms-video {
+/* 影片跟步驟字幕條是同一張卡：邊框、圓角、陰影掛在卡片上，
+   光暈留在外層 figure（卡片要 overflow:hidden 裁切字幕條的圓角，
+   光暈掛在同一個元素上會被一起裁掉）。 */
+.oms-video-card {
   position: relative;
   z-index: 1;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #101820;
+  box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.65);
+}
+
+.oms-video {
   display: block;
   width: 100%;
   aspect-ratio: 1600 / 900;
   object-fit: cover;
-  border: 1px solid var(--rule);
-  border-radius: 10px;
-  background: #101820;
-  box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.65);
+}
+
+/* 貼在影片下緣的步驟字幕條——講的就是畫面正在做的事 */
+.oms-video-steps {
+  margin: 0;
+  padding: 0.75rem 1.1rem;
+  border-top: 1px solid var(--rule);
+  background: rgba(255, 255, 255, 0.02);
+  list-style: none;
+  counter-reset: oms-step;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.oms-video-steps li {
+  display: flex;
+  gap: 0.7em;
+  font-size: 1.15rem;
+  line-height: 1.5;
+  color: var(--body);
+}
+
+.oms-video-steps li::before {
+  counter-increment: oms-step;
+  content: counter(oms-step, decimal-leading-zero);
+  flex: none;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.9em;
+  color: var(--accent);
 }
