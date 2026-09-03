@@ -25,7 +25,7 @@ export default function RoadmapFeedback({ active }) {
         </h2>
       </div>
 
-      <div className="findings">
+      <div className="findings findings--stacked">
         {POINTS.map((p, i) => (
           <article
             key={p.index}

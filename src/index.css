@@ -1127,6 +1127,33 @@ h2 {
   gap: 2.5rem;
 }
 
+/* 三欄卡片會把長句子擠進窄欄裡提早換行，跟頁面其他滿版文字對不齊。
+   這個變體改成單欄堆疊，每一句都用滿版寬度，換行點才跟圖對齊。 */
+.findings--stacked {
+  grid-template-columns: 1fr;
+  gap: 1.4rem;
+}
+
+.findings--stacked .finding {
+  display: flex;
+  align-items: baseline;
+  gap: 1rem;
+  border-top: none;
+  padding-top: 0;
+  border-bottom: 1px solid var(--rule);
+  padding-bottom: 1.1rem;
+}
+
+.findings--stacked .finding-index {
+  margin-bottom: 0;
+  flex: none;
+}
+
+.findings--stacked .finding h3 {
+  margin: 0;
+  flex: 1;
+}
+
 .finding {
   border-top: 1px solid var(--rule);
   padding-top: 1.1rem;
