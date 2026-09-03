@@ -61,7 +61,9 @@ export default function OmsFeature({
   const pointsBlock = (
     <div className="oms-block oms-block--points reveal-line" style={delay(video ? 1 : 2)}>
       <span className="tag">做到了什麼</span>
-      <ul className="oms-points">
+      {/* 有影片的頁面文字全擠在左半邊，條列改成雙欄小卡，同樣的內容
+          少吃一半的直向高度。沒有影片的頁面版面本來就寬，維持單欄。 */}
+      <ul className={`oms-points${video ? ' oms-points--grid' : ''}`}>
         {points.map((p) => (
           <li key={p.lead} className="oms-point">
             <b>{p.lead}</b>{p.text}
@@ -71,11 +73,13 @@ export default function OmsFeature({
     </div>
   );
 
+  // 現場亮點原本是一個有框有底色的提示框，光是框線跟內距就吃掉一整行的
+  // 高度。降級成一行帶標籤的小字，講的事情一樣，但不再跟主要條列搶版面。
   const tipBlock = tip && (
-    <div className="oms-tip reveal-line" style={delay(video ? 2 : 3)}>
+    <p className="oms-tip reveal-line" style={delay(video ? 2 : 3)}>
       <span className="oms-tip-label">現場亮點</span>
-      <p>{tip}</p>
-    </div>
+      {tip}
+    </p>
   );
 
   if (video) {
