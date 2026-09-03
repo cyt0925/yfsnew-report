@@ -80,9 +80,10 @@ export default function OmsFeature({
           <span className="rail-label">{kicker}</span>
         </div>
 
-        {head}
-
+        {/* 標題收進左欄，右欄從同一條上緣起跑：「怎麼操作」對齊「功能 01」，
+            影片上緣就對齊大標題，兩邊像同一列的兩個格子。 */}
         <div className="oms-col-left">
+          {head}
           {whyBlock}
           {pointsBlock}
         </div>
