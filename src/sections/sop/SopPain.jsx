@@ -30,8 +30,8 @@ const FINDINGS = [
   },
 ];
 
-const SPEED = 32;
-const GAP = 260;
+const SPEED = 14;
+const GAP = 120;
 
 // 每張卡片自己的標題＋兩行文字接續打完，卡片跟卡片之間再錯開起跑，
 // 跟原本「整張卡片一起淡入、卡片間錯開」的節奏對應，只是卡片內部
@@ -64,7 +64,7 @@ export default function SopPain({ active }) {
 
       <div className="findings">
         {FINDINGS.map((f, i) => {
-          const { titleDelay, lineDelays } = cardDelays(f, 0.55 + i * 0.35);
+          const { titleDelay, lineDelays } = cardDelays(f, 0.4 + i * 0.15);
           return (
             <article key={f.index} className="finding">
               <span className="finding-index">{f.index}</span>

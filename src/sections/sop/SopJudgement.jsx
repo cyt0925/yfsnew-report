@@ -20,8 +20,8 @@ const EVIDENCE = [
   { src: 'sop-docs-6.png', top: '63%', left: '44%', width: '42%', rotate: -4 },
 ];
 
-const SPEED = 32;
-const GAP = 320;
+const SPEED = 14;
+const GAP = 120;
 
 export default function SopJudgement({ active }) {
   // 兩句話、四行字接續打完：第一句兩行、第二句兩行，

@@ -5,8 +5,8 @@ import Typewriter from '../components/Typewriter.jsx';
 // 每次浮現的都是完整的一句，不會停在奇怪的地方讓人等下一句。
 // 每一行接著前一行的預估打完時間起跑（字數 * 速度 + 行間停頓），
 // 讀起來像一台終端機把整段話依序打出來，不是好幾行同時各自跑。
-const SPEED = 32;
-const LINE_GAP = 260;
+const SPEED = 14;
+const LINE_GAP = 120;
 
 // 給需要在這段話打完之後接東西的頁面用（例如 AiImportance3 打完
 // 才點亮下面的 logo）——回傳秒數，跟元件內部算的起跑時間共用同一套公式，

@@ -1,8 +1,8 @@
 // 給需要「這句打完才接下一句」的頁面共用的小工具，避免每個檔案自己
 // 手算一次「前面幾句的字數 * 速度 + 間隔」。呼叫一次 next(該行字數)
 // 拿到這一行的起跑時間（毫秒），內部游標自動往後推。
-export const SPEED = 32;
-export const GAP = 300;
+export const SPEED = 14;
+export const GAP = 120;
 
 export function makeCursor(startSeconds = 0.5) {
   let cursor = startSeconds * 1000;

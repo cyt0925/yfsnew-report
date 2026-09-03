@@ -17,7 +17,7 @@ import { useEffect, useState } from 'react';
  * 這種情況改傳 segments，每個 segment 可以帶 className（上色/加粗），
  * 並用 nowrapWith: true 跟「前一個」segment 黏成同一個不可斷行的區塊。
  */
-export default function Typewriter({ text, segments, speed = 55, active = true, startDelay = 0 }) {
+export default function Typewriter({ text, segments, speed = 26, active = true, startDelay = 0 }) {
   const parts = segments || [{ text }];
   const fullText = parts.map((p) => p.text).join('');
   const [count, setCount] = useState(0);
