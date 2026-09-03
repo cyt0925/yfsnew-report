@@ -1,4 +1,5 @@
 import Typewriter from '../../components/Typewriter.jsx';
+import { makeCursor, SPEED } from '../../utils/typeCursor.js';
 
 // 收尾頁：這套東西能不能活下去，取決於改起來麻不麻煩。
 // 底下三張是真的畫面——資料庫其實就是一張 Google 試算表，
@@ -15,7 +16,10 @@ const PANELS = [
 ];
 
 export default function SopMaintain({ active }) {
-  const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.3}s` } : { opacity: 1, animation: 'none' });
+  const cursor = makeCursor(0.5);
+  const lineDelays = LINES.map((line) => cursor.next(line.length));
+  const galleryStart = cursor.peekSeconds(200);
+  const delay = (i) => (active ? { animationDelay: `${galleryStart + i * 0.3}s` } : { opacity: 1, animation: 'none' });
 
   return (
     <section className="sop sop-maintain slide-content">
@@ -31,20 +35,20 @@ export default function SopMaintain({ active }) {
           <Typewriter text="前端操作，網站可編輯" active={active} />
         </h2>
         {LINES.map((line, i) => (
-          <p key={line} className="prose reveal-line" style={delay(i)}>
-            {line}
+          <p key={line} className="prose">
+            <Typewriter text={line} active={active} speed={SPEED} startDelay={lineDelays[i]} />
           </p>
         ))}
       </div>
 
       <div className="maintain-gallery">
-        <div className="maintain-row maintain-row--full reveal-line" style={delay(2)}>
+        <div className="maintain-row maintain-row--full reveal-line" style={delay(0)}>
           <figure className="maintain-panel">
             <img src={PANELS[0].src} alt={PANELS[0].caption} />
             <figcaption>{PANELS[0].caption}</figcaption>
           </figure>
         </div>
-        <div className="maintain-row maintain-row--pair reveal-line" style={delay(3)}>
+        <div className="maintain-row maintain-row--pair reveal-line" style={delay(1)}>
           {PANELS.slice(1).map((p) => (
             <figure key={p.src} className="maintain-panel">
               <img src={p.src} alt={p.caption} />

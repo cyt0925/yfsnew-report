@@ -1,3 +1,5 @@
+import Typewriter from '../components/Typewriter.jsx';
+import { makeCursor, SPEED } from '../utils/typeCursor.js';
 import IsoDiagram from './IsoDiagram.jsx';
 
 function Metrics({ items }) {
@@ -20,7 +22,11 @@ function Metrics({ items }) {
   );
 }
 
-export default function ToolSection({ tool }) {
+export default function ToolSection({ tool, active = true }) {
+  const cursor = makeCursor(0.4);
+  const problemDelay = cursor.next(tool.problem.length);
+  const approachDelay = cursor.next(tool.approach.length);
+
   return (
     <section className={`tool tool--${tool.layout} slide-content`}>
       <div className="rail">
@@ -29,7 +35,9 @@ export default function ToolSection({ tool }) {
       </div>
 
       <header className="tool-head">
-        <h2>{tool.name}</h2>
+        <h2>
+          <Typewriter text={tool.name} active={active} />
+        </h2>
         <span className={`status status--${tool.status === '已上線' ? 'live' : 'wip'}`}>
           {tool.status}
         </span>
@@ -37,12 +45,16 @@ export default function ToolSection({ tool }) {
 
       <div className="tool-problem">
         <span className="tag">卡住的地方</span>
-        <p>{tool.problem}</p>
+        <p>
+          <Typewriter text={tool.problem} active={active} speed={SPEED} startDelay={problemDelay} />
+        </p>
       </div>
 
       <div className="tool-approach">
         <span className="tag">怎麼解</span>
-        <p>{tool.approach}</p>
+        <p>
+          <Typewriter text={tool.approach} active={active} speed={SPEED} startDelay={approachDelay} />
+        </p>
       </div>
 
       <figure className="tool-figure">

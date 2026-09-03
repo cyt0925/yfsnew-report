@@ -20,8 +20,25 @@ const EVIDENCE = [
   { src: 'sop-docs-6.png', top: '63%', left: '44%', width: '42%', rotate: -4 },
 ];
 
+const SPEED = 32;
+const GAP = 320;
+
 export default function SopJudgement({ active }) {
-  const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.45}s` } : { opacity: 1, animation: 'none' });
+  // 兩句話、四行字接續打完：第一句兩行、第二句兩行，
+  // 上一行打完才接下一行，跟原本兩句依序淡入的節奏是同一個邏輯，
+  // 只是從「整句出現」換成「逐字浮現」。
+  let cursor = 500;
+  const p1l1Delay = cursor;
+  cursor += '現有資料其實夠多了，'.length * SPEED + GAP;
+  const p1l2Delay = cursor;
+  cursor += '重點在於能不能真的發揮作用。'.length * SPEED + GAP;
+  const p2l1Delay = cursor;
+  cursor += '如果能有一個方便查找、比對和修改的'.length * SPEED + GAP;
+  const p2l2Delay = cursor;
+  cursor += '統整入口，大家處理起來會順手很多。'.length * SPEED;
+  // 資料夾疊那句話打完才長出來——證據是接在陳述後面冒出來的，
+  // 不是跟文字同時搶畫面，所以起跑點要接在打字結束之後，不能沿用舊的固定秒數。
+  const folderDelay = cursor / 1000 + 0.35;
 
   return (
     <section className="sop sop-judgement slide-content">
@@ -37,15 +54,33 @@ export default function SopJudgement({ active }) {
       </div>
 
       <div className="verdict">
-        <p className="verdict-line reveal-line" style={delay(0)}>
-          現有資料其實夠多了，
+        <p className="verdict-line">
+          <Typewriter text="現有資料其實夠多了，" active={active} speed={SPEED} startDelay={p1l1Delay} />
           <br />
-          重點在於<b>能不能真的發揮作用</b>。
+          <Typewriter
+            segments={[{ text: '重點在於' }, { text: '能不能真的發揮作用', className: 'tw-accent' }, { text: '。' }]}
+            active={active}
+            speed={SPEED}
+            startDelay={p1l2Delay}
+          />
         </p>
-        <p className="verdict-line verdict-line--sub reveal-line" style={delay(1)}>
-          如果能有一個方便<em>查找</em>、<em>比對</em>和<em>修改</em>的
+        <p className="verdict-line verdict-line--sub">
+          <Typewriter
+            segments={[
+              { text: '如果能有一個方便' },
+              { text: '查找', className: 'tw-underline' },
+              { text: '、' },
+              { text: '比對', className: 'tw-underline' },
+              { text: '和' },
+              { text: '修改', className: 'tw-underline' },
+              { text: '的' },
+            ]}
+            active={active}
+            speed={SPEED}
+            startDelay={p2l1Delay}
+          />
           <br />
-          統整入口，大家處理起來會順手很多。
+          <Typewriter text="統整入口，大家處理起來會順手很多。" active={active} speed={SPEED} startDelay={p2l2Delay} />
         </p>
       </div>
 
@@ -54,7 +89,7 @@ export default function SopJudgement({ active }) {
           src="sop-docs-folder.png"
           alt="部門作業流程資料夾，依品牌與通路分成六類"
           className="doc-pile-folder"
-          style={{ '--pile-delay': '1.3s' }}
+          style={{ '--pile-delay': `${folderDelay}s` }}
         />
         {EVIDENCE.map((e, i) => (
           <img
@@ -67,7 +102,7 @@ export default function SopJudgement({ active }) {
               left: e.left,
               width: e.width,
               '--rotate': `${e.rotate}deg`,
-              '--pile-delay': `${1.55 + i * 0.09}s`,
+              '--pile-delay': `${folderDelay + 0.25 + i * 0.09}s`,
             }}
           />
         ))}

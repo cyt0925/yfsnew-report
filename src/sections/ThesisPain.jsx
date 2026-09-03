@@ -1,5 +1,5 @@
 import Typewriter from '../components/Typewriter.jsx';
-import RevealLines from './RevealLines.jsx';
+import TypewriterLines from './TypewriterLines.jsx';
 import IsoDiagram from './IsoDiagram.jsx';
 
 const LINES = [
@@ -20,7 +20,7 @@ export default function ThesisPain({ active }) {
           <h2 className="thesis-heading">
             <Typewriter text="作業重複的日常消耗" active={active} />
           </h2>
-          <RevealLines lines={LINES} startDelay={0.55} active={active} />
+          <TypewriterLines lines={LINES} startDelay={0.55} active={active} />
         </div>
       </div>
 

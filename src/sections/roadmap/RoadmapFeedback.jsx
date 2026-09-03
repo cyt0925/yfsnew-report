@@ -1,4 +1,5 @@
 import Typewriter from '../../components/Typewriter.jsx';
+import { makeCursor, SPEED } from '../../utils/typeCursor.js';
 
 // 上一頁是我自己讀 SOP 看出來的；這一頁換成營運端同事講的，
 // 兩種來源都指向同一個結論——所以下一頁的「決定做系統」才站得住腳。
@@ -10,8 +11,13 @@ const POINTS = [
   { index: '03', text: '驗收時兩邊數字對不起來' },
 ];
 
+const CLOSING_LINE = '這三件事背後其實是同一個原因，流程本身沒有留下可以追的軌跡。';
+
 export default function RoadmapFeedback({ active }) {
-  const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.3}s` } : { opacity: 1, animation: 'none' });
+  const cursor = makeCursor(0.55);
+  const pointDelays = POINTS.map((p) => cursor.next(p.text.length));
+  const closingDelay = cursor.next(CLOSING_LINE.length);
+  const imageDelaySeconds = cursor.peekSeconds(200);
 
   return (
     <section className="roadmap-detail slide-content">
@@ -27,22 +33,23 @@ export default function RoadmapFeedback({ active }) {
 
       <div className="findings findings--stacked">
         {POINTS.map((p, i) => (
-          <article
-            key={p.index}
-            className="finding reveal-line"
-            style={active ? { animationDelay: `${0.55 + i * 0.3}s` } : { opacity: 1, animation: 'none' }}
-          >
+          <article key={p.index} className="finding">
             <span className="finding-index">{p.index}</span>
-            <h3>{p.text}</h3>
+            <h3>
+              <Typewriter text={p.text} active={active} speed={SPEED} startDelay={pointDelays[i]} />
+            </h3>
           </article>
         ))}
       </div>
 
-      <p className="prose prose--accent roadmap-detail-lede reveal-line" style={delay(3)}>
-        這三件事背後其實是同一個原因，流程本身沒有留下可以追的軌跡。
+      <p className="prose prose--accent roadmap-detail-lede">
+        <Typewriter text={CLOSING_LINE} active={active} speed={SPEED} startDelay={closingDelay} />
       </p>
 
-      <figure className="compare-panel roadmap-evidence-below reveal-line" style={delay(4)}>
+      <figure
+        className="compare-panel roadmap-evidence-below reveal-line"
+        style={active ? { animationDelay: `${imageDelaySeconds}s` } : { opacity: 1, animation: 'none' }}
+      >
         <img src="shot-165840.png" alt="公槽裡的 PO 總表，實際長這樣" />
         <figcaption>公槽裡的 PO 總表，實際長這樣</figcaption>
       </figure>

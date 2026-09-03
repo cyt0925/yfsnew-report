@@ -2,7 +2,7 @@ import Typewriter from '../../components/Typewriter.jsx';
 
 // 三個發現並列成三欄，而不是拆成三張投影片：這一頁的作用是「問題的全貌」，
 // 三件事要同時在場上，才看得出它們是同一件事的三個面向。
-// 密度用時間管理——逐欄浮現，不是一次砸出九行字。
+// 密度用時間管理——三欄依序打出來，不是一次砸出九行字。
 const FINDINGS = [
   {
     index: '01',
@@ -30,6 +30,24 @@ const FINDINGS = [
   },
 ];
 
+const SPEED = 32;
+const GAP = 260;
+
+// 每張卡片自己的標題＋兩行文字接續打完，卡片跟卡片之間再錯開起跑，
+// 跟原本「整張卡片一起淡入、卡片間錯開」的節奏對應，只是卡片內部
+// 從「一次出現」換成「逐字打出來」。
+function cardDelays(f, base) {
+  let cursor = base * 1000;
+  const titleDelay = cursor;
+  cursor += f.title.length * SPEED + GAP;
+  const lineDelays = f.lines.map((line) => {
+    const d = cursor;
+    cursor += line.length * SPEED + GAP;
+    return d;
+  });
+  return { titleDelay, lineDelays };
+}
+
 export default function SopPain({ active }) {
   return (
     <section className="sop sop-pain slide-content">
@@ -45,19 +63,22 @@ export default function SopPain({ active }) {
       </div>
 
       <div className="findings">
-        {FINDINGS.map((f, i) => (
-          <article
-            key={f.index}
-            className="finding reveal-line"
-            style={active ? { animationDelay: `${0.55 + i * 0.35}s` } : { opacity: 1, animation: 'none' }}
-          >
-            <span className="finding-index">{f.index}</span>
-            <h3>{f.title}</h3>
-            {f.lines.map((line) => (
-              <p key={line}>{line}</p>
-            ))}
-          </article>
-        ))}
+        {FINDINGS.map((f, i) => {
+          const { titleDelay, lineDelays } = cardDelays(f, 0.55 + i * 0.35);
+          return (
+            <article key={f.index} className="finding">
+              <span className="finding-index">{f.index}</span>
+              <h3>
+                <Typewriter text={f.title} active={active} speed={SPEED} startDelay={titleDelay} />
+              </h3>
+              {f.lines.map((line, li) => (
+                <p key={line}>
+                  <Typewriter text={line} active={active} speed={SPEED} startDelay={lineDelays[li]} />
+                </p>
+              ))}
+            </article>
+          );
+        })}
       </div>
     </section>
   );

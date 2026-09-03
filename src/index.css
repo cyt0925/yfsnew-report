@@ -449,20 +449,37 @@ h2 {
 
 .typewriter-cursor {
   display: inline-block;
-  width: 2px;
-  height: 0.85em;
+  width: 3px;
+  height: 0.9em;
   margin-left: 0.2em;
-  background: currentColor;
-  vertical-align: -0.05em;
+  background: var(--accent);
+  box-shadow: 0 0 6px 1px rgba(209, 15, 39, 0.75);
+  vertical-align: -0.06em;
   animation: caret-blink 0.9s steps(1) infinite;
 }
 
+.typewriter-cursor--pending,
 .typewriter-cursor--done {
   display: none;
 }
 
 @keyframes caret-blink {
-  50% { opacity: 0; }
+  50% { opacity: 0; box-shadow: none; }
+}
+
+/* 逐字打字時，句子中間要強調的字用這兩個 class（取代原本的 <b>/<em>，
+   因為打字機是用 span 逐字元組出來的，不是整段 DOM，套不到
+   「.verdict-line b」這種靠標籤選到的規則）。 */
+.tw-accent {
+  color: var(--accent);
+  font-weight: 900;
+}
+
+.tw-underline {
+  color: var(--fg);
+  font-weight: 900;
+  border-bottom: 2px solid var(--accent);
+  padding-bottom: 0.1em;
 }
 
 /* ── 工具章節 ── */
@@ -763,11 +780,6 @@ h2 {
 .roadmap-decision .verdict-line--sub {
   margin-top: 2.6rem;
   font-size: clamp(1.7rem, 2.6vw, 2.4rem);
-}
-
-.roadmap-decision .verdict-line b {
-  color: var(--accent);
-  font-weight: 900;
 }
 
 /* ── AI 的重要性 ── */

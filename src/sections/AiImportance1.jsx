@@ -1,5 +1,5 @@
 import Typewriter from '../components/Typewriter.jsx';
-import RevealLines from './RevealLines.jsx';
+import TypewriterLines from './TypewriterLines.jsx';
 
 const LINES = [
   '這幾個月觀察下來，發現有 IT 資源排程比較緊湊、',
@@ -19,7 +19,7 @@ export default function AiImportance1({ active }) {
         <h2 className="thesis-heading">
           <Typewriter text="痛點" active={active} />
         </h2>
-        <RevealLines lines={LINES} startDelay={0.5} active={active} />
+        <TypewriterLines lines={LINES} startDelay={0.5} active={active} />
       </div>
 
       {/* 右側原本是空的。放上痛點示意圖：等距視角、純紅光在黑底上，

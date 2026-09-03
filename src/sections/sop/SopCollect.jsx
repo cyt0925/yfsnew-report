@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react';
 import Typewriter from '../../components/Typewriter.jsx';
+import { makeCursor, SPEED } from '../../utils/typeCursor.js';
 
 // 文案本身就是示範內容的講解，所以不再另外放一組骨架文字——
 // 右邊那支影片錄的正是「打 MARS、疊加 CPG、再疊竹運，四筆瞬間收斂成三筆」
@@ -51,18 +52,19 @@ export default function SopCollect({ active }) {
         </h2>
 
         <div className="sop-blocks">
-          {BLOCKS.map((b, i) => (
-            <div
-              key={b.tag}
-              className="sop-block reveal-line"
-              style={active ? { animationDelay: `${0.55 + i * 0.4}s` } : { opacity: 1, animation: 'none' }}
-            >
-              <span className="tag">{b.tag}</span>
-              {b.lines.map((line) => (
-                <p key={line}>{line}</p>
-              ))}
-            </div>
-          ))}
+          {(() => {
+            const cursor = makeCursor(0.55);
+            return BLOCKS.map((b) => (
+              <div key={b.tag} className="sop-block">
+                <span className="tag">{b.tag}</span>
+                {b.lines.map((line) => (
+                  <p key={line}>
+                    <Typewriter text={line} active={active} speed={SPEED} startDelay={cursor.next(line.length)} />
+                  </p>
+                ))}
+              </div>
+            ));
+          })()}
         </div>
       </div>
 

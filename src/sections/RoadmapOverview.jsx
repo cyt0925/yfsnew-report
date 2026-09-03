@@ -1,3 +1,4 @@
+import Typewriter from '../components/Typewriter.jsx';
 import RoadmapScene from './RoadmapScene.jsx';
 import { tools } from '../data/tools.js';
 
@@ -7,7 +8,7 @@ export default function RoadmapOverview({ active }) {
       <div className="roadmap-rail">
         <span className="rail-label">全貌</span>
         <h2 className="thesis-heading roadmap-heading">
-          從觀察到落地的{tools.length}個切入點
+          <Typewriter text={`從觀察到落地的${tools.length}個切入點`} active={active} />
         </h2>
       </div>
       <div className="roadmap-stage">{active && <RoadmapScene />}</div>
