@@ -748,6 +748,28 @@ h2 {
   grid-column: 2 / span 9;
 }
 
+/* 收尾頁拿掉標題後，內容變短，靠 align-content:center 置中反而會浮在
+   畫面正中央、上面留一大片空白。改成貼齊上緣，字級也再放大一階，
+   讓這句「決定」本身撐滿版面，讀起來更有份量。 */
+.roadmap-decision {
+  align-content: start;
+  padding-top: 12vh;
+}
+
+.roadmap-decision .verdict-line {
+  font-size: clamp(2.3rem, 3.6vw, 3.3rem);
+}
+
+.roadmap-decision .verdict-line--sub {
+  margin-top: 2.6rem;
+  font-size: clamp(1.7rem, 2.6vw, 2.4rem);
+}
+
+.roadmap-decision .verdict-line b {
+  color: var(--accent);
+  font-weight: 900;
+}
+
 /* ── AI 的重要性 ── */
 
 .ai {
