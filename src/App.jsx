@@ -10,17 +10,18 @@ import RoadmapOverview from './sections/RoadmapOverview.jsx';
 import RoadmapGap from './sections/roadmap/RoadmapGap.jsx';
 import RoadmapFeedback from './sections/roadmap/RoadmapFeedback.jsx';
 import RoadmapDecision from './sections/roadmap/RoadmapDecision.jsx';
-import ToolSection from './sections/ToolSection.jsx';
+import OmsTitle from './sections/oms/OmsTitle.jsx';
+import OmsFeature from './sections/oms/OmsFeature.jsx';
+import OmsSign from './sections/oms/OmsSign.jsx';
+import OmsPurchase from './sections/oms/OmsPurchase.jsx';
 import SopTitle from './sections/sop/SopTitle.jsx';
 import SopPain from './sections/sop/SopPain.jsx';
 import SopJudgement from './sections/sop/SopJudgement.jsx';
 import SopCollect from './sections/sop/SopCollect.jsx';
 import SopCompare from './sections/sop/SopCompare.jsx';
 import SopMaintain from './sections/sop/SopMaintain.jsx';
-import { tools } from './data/tools.js';
+import { FEATURES } from './data/omsFeatures.js';
 import './index.css';
-
-const coupangTool = tools.find((t) => t.id === 'coupang-oms');
 
 function Hero({ active }) {
   return (
@@ -63,23 +64,28 @@ function Hero({ active }) {
 // 「全貌」章節刻意排在 SOP 檢索網站後面、酷澎系統前面：它不是目錄，
 // 是轉場——先講完 SOP 檢索網站做了什麼，再講我在自己做的網站上讀 SOP
 // 時看到了什麼問題，帶出「所以決定做酷澎系統」這個決定，敘事是連著的。
-// SOP 檢索網站跟全貌都不走通用的 ToolSection 單頁模板——內容量本身
-// 就是一段完整的敘事，所以各自獨立成多步驟章節。酷澎系統目前仍是
-// 通用模板，之後要展開再比照這個結構拆。
+// 酷澎系統章節內用上下鍵展開五個核心功能（開場頁 + 功能 01–05）；
+// 「驗收單自動簽名」跟「採購表格式轉換」刻意不塞進同一條下滑動線——
+// 它們是另外兩個獨立章節，靠左右鍵切，不搶「五個功能」這條主線的節奏。
 const SOP_STEPS = 6;
 const ROADMAP_STEPS = 4;
+const OMS_STEPS = 1 + FEATURES.length;
 const CHAPTERS = [
   { id: 'hero', steps: 1 },
   { id: 'thesis', steps: 2 },
   { id: 'ai-importance', steps: 3 },
   { id: 'sop-search', steps: SOP_STEPS },
   { id: 'roadmap', steps: ROADMAP_STEPS },
-  { id: 'coupang-oms', steps: 1 },
+  { id: 'coupang-oms', steps: OMS_STEPS },
+  { id: 'coupang-sign', steps: 1 },
+  { id: 'coupang-purchase', steps: 1 },
 ];
 const CHAPTER_COUNT = CHAPTERS.length;
 const SOP_CHAPTER = 3;
 const ROADMAP_CHAPTER = 4;
-const COUPANG_CHAPTER = 5;
+const OMS_CHAPTER = 5;
+const SIGN_CHAPTER = 6;
+const PURCHASE_CHAPTER = 7;
 
 function Chapter({ stepCount, localStep, children }) {
   return (
@@ -282,9 +288,32 @@ export default function App() {
           );
         })()}
 
+        {(() => {
+          const step = pos.chapter === OMS_CHAPTER ? pos.step : 0;
+          const on = (i) => pos.chapter === OMS_CHAPTER && pos.step === i;
+          return (
+            <Chapter stepCount={OMS_STEPS} localStep={step}>
+              <div className="step">
+                <OmsTitle key={visitKey(OMS_CHAPTER, 0)} active={on(0)} />
+              </div>
+              {FEATURES.map((feature, i) => (
+                <div className="step" key={feature.n}>
+                  <OmsFeature {...feature} key={visitKey(OMS_CHAPTER, i + 1)} active={on(i + 1)} />
+                </div>
+              ))}
+            </Chapter>
+          );
+        })()}
+
         <Chapter stepCount={1} localStep={0}>
           <div className="step">
-            <ToolSection tool={coupangTool} active={pos.chapter === COUPANG_CHAPTER} />
+            <OmsSign key={visitKey(SIGN_CHAPTER, 0)} active={pos.chapter === SIGN_CHAPTER} />
+          </div>
+        </Chapter>
+
+        <Chapter stepCount={1} localStep={0}>
+          <div className="step">
+            <OmsPurchase key={visitKey(PURCHASE_CHAPTER, 0)} active={pos.chapter === PURCHASE_CHAPTER} />
           </div>
         </Chapter>
       </div>

@@ -1630,3 +1630,148 @@ h2 {
   border-color: rgba(209, 15, 39, 0.6);
   box-shadow: 0 22px 40px rgba(0, 0, 0, 0.66), 0 0 0 1px rgba(209, 15, 39, 0.22);
 }
+
+/* ══════════ 酷澎訂單管理系統：功能拆解章節 ══════════
+   跟 .sop 共用同一套 13 欄網格，「為什麼要做／怎麼操作／做到了什麼」
+   三段式堆疊，每頁文字量都不小，字級刻意比 .prose 預設值小一階，
+   換取不溢出、也不用逐頁刪內容。 */
+
+.oms {
+  display: grid;
+  grid-template-columns: var(--rail) repeat(12, 1fr);
+  column-gap: var(--gutter);
+  align-items: start;
+  align-content: start;
+  row-gap: 1rem;
+  padding-top: 2.2vh;
+}
+
+.oms-head {
+  grid-column: 2 / span 11;
+}
+
+.oms-head .thesis-heading {
+  margin-bottom: 0;
+}
+
+.oms-kicker {
+  margin-bottom: 0.5rem;
+}
+
+.oms-note {
+  margin: 0.5rem 0 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+}
+
+.oms-block {
+  grid-column: 2 / span 12;
+  max-width: 62em;
+}
+
+.oms-block .tag {
+  margin-bottom: 0.4rem;
+}
+
+.oms-block .prose {
+  font-size: 1.05rem;
+  line-height: 1.6;
+  max-width: none;
+}
+
+.oms-steps {
+  margin: 0;
+  padding-left: 1.3em;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--body);
+}
+
+.oms-steps li::marker {
+  color: var(--accent);
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.oms-points {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.oms-point {
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: var(--body);
+  padding-left: 1.1em;
+  position: relative;
+}
+
+.oms-point::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0.55em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+
+.oms-point b {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+.oms-point b::after {
+  content: "：";
+}
+
+.oms-tip {
+  grid-column: 2 / span 10;
+  margin: 0.2rem 0 0;
+  display: flex;
+  align-items: baseline;
+  gap: 0.8rem;
+  padding: 0.85rem 1.1rem;
+  border: 1px solid rgba(209, 15, 39, 0.4);
+  background: rgba(209, 15, 39, 0.08);
+  border-radius: 6px;
+}
+
+.oms-tip-label {
+  flex: none;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.78rem;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.oms-tip p {
+  margin: 0;
+  font-size: 0.98rem;
+  line-height: 1.55;
+  color: var(--fg);
+}
+
+/* 章節開場頁：不像功能頁塞滿文字，置中呈現一句話 + 動線圖即可 */
+.oms-title {
+  align-content: center;
+}
+
+.oms-title-body {
+  grid-column: 2 / span 10;
+  display: flex;
+  flex-direction: column;
+  gap: 1.4rem;
+}
+
+.oms-title-body .prose {
+  max-width: 42em;
+}
