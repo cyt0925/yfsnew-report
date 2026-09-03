@@ -1,5 +1,5 @@
 import Typewriter from '../components/Typewriter.jsx';
-import TypewriterLines from './TypewriterLines.jsx';
+import RevealLines from './RevealLines.jsx';
 import CrtTerminal from '../effects/crt/CrtTerminal.jsx';
 
 const LINES = [
@@ -21,7 +21,7 @@ export default function AiImportance2({ active }) {
         <h2 className="thesis-heading">
           <Typewriter text="自主開發：流程優化" active={active} />
         </h2>
-        <TypewriterLines lines={LINES} startDelay={0.5} active={active} />
+        <RevealLines lines={LINES} startDelay={0.5} active={active} />
       </div>
 
       <figure className="ai-figure">

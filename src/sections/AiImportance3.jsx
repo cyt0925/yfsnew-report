@@ -1,5 +1,5 @@
 import Typewriter from '../components/Typewriter.jsx';
-import TypewriterLines, { typewriterLinesDuration } from './TypewriterLines.jsx';
+import RevealLines from './RevealLines.jsx';
 
 const LINES = [
   '在等功能更新或是平台開放 API 的同時，',
@@ -9,10 +9,8 @@ const LINES = [
 ];
 
 export default function AiImportance3({ active }) {
-  // logo 通電閃爍跟這句收尾話同一刻一起亮起，兩個元素共用同一個延遲數字——
-  // 現在內文改成逐字打，每行實際耗時不再是固定值，改用跟 TypewriterLines
-  // 同一套公式反推「這幾行打完的時間」，兩邊才會真的對上。
-  const closingDelay = typewriterLinesDuration(LINES, 0.5) + 0.35;
+  // logo 通電閃爍跟這句話同一刻一起亮起，兩個元素共用同一個延遲數字。
+  const closingDelay = 0.5 + LINES.length * 0.28 + 0.35;
 
   return (
     <section className="ai slide-content">
@@ -31,18 +29,12 @@ export default function AiImportance3({ active }) {
             active={active}
           />
         </h2>
-        <TypewriterLines lines={LINES} startDelay={0.5} active={active} />
-        <p className="ai-closing">
-          <Typewriter
-            segments={[
-              { text: '藉由 ' },
-              { text: 'CC', className: 'claude-accent' },
-              { text: ' 輔助，加速自動化邁進。' },
-            ]}
-            active={active}
-            speed={32}
-            startDelay={closingDelay * 1000}
-          />
+        <RevealLines lines={LINES} startDelay={0.5} active={active} />
+        <p
+          className="ai-closing reveal-line"
+          style={active ? { animationDelay: `${closingDelay}s` } : { opacity: 1, animation: 'none' }}
+        >
+          藉由 <b>CC</b> 輔助，加速自動化邁進。
         </p>
       </div>
 

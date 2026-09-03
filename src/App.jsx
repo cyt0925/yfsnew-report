@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
+import Typewriter from './components/Typewriter.jsx';
 import LogicCore from './effects/logic-core/LogicCore.jsx';
 import ThesisPain from './sections/ThesisPain.jsx';
 import ThesisSolution from './sections/ThesisSolution.jsx';
@@ -17,20 +18,11 @@ import SopCollect from './sections/sop/SopCollect.jsx';
 import SopCompare from './sections/sop/SopCompare.jsx';
 import SopMaintain from './sections/sop/SopMaintain.jsx';
 import { tools } from './data/tools.js';
-import Typewriter from './components/Typewriter.jsx';
-import { makeCursor } from './utils/typeCursor.js';
 import './index.css';
 
 const coupangTool = tools.find((t) => t.id === 'coupang-oms');
 
 function Hero({ active }) {
-  // 封面兩行標題接續打出來，其餘（眼球提示、分隔線、署名）維持原本
-  // 靜態出現——跟後面每一頁的做法一致：只有敘事性的標題／內文逐字浮現，
-  // 標籤類的小字不用陪著等。
-  const cursor = makeCursor(0.3);
-  const h1Delay = cursor.next(6);
-  const h2Delay = cursor.next(11);
-
   return (
     <section className="hero">
       <div className="hero-sphere">
@@ -53,10 +45,10 @@ function Hero({ active }) {
       <div className="hero-content">
         <p className="eyebrow">儲備幹部試用期報告</p>
         <h1>
-          <Typewriter text="AI 流程再造" active={active} startDelay={h1Delay} />
+          <Typewriter text="AI 流程再造" active={active} />
         </h1>
         <h2>
-          <Typewriter text="永豐商店 SOP 優化與實務落地" active={active} startDelay={h2Delay} />
+          <Typewriter text="永豐商店 SOP 優化與實務落地" active={active} />
         </h2>
         <div className="divider" />
         <div className="meta">
