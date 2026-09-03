@@ -24,9 +24,9 @@ export default function RoadmapDecision({ active }) {
           缺的不是規範，是<b>維持這條流程的東西</b>。
         </p>
         <p className="verdict-line verdict-line--sub reveal-line" style={delay(1)}>
-          現在維持它的是人的細心和記憶，這並不可靠。
+          目前完全仰賴同仁的細心與記憶來維持，但人工難免有極限。
           <br />
-          所以我決定，把 SOP 裡靠人維持的環節，換成靠<em>系統</em>維持。
+          因此我決定，把流程中改單難抓、手動覆蓋的高風險環節，交由<em>系統</em>自動化處理。
         </p>
         <p className="prose prose--accent verdict-tagline reveal-line" style={delay(2)}>
           SOP 繼續負責定義規則，系統負責確保規則真的被執行、而且留得下紀錄。

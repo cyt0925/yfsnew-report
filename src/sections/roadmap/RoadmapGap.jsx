@@ -13,6 +13,11 @@ const FLOW = [
   '依回覆於時效內更改PO狀態及內容',
 ];
 
+// 這三步是同一條「要繞三手」的路徑：先在酷澎那頭建單、
+// 進我們系統批次匯入、最後又落回公槽的 Excel 手抄——用紅框把
+// 這條隱藏的動線標出來，不用另外畫圖說明。
+const KEY_STEPS = new Set(['平台建立PO', '新PO匯入處理系統', 'PO彙總統合']);
+
 export default function RoadmapGap({ active }) {
   const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.3}s` } : { opacity: 1, animation: 'none' });
 
@@ -24,16 +29,19 @@ export default function RoadmapGap({ active }) {
 
       <div className="roadmap-lead">
         <h2 className="thesis-heading">
-          <Typewriter text="PO單彙總，底下沒有系統" active={active} />
+          <Typewriter text="關鍵步驟缺乏系統支撐" active={active} />
         </h2>
         <p className="prose reveal-line" style={delay(0)}>
-          營運人員和我反應，需要反覆在 Excel 表上不斷操作、疊加紀錄。
+          營運人員和我反應「PO 彙總統合」這步，全靠在共用 Excel 上反覆手動抄寫、層層疊加紀錄。
+        </p>
+        <p className="prose reveal-line" style={delay(1)}>
+          要先去酷澎後台抓單，再到我們公司系統批次匯入，最後才回到公槽的 PO 總表 Excel 把新單抄進去——這中間繞了三手。
         </p>
 
-        <p className="flow-chain reveal-line" style={delay(1)}>
+        <p className="flow-chain reveal-line" style={delay(2)}>
           {FLOW.map((step, i) => (
             <span key={step}>
-              <span className={step === 'PO彙總統合' ? 'flow-step flow-step--key' : 'flow-step'}>
+              <span className={KEY_STEPS.has(step) ? 'flow-step flow-step--key' : 'flow-step'}>
                 {step}
               </span>
               {i < FLOW.length - 1 && <span className="flow-arrow"> → </span>}
@@ -41,12 +49,12 @@ export default function RoadmapGap({ active }) {
           ))}
         </p>
 
-        <p className="prose prose--accent reveal-line" style={delay(2)}>
-          酷澎 PO 單確認作業流程（SOP-CP-CP-001）這份文件，步驟寫的是打開公槽那個 PO 總表 Excel，把新單抄進去，這是必須解決的問題。
+        <p className="prose prose--accent reveal-line" style={delay(3)}>
+          對應 SOP 網站上，酷澎 PO 單確認作業流程（SOP-CP-CP-001）這份文件，步驟寫的是打開公槽那個 PO 總表 Excel，把新單抄進去，確實驗證了營運端所反應的情況。
         </p>
       </div>
 
-      <div className="roadmap-evidence reveal-line" style={delay(3)}>
+      <div className="roadmap-evidence reveal-line" style={delay(4)}>
         <figure className="compare-panel">
           <img src="po-sop.png" alt="酷澎 PO 單確認作業流程，SOP-CP-CP-001 的目的與流程總覽" />
           <figcaption>SOP-CP-CP-001，目的與流程總覽</figcaption>

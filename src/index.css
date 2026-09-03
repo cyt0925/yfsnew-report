@@ -715,47 +715,17 @@ h2 {
   gap: 1.5rem;
 }
 
-.roadmap-split-body {
-  grid-column: 2 / span 4;
-  display: flex;
-  flex-direction: column;
-  gap: 1.3rem;
-}
-
-.roadmap-split-body .thesis-heading {
-  margin-bottom: 0.2rem;
-}
-
-.point-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.7rem;
-}
-
-.point-line {
+/* 圖擺最下面、放大：這張截圖是整個論證的證據，值得佔滿版面，
+   跟三張卡片一樣滿版 12 欄，不再侷限在右邊那一小塊。 */
+.roadmap-evidence-below {
+  grid-column: 2 / span 12;
   margin: 0;
-  padding-left: 1.1rem;
-  position: relative;
-  font-size: 1.05rem;
-  line-height: 1.7;
-  color: var(--body);
+  max-width: 56rem;
 }
 
-.point-line::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 0.65em;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-}
-
-.roadmap-evidence-solo {
-  grid-column: 6 / span 8;
-  align-self: start;
-  margin: 0;
+.roadmap-evidence-below img {
+  width: 100%;
+  height: auto;
 }
 
 .verdict-tagline {
