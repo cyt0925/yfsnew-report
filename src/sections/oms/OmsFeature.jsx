@@ -5,12 +5,17 @@ import Typewriter from '../../components/Typewriter.jsx';
 // how 可以是一句話（prose）或一串步驟（編號列表）；points 一律是條列，
 // 每條有粗體的一句話標題 + 一句補充說明，不用另外畫圖或截圖也讀得快。
 //
-// 有 video 的功能頁（目前只有「上傳整合表」）改走左右分欄：左邊放
-// 為什麼要做／做到了什麼，右邊是示範影片，操作步驟直接掛在影片下緣
-// 當字幕條——步驟講的就是畫面正在做的事，兩者貼在一起讀最省版面，
-// 也不用再為「怎麼操作」單獨留一整塊。
+// 版面預設是左右分欄（layout="split"）：左邊放為什麼要做／做到了什麼，
+// 右邊是示範影片，「怎麼操作」直接掛在影片下緣當字幕條——講的就是畫面
+// 正在做的事，兩者貼在一起讀最省版面，也不用再為它單獨留一整塊。
+// 影片還沒補上的功能一樣走這個版面，右欄先放同比例的佔位卡，之後把
+// video 欄位填進 omsFeatures.js 就會自動換成真的影片，版面不用再動。
+//
+// layout="stacked" 是原本的滿版堆疊版面，留給第 6、7 章（簽名、採購表）：
+// 那兩章是獨立產品、條目也比較多（簽名頁有 5 條），分欄後的 1.6rem 會爆版。
 export default function OmsFeature({
-  n, kicker = '酷澎訂單管理系統', title, why, how, points, note, video, videoLabel, active,
+  n, kicker = '酷澎訂單管理系統', title, why, how, points, note,
+  video, videoLabel, layout = 'split', active,
 }) {
   const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.2}s` } : { opacity: 1, animation: 'none' });
   const howSteps = Array.isArray(how) ? how : null;
@@ -45,7 +50,7 @@ export default function OmsFeature({
   );
 
   const howBlock = (
-    <div className="oms-block reveal-line" style={delay(video ? 0 : 1)}>
+    <div className="oms-block reveal-line" style={delay(1)}>
       <span className="tag">怎麼操作</span>
       {howSteps ? (
         <ol className="oms-steps">
@@ -60,7 +65,10 @@ export default function OmsFeature({
   );
 
   const pointsBlock = (
-    <div className="oms-block oms-block--points reveal-line" style={delay(video ? 1 : 2)}>
+    <div
+      className="oms-block oms-block--points reveal-line"
+      style={delay(layout === 'split' ? 1 : 2)}
+    >
       <span className="tag">做到了什麼</span>
       <ul className="oms-points">
         {points.map((p) => (
@@ -72,7 +80,7 @@ export default function OmsFeature({
     </div>
   );
 
-  if (video) {
+  if (layout === 'split') {
     return (
       <section className="oms oms-feature--split slide-content">
         <div className="rail">
@@ -93,29 +101,40 @@ export default function OmsFeature({
             <span className="tag">怎麼操作</span>
             <figure className={`oms-video-figure${active ? ' is-active' : ''}`}>
               <div className="oms-video-card">
-                <video
-                  ref={videoRef}
-                  className="oms-video"
-                  src={video}
-                  muted
-                  loop
-                  playsInline
-                  preload="auto"
-                  aria-label={videoLabel || `${title}操作示範`}
-                />
-                {/* 步驟編號用 CSS counter 產生，不寫死在文字裡：條目增減
-                    都不用回來改號碼。 */}
-                {howSteps && (
+                {video ? (
+                  <video
+                    ref={videoRef}
+                    className="oms-video"
+                    src={video}
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    aria-label={videoLabel || `${title}操作示範`}
+                  />
+                ) : (
+                  <div className="oms-video oms-video--pending" role="img" aria-label={`${title}操作示範（影片待補）`}>
+                    <span className="oms-video-pending-mark" aria-hidden="true" />
+                    <span className="oms-video-pending-label">示範影片</span>
+                  </div>
+                )}
+                {/* 敘述貼在影片下緣。步驟編號用 CSS counter 產生，不寫死在
+                    文字裡：條目增減都不用回來改號碼。how 只有一句話的功能
+                    （02、03）就直接放成一段字，不硬套成只有一項的編號列表。 */}
+                {howSteps ? (
                   <ol className="oms-video-steps">
                     {howSteps.map((step) => (
                       <li key={step}>{step}</li>
                     ))}
                   </ol>
+                ) : (
+                  <div className="oms-video-steps oms-video-steps--prose">
+                    <p>{how}</p>
+                  </div>
                 )}
               </div>
             </figure>
           </div>
-          {!howSteps && howBlock}
         </div>
       </section>
     );

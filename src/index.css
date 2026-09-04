@@ -1919,6 +1919,36 @@ h2 {
   object-fit: cover;
 }
 
+/* 影片還沒補上時的佔位卡：吃跟 .oms-video 一模一樣的比例與 flex 行為，
+   之後把 video 欄位填進 omsFeatures.js，版面高度不會有任何位移。 */
+.oms-video--pending {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.9rem;
+  background:
+    radial-gradient(circle at 50% 45%, rgba(209, 15, 39, 0.09), transparent 62%),
+    #101820;
+}
+
+/* 播放三角形，用 border 畫，不用另外拉一張圖或 SVG 進來 */
+.oms-video-pending-mark {
+  width: 0;
+  height: 0;
+  border-style: solid;
+  border-width: 0.85rem 0 0.85rem 1.45rem;
+  border-color: transparent transparent transparent rgba(209, 15, 39, 0.55);
+  margin-left: 0.3rem;
+}
+
+.oms-video-pending-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.24em;
+  color: var(--muted);
+}
+
 /* 貼在影片下緣的步驟字幕條——講的就是畫面正在做的事 */
 .oms-video-steps {
   margin: 0;
@@ -1951,4 +1981,17 @@ h2 {
   font-family: "IBM Plex Mono", monospace;
   font-size: 0.9em;
   color: var(--accent);
+}
+
+/* how 只有一句話的功能（02、03）：外觀跟字幕條一樣，但不編號——
+   一段話套上「01」看起來像列表被截斷了。 */
+.oms-video-steps--prose {
+  justify-content: center;
+}
+
+.oms-video-steps--prose p {
+  margin: 0;
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: var(--body);
 }
