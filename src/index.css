@@ -18,6 +18,17 @@
   box-sizing: border-box;
 }
 
+/* 版面幾乎全是 rem 疊出來的，所以把 rem 本身綁在視窗高度上：
+   投影片就會整張等比縮小，而不是各頁分別去改字級或砍文案。
+   基準 950px —— 目前最高的一頁（SOP 比對頁）自然高度 894px，
+   在 950px 的視窗裡剛好還有餘裕，所以那是「全部塞得下」的最小高度。
+   1.684vh = 16px / 950px；桌機與投影機（高度 ≥ 950px）維持原本的 16px 不變大，
+   字放大會讓文字重新換行、行數變多，反而可能又撐爆版面。
+   下限 9px 是防呆，正常筆電（高度 600px 以上 → 10.1px）碰不到。 */
+html {
+  font-size: clamp(9px, 1.684vh, 16px);
+}
+
 html,
 body {
   margin: 0;
@@ -1450,6 +1461,13 @@ h2 {
   grid-column: 7 / span 7;
   align-self: start;
   margin: 0;
+  /* 這三張圖的高度是「跟著欄寬走」的（維持原生比例），欄寬又只跟視窗寬度有關，
+     所以視窗一變矮變扁（筆電就是這個形狀），圖不會跟著矮下來，整頁就爆出畫面。
+     這裡用綁在視窗高度上的 rem 給欄寬封頂：視窗越矮、圖跟著等比縮小，
+     比例不變、也不用 object-fit 硬切。上限 53rem 在 16px 基準下＝848px，
+     比這一欄實際能拿到的寬度還寬，所以桌機／投影機上完全不會生效。 */
+  max-width: 53rem;
+  margin-left: auto;
   display: flex;
   flex-direction: column;
   gap: 1rem;
@@ -1590,7 +1608,9 @@ h2 {
 .doc-pile {
   grid-column: 8 / span 6;
   position: relative;
-  height: 455px;
+  /* 用 rem 不用 px：整份簡報的 rem 綁在視窗高度上，這疊圖要跟著一起縮，
+     不然筆電上文字縮了、這塊沒縮，整頁還是會爆出畫面。455px ÷ 16。 */
+  height: 28.4375rem;
   margin: 0;
   align-self: center;
 }
