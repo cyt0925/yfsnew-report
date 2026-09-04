@@ -22,6 +22,10 @@ Vite + React 做的簡報，給主管月會報告用。二維導覽：左右鍵�
 ```bash
 npm install
 npm run dev
+
+npm run shot                    # 逐頁截圖 + 版面檢查（全部 24 頁 × 三種尺寸，約 5 分鐘）
+npm run shot -- --only 5        # 只截第 5 章（約 50 秒）
+npm run shot -- --only 5.2,3.1  # 只截指定的 章.步驟
 ```
 
 - 開發分支：`claude/artifacts-vs-claude-code-lyit8u`
@@ -32,5 +36,8 @@ npm run dev
 ## 合作方式
 
 - 改完要**實際跑起來用 Playwright 截圖確認**排版，不要只看程式碼就說做好了。
+  用 `npm run shot`（`scripts/shot.mjs`），不要每次重寫一次性的截圖腳本——
+  那支腳本裡記了兩個很容易踩的量測陷阱，重寫大概率會再踩一次。
+  改哪一章就 `--only <章>`，不用每次掃全部。
 - 使用者對版面很敏感，會逐頁檢查。
 - 溝通用繁體中文。
