@@ -464,13 +464,13 @@ Error generating stack: `+s.message+`
 
             const shadowGeo = new THREE.CircleGeometry(2.2, 32);
             const shadowMat = new THREE.MeshBasicMaterial({
-                color: 0x000000, transparent: true, opacity: 0.55, depthWrite: false
+                color: 0x000000, transparent: true, opacity: 0.4, depthWrite: false
             });
             const coreShadow = new THREE.Mesh(shadowGeo, shadowMat);
             coreShadow.rotation.x = -Math.PI / 2;
             coreShadow.position.y = -1.7; // 貼在平台表面（platform 頂面在 -1.75）
             coreShadow.renderOrder = 1;
-            group.add(coreShadow);`,Yy="pointLight.intensity = 1.0 + pulse * 1.5;",qy="pointLight.intensity = 1.75 + pulse * 0.55;",Ky="group.position.y = Math.sin(time * 0.5) * 0.2;",Zy=`group.position.y = Math.sin(time * 0.5) * 0.2;
+            group.add(coreShadow);`,Yy="coreEmissiveMat.emissiveIntensity = 0.4 + pulse * 0.6;",qy="coreEmissiveMat.emissiveIntensity = 0.15 + pulse * 0.18;",Ky="group.position.y = Math.sin(time * 0.5) * 0.2;",Zy=`group.position.y = Math.sin(time * 0.5) * 0.2;
 
                 // 房子獨立於整體場景漂浮，脫離「釘在平台上」的感覺
                 core.position.y = coreBaseY + Math.sin(time * 1.4) * 0.4;`,Qy=`
