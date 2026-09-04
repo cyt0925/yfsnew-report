@@ -1212,6 +1212,26 @@ h2 {
   margin-bottom: 0;
 }
 
+/* 並排版面的字級跟著欄寬走（同 .oms-feature--split 的理由）：兩欄後每欄
+   666px（1920 寬）／586px（1440 寬），跟分欄頁的 594px 同一階，所以內文
+   用跟它一樣的 1.6rem，行高對齊 .oms-block .prose 的 1.7。
+   .findings--stacked 是滿版單欄（RoadmapFeedback），行長完全不同，
+   維持原尺寸，所以這裡要排除它。 */
+.findings:not(.findings--stacked) .finding h3 {
+  font-size: 2.1rem;
+  margin-bottom: 1rem;
+}
+
+.findings:not(.findings--stacked) .finding p {
+  margin-bottom: 0.8rem;
+  font-size: 1.6rem;
+  line-height: 1.7;
+}
+
+.findings:not(.findings--stacked) .finding p:last-child {
+  margin-bottom: 0;
+}
+
 /* ── 步驟 2：判斷（整頁只有兩句話） ── */
 
 .sop-judgement {
