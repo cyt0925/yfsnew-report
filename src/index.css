@@ -1141,16 +1141,16 @@ h2 {
   margin-bottom: 0;
 }
 
-/* ── 步驟 1：三個發現並列 ── */
+/* ── 步驟 1：兩個發現並列 ── */
 
 .findings {
   grid-column: 2 / span 12;
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, 1fr);
   gap: 2.5rem;
 }
 
-/* 三欄卡片會把長句子擠進窄欄裡提早換行，跟頁面其他滿版文字對不齊。
+/* 並排卡片會把長句子擠進窄欄裡提早換行，跟頁面其他滿版文字對不齊。
    這個變體改成單欄堆疊，每一句都用滿版寬度，換行點才跟圖對齊。 */
 .findings--stacked {
   grid-template-columns: 1fr;
