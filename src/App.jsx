@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Typewriter from './components/Typewriter.jsx';
 import LogicCore from './effects/logic-core/LogicCore.jsx';
 import ThesisPain from './sections/ThesisPain.jsx';
@@ -87,6 +87,86 @@ const OMS_CHAPTER = 5;
 const SIGN_CHAPTER = 6;
 const PURCHASE_CHAPTER = 7;
 
+// ── 讓每一頁在矮螢幕上也塞得下 ──
+// 每一頁的尺寸都是照著約 950px 高的視窗調出來的（詳見 HANDOVER）。筆電的視窗
+// 高度常常只剩 600～730px（瀏覽器工具列吃掉一截，再乘上系統顯示縮放 125%／150%），
+// 內容一超出 .step 的 overflow:hidden 就直接把標題或圖切掉。
+//
+// 做法是「每頁各自縮到剛好」，不是整份一起縮：塞得下的頁面一個像素都不動，
+// 維持原本調好的尺寸；只有真的比視窗高的那幾頁才縮，而且只縮到剛好塞得下。
+// 整份一起縮的話，明明還有餘裕的頁面也跟著變小，在筆電上讀起來太吃力。
+const FIT_MARGIN = 16; // 需要縮的頁面上下各留 8px，內容不要真的貼著螢幕邊緣
+
+// 先試 zoom：zoom 會重新排版（版面照樣鋪滿整個寬度，只是字和間距一起變小），
+// 比 transform: scale 好，後者是把整頁當圖片縮，左右會多出兩條空白。
+//
+// 但有些頁面 zoom 救不了——維護頁那三張截圖是照原生比例縮放的，高度完全由欄寬
+// 決定；zoom 縮小以後版面變寬，圖跟著變高，抵銷掉縮放，量出來還是一樣高。
+// 這種頁面就退回 transform: scale，那是純視覺縮放、不重排，一定塞得下，
+// 代價是左右各留一點空白（會走到這條路的頁面縮放幅度都很小，看不太出來）。
+function computeFit(content, vh) {
+  content.style.zoom = '';
+  content.style.transform = '';
+  const natural = content.getBoundingClientRect().height;
+  // 塞得下就完全不動。滿版頁（封面、全貌）自然高度剛好等於視窗高，也走這條。
+  if (natural <= vh || natural === 0) return { zoom: '', transform: '' };
+
+  const ratio = String((vh - FIT_MARGIN) / natural);
+  content.style.zoom = ratio;
+  if (content.getBoundingClientRect().height <= vh) return { zoom: ratio, transform: '' };
+
+  content.style.zoom = '';
+  return { zoom: '', transform: `scale(${ratio})` };
+}
+
+// 量高度很貴（要先把縮放清掉，逼瀏覽器把 24 頁重新排版一次），但結果只跟視窗尺寸
+// 有關，所以量過就存起來。翻頁時只是把存好的值重新貼回去，不會卡住翻頁動畫。
+const fitCache = new Map();
+let fitCacheKey = '';
+
+function fitStepsToViewport(remeasure = false) {
+  const vh = window.innerHeight;
+  const key = `${window.innerWidth}x${vh}`;
+  if (remeasure || key !== fitCacheKey) {
+    fitCache.clear();
+    fitCacheKey = key;
+  }
+  document.querySelectorAll('.step').forEach((step, i) => {
+    const content = step.firstElementChild;
+    if (!content) return;
+    let fit = fitCache.get(i);
+    if (!fit) {
+      fit = computeFit(content, vh);
+      fitCache.set(i, fit);
+    }
+    content.style.zoom = fit.zoom;
+    content.style.transform = fit.transform;
+  });
+}
+
+// signal 帶的是 visits：每次翻到一頁，那一頁會換 key 重新掛載（動畫要重播），
+// 掛出來的是全新的 DOM 節點，上面沒有縮放，所以每次翻頁都要重貼一次。
+// 用 useLayoutEffect 在瀏覽器畫出來之前就貼好，不會閃一下原尺寸。
+function useFitSteps(signal) {
+  useLayoutEffect(() => {
+    fitStepsToViewport();
+  }, [signal]);
+
+  useEffect(() => {
+    const onResize = () => fitStepsToViewport();
+    // 圖片和影片載入前高度是 0，量到的自然高度會偏矮——這幾頁的高度就是被截圖
+    // 撐出來的，所以每載入一份素材就重量一次。load 事件不會冒泡，要用捕獲階段接。
+    const onLoad = () => fitStepsToViewport(true);
+    window.addEventListener('resize', onResize);
+    document.addEventListener('load', onLoad, true);
+    if (document.fonts) document.fonts.ready.then(() => fitStepsToViewport(true));
+    return () => {
+      window.removeEventListener('resize', onResize);
+      document.removeEventListener('load', onLoad, true);
+    };
+  }, []);
+}
+
 function Chapter({ stepCount, localStep, children }) {
   return (
     <div className="chapter">
@@ -109,6 +189,8 @@ export default function App() {
   // 拿來當 key 逼元件重新掛載，讓打字機／逐行淡入動畫在每次抵達時重播——
   // 只算 CSS animation 播完就定格，不會因為切走又切回來自動重來。
   const [visits, setVisits] = useState({ '0.0': 1 });
+
+  useFitSteps(visits);
 
   useEffect(() => {
     const key = `${pos.chapter}.${pos.step}`;
