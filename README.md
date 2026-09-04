@@ -13,7 +13,8 @@ npm run preview  # 預覽 build 結果
 
 ## 部署
 
-`npm run build` 後把整個 `dist/` 資料夾拖到 Netlify 即可，不需要額外設定。
+部署在 GitHub Pages（`gh-pages` 分支），網址 <https://cyt0925.github.io/yfsnew-report/>。
+`npm run build` 之後把 `dist/` 的內容推上 `gh-pages`，詳細步驟見 [HANDOVER.md](HANDOVER.md#五部署)。
 
 ## 品牌配色
 

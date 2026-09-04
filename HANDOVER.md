@@ -1,0 +1,143 @@
+# 交接筆記
+
+給下一個接手這份簡報的人（或下一個 Claude 對話）。程式碼本身看得出「做了什麼」，
+這份文件記的是**看不出來的那些**：為什麼這樣做、踩過哪些坑、還有什麼沒做完。
+
+---
+
+## 一、這是什麼、東西在哪
+
+| | |
+|---|---|
+| 簡報原始碼 | 這個 repo，開發分支 `claude/artifacts-vs-claude-code-lyit8u` |
+| 線上簡報 | `gh-pages` 分支，網址 <https://cyt0925.github.io/yfsnew-report/> |
+| 簡報在講的系統 | 另一個 repo：`cyt0925/yfs`（SOP 檢索網站 + `coupang-oms/` 酷澎訂單管理系統） |
+
+簡報內容的事實來源是 `cyt0925/yfs`。**要改酷澎那幾頁的文案前，先去讀那個 repo 的
+`coupang-oms/README.md` 跟實際程式碼**——這份簡報寫過的內容都跟程式碼核對過，
+不要憑印象改，之前就發生過寫錯的狀況（見第四節）。
+
+---
+
+## 二、簡報結構
+
+二維導覽：**左右鍵換章節，上下鍵在章節內換步驟**。共 8 章。
+
+| # | 章節 | 步驟 | 元件 |
+|---|---|---|---|
+| 0 | 封面 | 1 | `App.jsx` 的 `Hero()` + `effects/logic-core/` |
+| 1 | 論點 | 2 | `sections/ThesisPain·ThesisSolution` |
+| 2 | 為什麼是 AI | 3 | `sections/AiImportance1~3` |
+| 3 | SOP 檢索網站 | 6 | `sections/sop/` |
+| 4 | 全貌（轉場） | 4 | `sections/RoadmapOverview` + `sections/roadmap/` |
+| 5 | 酷澎訂單管理系統 | 6 | `sections/oms/OmsTitle` + `OmsFeature` × 5 |
+| 6 | 驗收單自動簽名 | 1 | `sections/oms/OmsSign` |
+| 7 | 採購表格式轉換 | 1 | `sections/oms/OmsPurchase` |
+
+第 4 章「全貌」刻意夾在 SOP 跟酷澎中間：它不是目錄，是**轉場**——先講完 SOP
+網站做了什麼，再講「我在自己做的網站上讀 SOP 時看到了什麼問題」，帶出做酷澎系統
+這個決定。敘事是連著的，不要把它當目錄搬走。
+
+第 6、7 章刻意**不放進第 5 章的下滑動線**：它們是獨立產品，不是同一條流程裡的步驟。
+
+酷澎五個功能的文案集中在 `src/data/omsFeatures.js`，版面在 `OmsFeature.jsx`
+共用一個模板（為什麼要做 → 怎麼操作 → 做到了什麼）。
+
+---
+
+## 三、版面與視覺上的「為什麼」
+
+這些都是試過才定案的，改之前先知道原本為什麼這樣：
+
+- **字級跟著欄寬走，不是同一個數字套到底。** 分欄頁（有影片那頁）文字只佔半邊
+  594px，用 `1.6rem` 一行約 23 字；滿版頁欄寬 1200px 左右，同樣字級一行會變成
+  47 字，行太長反而難讀，而且「驗收單簽名」那頁（5 條）會直接爆出畫面，所以維持
+  `1.4rem`。想統一成 1.6rem 的話，**得先砍簽名頁的文案**。
+
+- **有影片的功能頁走左右分欄**：標題收進左欄，右欄從同一條上緣起跑，所以「怎麼操作」
+  對齊「功能 01」、影片上緣對齊大標題。右欄 `align-self: stretch` 讓影片卡下緣
+  也跟左欄切齊，影片本身維持比例不變形，多出來的高度由字幕條吸收（步驟平均散開）。
+
+- **操作步驟是貼在影片下緣的字幕條**，編號用 CSS counter 產生，增減步驟不用回頭改號碼。
+
+- **「做到了什麼」是單欄不是雙欄。** 曾經改成雙欄小卡，但字級拉大後每格被擠成 4 行很難讀，
+  實測單欄 395px vs 雙欄 392px——高度幾乎一樣但好讀太多，所以拿掉了。
+
+- **打字機效果只給大標題**，內文是原本的淡入上移（`.reveal-line`）。曾經全部改成逐字打，
+  太慢又太吵，已經退回來了。
+
+---
+
+## 四、踩過的坑（重要，別再踩一次）
+
+**1. 封面房子的立體感會週期性消失**
+不是燈光問題，也不是 z-fighting（正交相機 near=1 far=1000，深度精度遠夠）。
+真正原因：房子沿用原場景那個青色發光方塊的**自體發光材質**，`emissiveIntensity`
+原本在 0.4～1.0 之間脈動。自體發光是均勻加在整個表面、不看法線的，一強就把方向光
+造出來的屋頂／正面明暗差蓋掉，紅色通道直接頂到 255 → 整棟一片死紅。
+修法在 `effects/logic-core/buildSrcDoc.js`，壓成 `0.15 + pulse * 0.18`。
+**我第一次診斷錯，改了點光源，白改一輪。** 要動封面的光影，先量再改。
+
+**2. 影片開頭的 logo 縮太快**
+`oms-loop.webm` 開頭已經用 ffmpeg 接了一段 0.9 秒定格，所以 `OmsTitle.jsx` 的
+`START = 0`（不是像 `sop-loop.webm` 那樣要跳過白畫面起始幀）。換影片的話這個常數要跟著調。
+
+**3. 這個環境的 `git fetch` 會給過期的 ref**
+`git status` 可能顯示「本地未推 45 個 commit」但其實早就推上去了。
+要確認真實狀態用 `git ls-remote origin <branch>` 比對 `git rev-parse HEAD`。
+
+**4. 文案寫錯過一次**
+「驗收狀態自動同步」那頁曾經寫成「系統內建瀏覽器自動化去抓酷澎後台」，
+實際上是**兩支各自獨立的程式**：一支瀏覽器端腳本（Tampermonkey）抓數量，
+系統這邊開一個帶通行碼的同步端點接收。現在的文案是對的，不要改回去。
+
+---
+
+## 五、部署
+
+README 裡寫的 Netlify 已經不適用，**實際是 GitHub Pages**，用 worktree 手動推：
+
+```bash
+npm run build
+
+# 注意：不要用本地的 origin/gh-pages（可能是過期快取），要問遠端真實值
+SHA=$(git ls-remote origin refs/heads/gh-pages | cut -f1)
+git worktree add /tmp/gh-pages-deploy $SHA --detach
+cd /tmp/gh-pages-deploy
+git rm -rq .
+cp -r /path/to/repo/dist/* .
+touch .nojekyll
+git add -A && git commit -m "Deploy: ..."
+git push origin HEAD:gh-pages
+
+cd /path/to/repo
+git worktree remove --force /tmp/gh-pages-deploy && git worktree prune
+```
+
+推完跟使用者說一聲要 **Ctrl+F5** 硬重新整理，瀏覽器會快取舊的。
+
+---
+
+## 六、還沒做完的
+
+- [ ] **功能 02～05 沒有示範影片**。目前只有「上傳整合表」有（`oms-upload-demo.webm`）。
+      要加的話：轉成 webm、放進 `public/`，然後在 `omsFeatures.js` 對應的功能加上
+      `video` 跟 `videoLabel` 兩個欄位，版面會自動切換成左右分欄，不用改 `OmsFeature.jsx`。
+- [ ] **第 6、7 章（簽名、採購表轉換）也還沒有影片**，同上做法。
+- [ ] **測試數字沒放進簡報**。`coupang-oms/README.md` 目前是
+      `test_flow.py` 184 項 + `test_purchase.py` 48 項。
+      注意 `src/data/tools.js` 裡還留著 `metrics` 欄位寫「測試覆蓋 164 項通過」——
+      那是**舊的錯誤數字**，而且自從 `ToolSection.jsx` 被刪掉之後這個欄位已經沒有任何
+      地方在讀了（死資料）。要用數字的話請以 README 為準，順便把這段清掉。
+- [ ] **簽名頁字級**：想跟分欄頁一樣拉到 1.6rem 的話要先砍文案（5 條壓成 3～4 條），
+      已經跟使用者提過，還沒決定。
+
+---
+
+## 七、跟使用者合作的方式
+
+- 每次改完都要**實際跑起來用 Playwright 截圖確認**（排版有沒有溢出、字級、動畫），
+  不要只看程式碼就說做好了。
+- 改動要**推到開發分支 + 部署到 gh-pages**，然後告訴使用者可以看了。
+- 使用者對版面很敏感，會逐頁檢查。文案調整前先討論，不要自己改掉他寫的字。
+- 溝通用繁體中文。
