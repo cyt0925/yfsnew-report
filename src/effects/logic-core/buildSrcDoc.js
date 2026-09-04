@@ -118,7 +118,7 @@ const FLOATING_CORE_Y = `const coreBaseY = 1.7;
 
             const shadowGeo = new THREE.CircleGeometry(2.2, 32);
             const shadowMat = new THREE.MeshBasicMaterial({
-                color: 0x000000, transparent: true, opacity: 0.55, depthWrite: false
+                color: 0x000000, transparent: true, opacity: 0.4, depthWrite: false
             });
             const coreShadow = new THREE.Mesh(shadowGeo, shadowMat);
             coreShadow.rotation.x = -Math.PI / 2;
@@ -126,15 +126,15 @@ const FLOATING_CORE_Y = `const coreBaseY = 1.7;
             coreShadow.renderOrder = 1;
             group.add(coreShadow);`;
 
-// 平台上那圈陰影「忽有忽無」的原因不在陰影本身——它一直都畫著。
-// 問題出在這盞青色點光源就架在 (0, 1, 0)，正好是房子跟陰影的正上方，
-// 而原版讓它的強度在 1.0～2.5 之間脈動（週期約 2.5 秒）。陰影是一片
-// 固定 40% 的黑色圓盤，本身不發光：光弱的時候平台本來就暗，黑蓋在黑上
-// 幾乎看不出來；光強的時候才顯影。於是陰影看起來每兩秒半就消失一次。
-// 把脈動的振幅收窄（保留「呼吸感」，但平台不再暗到吃掉陰影），
-// 順便把圓盤加深一點，讓它在整個週期裡都讀得出來。
-const SOURCE_LIGHT_PULSE = `pointLight.intensity = 1.0 + pulse * 1.5;`;
-const STEADIER_LIGHT_PULSE = `pointLight.intensity = 1.75 + pulse * 0.55;`;
+// 房子的立體感「忽有忽無」的真正原因：它用的是 coreEmissiveMat，一個
+// 自體發光材質，而原版讓 emissiveIntensity 在 0.4～1.0 之間脈動（週期 2.5 秒）。
+// 自體發光是均勻加在整個表面上的、不看法線，所以它一強就把方向光造出來的
+// 屋頂／正面明暗差整個蓋過去，紅色通道直接頂到 255——整棟變成一片死紅，
+// 看起來就是「立體感每兩秒半消失一次」。原場景的核心是青色發光方塊，
+// 這個設定合理；換成紅色的房子之後就過曝了。把振幅壓下來，呼吸感留著，
+// 但任何時候都不會蓋掉屋頂的陰影面。
+const SOURCE_EMISSIVE_PULSE = `coreEmissiveMat.emissiveIntensity = 0.4 + pulse * 0.6;`;
+const DIMMER_EMISSIVE_PULSE = `coreEmissiveMat.emissiveIntensity = 0.15 + pulse * 0.18;`;
 
 const SOURCE_FLOAT_DRIFT = `group.position.y = Math.sin(time * 0.5) * 0.2;`;
 const ADDED_CORE_FLOAT = `group.position.y = Math.sin(time * 0.5) * 0.2;
@@ -231,7 +231,7 @@ export function buildLogicCoreSrcDoc() {
   html = html.replace(SOURCE_GROUP, SCALED_GROUP);
   html = html.replace(SOURCE_CORE_Y, FLOATING_CORE_Y);
   html = html.replace(SOURCE_FLOAT_DRIFT, ADDED_CORE_FLOAT);
-  html = html.replace(SOURCE_LIGHT_PULSE, STEADIER_LIGHT_PULSE);
+  html = html.replace(SOURCE_EMISSIVE_PULSE, DIMMER_EMISSIVE_PULSE);
 
   html = html.replace(/<script[^>]*cdn\.tailwindcss\.com[^>]*><\/script>/gi, '');
   html = html.replace(/<script[^>]*code\.iconify\.design[^>]*><\/script>/gi, '');
