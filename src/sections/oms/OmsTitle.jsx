@@ -12,12 +12,8 @@ const START = 0;
 const STILL = 3.47;
 
 // 章節開場：跟 SOP 檢索網站那頁同一個概念——logo 縮到左上角，
-// 酷澎訂單管理系統的畫面從那裡長出來，右邊放這支示範影片，
-// 左邊把整個系統的兩條作業動線攤開，再往下逐一展開五個功能。
-// 「驗收單簽名」跟「採購表轉換」刻意不畫進這條動線——它們是左右鍵
-// 才切得到的獨立章節，這裡只用一句話帶過去，不搶這頁的焦點。
-const FLOW = ['上傳整合表', '首頁 PO 總表', '編輯出貨數量', '匯出給倉庫', '驗收狀態自動判定'];
-
+// 酷澎訂單管理系統的畫面從那裡長出來，右邊放這支示範影片。
+// 左邊只留一句話定調整個系統的作業動線，其餘留白，往下才逐一展開五個功能。
 export default function OmsTitle({ active }) {
   const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.3}s` } : { opacity: 1, animation: 'none' });
 
@@ -71,22 +67,8 @@ export default function OmsTitle({ active }) {
           </h2>
         </header>
         <p className="prose reveal-line" style={delay(0)}>
-          不談抽象的技術模組，跟著 OP 每天的作業動線走：上傳、比對、編輯、匯出，
+          跟著 OP 每天的作業動線走：上傳、比對、編輯、匯出，
           最後接回驗收，形成一個閉環。
-        </p>
-
-        <p className="flow-chain reveal-line" style={delay(1)}>
-          {FLOW.map((step, i) => (
-            <span key={step}>
-              <span className="flow-step">{step}</span>
-              {i < FLOW.length - 1 && <span className="flow-arrow"> → </span>}
-            </span>
-          ))}
-        </p>
-
-        <p className="prose prose--accent reveal-line" style={delay(2)}>
-          另外還有兩個獨立單元——「驗收單自動簽名」與「採購表格式轉換」，
-          左右鍵可以直接切過去看。
         </p>
       </div>
 
