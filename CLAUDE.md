@@ -23,7 +23,7 @@ Vite + React 做的簡報，給主管月會報告用。二維導覽：左右鍵�
 npm install
 npm run dev
 
-npm run shot                    # 逐頁截圖 + 版面檢查（全部 24 頁 × 三種尺寸，約 5 分鐘）
+npm run shot                    # 逐頁截圖 + 版面檢查（全部 26 頁 × 三種尺寸，約 5 分鐘）
 npm run shot -- --only 5        # 只截第 5 章（約 50 秒）
 npm run shot -- --only 5.2,3.1  # 只截指定的 章.步驟
 ```

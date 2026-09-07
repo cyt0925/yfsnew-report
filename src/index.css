@@ -1994,6 +1994,106 @@ h2 {
   aspect-ratio: 1600 / 900;
 }
 
+/* ── 採購表格式轉換：兩頁 ── */
+
+/* 第一頁上下排：為什麼要做在上，Before／After 對照圖在下。
+   圖寬上限 960px：Before 那張 1645×608，走滿 1370px 的內容欄會有 500px 高，
+   加上文字整頁超過 963px、矮螢幕要縮到 0.65 以下，字會小到讀不了。
+   試過 1100px（Before 406px）整頁 941px、1440×700 要縮到 0.73，還是太兇；
+   960px 時 Before 約 355px、After 約 62px，整頁壓到 850px 上下。 */
+.oms-purchase-intro {
+  row-gap: 1.2rem;
+}
+
+.purchase-why {
+  grid-column: 2 / span 12;
+}
+
+.purchase-ba {
+  grid-column: 2 / span 12;
+  max-width: 960px;
+}
+
+/* Before／After 對照：兩張圖上下疊，中間一個轉換箭頭。
+   After 那張 1749×113 超寬扁，跟 Before 並排會縮成一條線，所以只能上下疊。 */
+.ba {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.ba-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.ba-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.ba-label b {
+  color: var(--accent);
+  font-weight: 700;
+  margin-right: 0.7em;
+}
+
+.ba-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  /* Excel 截圖是白底，在深色版面上會很亮；留一點陰影讓它像一張貼上去的卡 */
+  box-shadow: 0 12px 24px -16px rgba(0, 0, 0, 0.7);
+}
+
+.ba-arrow {
+  align-self: center;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.9rem;
+  letter-spacing: 0.18em;
+  color: var(--accent);
+}
+
+.ba-caption {
+  margin-top: 0.15rem;
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: var(--body);
+}
+
+/* 第二頁的影片來源本身上下就有黑邊（錄影時視窗沒鋪滿），卡片底色從 #101820
+   改成純黑，黑邊就跟卡片融在一起，不會看到兩種深色疊在一起。 */
+.oms-purchase-detail .oms-video-card {
+  background: #000;
+}
+
+/* 第二頁左欄的縮小版：只有半個欄寬，標籤跟間距都收緊一階 */
+.ba--compact {
+  gap: 0.3rem;
+}
+
+.ba--compact .ba-item {
+  gap: 0.25rem;
+}
+
+.ba--compact .ba-label {
+  font-size: 0.72rem;
+}
+
+.ba--compact .ba-arrow {
+  font-size: 0.78rem;
+}
+
+.ba--compact .ba-img {
+  border-radius: 6px;
+}
+
 /* 簽名章第一頁：上下排，文字在上、SOP 截圖在下走滿版。
    那張圖上的字很小，橫跨整個內容欄才讀得到——擠在半個欄寬裡放不大。
    圖維持原比例（859×245），不裁：它是一份看得見字的文件，裁掉就讀不了。 */

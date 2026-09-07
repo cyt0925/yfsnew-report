@@ -67,12 +67,12 @@ function Hero({ active }) {
 // 酷澎系統章節內用上下鍵展開五個核心功能（開場頁 + 功能 01–05）；
 // 「驗收單自動簽名」跟「採購表格式轉換」刻意不塞進同一條下滑動線——
 // 它們合成一章「額外功能」，靠左右鍵切到，不搶「五個功能」這條主線的節奏。
-// 這一章三個步驟：簽名的兩頁（為什麼要做＋SOP 截圖 / 怎麼操作＋做到了什麼）
-// 加上採購表格式轉換。
+// 這一章四個步驟：簽名的兩頁（為什麼要做＋SOP 截圖 / 怎麼操作＋做到了什麼）
+// 加上採購表格式轉換的兩頁（為什麼要做＋Before/After / 怎麼操作＋影片）。
 const SOP_STEPS = 6;
 const ROADMAP_STEPS = 4;
 const OMS_STEPS = 1 + FEATURES.length;
-const EXTRA_STEPS = 3; // 簽名 × 2 + 採購表 × 1
+const EXTRA_STEPS = 4; // 簽名 × 2 + 採購表 × 2
 const CHAPTERS = [
   { id: 'hero', steps: 1 },
   { id: 'thesis', steps: 2 },
@@ -400,7 +400,10 @@ export default function App() {
                 <OmsSign part={1} key={visitKey(EXTRA_CHAPTER, 1)} active={on(1)} />
               </div>
               <div className="step">
-                <OmsPurchase key={visitKey(EXTRA_CHAPTER, 2)} active={on(2)} />
+                <OmsPurchase part={0} key={visitKey(EXTRA_CHAPTER, 2)} active={on(2)} />
+              </div>
+              <div className="step">
+                <OmsPurchase part={1} key={visitKey(EXTRA_CHAPTER, 3)} active={on(3)} />
               </div>
             </Chapter>
           );
