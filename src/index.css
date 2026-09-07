@@ -1975,6 +1975,25 @@ h2 {
   color: var(--muted);
 }
 
+/* 簽名章第二頁：怎麼操作、做到了什麼兩塊收在左欄，右欄放示範影片。
+   跟功能頁的差別在「下緣怎麼對齊」：功能頁是讓影片填滿剩下的高度（裁切），
+   這裡的影片沒有字幕條可以吸收高度，硬填會裁掉將近三成——畫面正中央就是
+   那個簽名對話框，裁不得。所以改成反過來：影片鎖 16:9 不動，左欄拉滿整列
+   高度、兩塊文字用 space-between 撐開，最後一塊的下緣自然落在影片下緣。 */
+.oms-sign-detail .oms-col-right {
+  align-self: start;
+}
+
+.oms-sign-detail .oms-col-left {
+  align-self: stretch;
+  justify-content: space-between;
+}
+
+.oms-video-frame--fixed {
+  flex: none;
+  aspect-ratio: 1600 / 900;
+}
+
 /* 簽名章第一頁：上下排，文字在上、SOP 截圖在下走滿版。
    那張圖上的字很小，橫跨整個內容欄才讀得到——擠在半個欄寬裡放不大。
    圖維持原比例（859×245），不裁：它是一份看得見字的文件，裁掉就讀不了。 */

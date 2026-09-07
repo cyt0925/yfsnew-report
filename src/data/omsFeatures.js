@@ -94,6 +94,8 @@ export const SIGN_FEATURE = {
   },
   how: '首次存好個人簽名檔，之後批次拖入驗收單 PDF，一鍵執行秒下載。',
   points: '告別 Colab 跑 code 流程，簽名檔存在系統裡，每張 PDF 獨立回報；簽單歷史紀錄保留，酷澎版面微調時 OP 自己調整即可。',
+  video: 'oms-sign-demo.webm',
+  videoLabel: '驗收單批次簽名操作示範',
 };
 
 export const PURCHASE_FEATURE = {
