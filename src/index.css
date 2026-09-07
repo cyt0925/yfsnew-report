@@ -1975,16 +1975,31 @@ h2 {
   color: var(--muted);
 }
 
-/* 簽名章第一頁右欄那張 SOP 截圖。跟影片卡不同：影片可以裁（cover），
-   這張是一份看得見字的文件，裁掉就讀不了，所以維持原比例、不填滿卡片。
-   它本來就是深色底，跟卡片背景幾乎同色，上下留白看不出來。 */
-.oms-video-card--shot {
-  /* flex: 1 是寬度（主軸）要撐滿欄寬；align-self: start 是高度（交錯軸）
-     不要跟著拉伸。兩個都要，只寫 flex: none 的話卡片會縮成圖片的原始
-     寬度、直接溢出版面。 */
-  flex: 1;
-  align-self: start;
-  background: transparent;
+/* 簽名章第一頁：上下排，文字在上、SOP 截圖在下走滿版。
+   那張圖上的字很小，橫跨整個內容欄才讀得到——擠在半個欄寬裡放不大。
+   圖維持原比例（859×245），不裁：它是一份看得見字的文件，裁掉就讀不了。 */
+.oms-sign-intro {
+  row-gap: 1.6rem;
+}
+
+.sign-why {
+  grid-column: 2 / span 12;
+}
+
+.sign-shot {
+  grid-column: 2 / span 12;
+  /* .oms-block 預設有 max-width: 62em（約 992px），會把圖卡在那個寬度 */
+  max-width: none;
+}
+
+.oms-sop-figure {
+  margin: 0;
+  position: relative;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  overflow: hidden;
+  background: #101820;
+  box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.65);
 }
 
 .oms-sop-shot {

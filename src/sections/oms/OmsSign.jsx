@@ -1,9 +1,10 @@
 import Typewriter from '../../components/Typewriter.jsx';
 import { SIGN_FEATURE } from '../../data/omsFeatures.js';
 
-// 「驗收單自動簽名」拆成兩頁（`part` 0 / 1），跟第 5 章的功能頁一樣走左右分欄：
-//   part 0：為什麼要做（左）＋ SOP 檢索網站上那份舊流程的截圖（右）
-//   part 1：怎麼操作（左）＋ 做到了什麼（右）
+// 「驗收單自動簽名」拆成兩頁（`part` 0 / 1）：
+//   part 0：上下——為什麼要做在上，SOP 檢索網站上那份舊流程的截圖在下。
+//           那張圖上的字很小，走滿版才讀得到，擠在半個欄寬裡沒有意義。
+//   part 1：左右——怎麼操作（左）＋ 做到了什麼（右），跟第 5 章的功能頁同一套。
 // 拆頁是因為那張 SOP 截圖值得單獨看——它就是「為什麼要做」在講的那一長串
 // Colab 步驟，跟文字擠在同一頁會兩邊都讀不清楚。
 //
@@ -15,7 +16,7 @@ export default function OmsSign({ part = 0, active }) {
   const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.2}s` } : { opacity: 1, animation: 'none' });
 
   return (
-    <section className="oms oms-feature--split slide-content">
+    <section className={`oms${part === 1 ? ' oms-feature--split' : ' oms-sign-intro'} slide-content`}>
       <div className="rail">
         <span className="rail-index">03</span>
         <span className="rail-label">{kicker}</span>
@@ -30,22 +31,16 @@ export default function OmsSign({ part = 0, active }) {
 
       {part === 0 ? (
         <>
-          <div className="oms-col-left">
-            <div className="oms-block reveal-line" style={delay(0)}>
-              <span className="tag">為什麼要做</span>
-              <p className="prose">{why}</p>
-            </div>
+          <div className="oms-block sign-why reveal-line" style={delay(0)}>
+            <span className="tag">為什麼要做</span>
+            <p className="prose">{why}</p>
           </div>
 
-          <div className="oms-col-right">
-            <div className="oms-block reveal-line" style={delay(0)}>
-              <span className="tag">原本的流程</span>
-              <figure className={`oms-video-figure${active ? ' is-active' : ''}`}>
-                <div className="oms-video-card oms-video-card--shot">
-                  <img className="oms-sop-shot" src={sop.src} alt={sop.alt} />
-                </div>
-              </figure>
-            </div>
+          <div className="oms-block sign-shot reveal-line" style={delay(1)}>
+            <span className="tag">原本的流程</span>
+            <figure className={`oms-sop-figure${active ? ' is-active' : ''}`}>
+              <img className="oms-sop-shot" src={sop.src} alt={sop.alt} />
+            </figure>
           </div>
         </>
       ) : (
