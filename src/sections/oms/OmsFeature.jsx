@@ -103,23 +103,28 @@ export default function OmsFeature({
             <span className="tag">怎麼操作</span>
             <figure className={`oms-video-figure${active ? ' is-active' : ''}`}>
               <div className="oms-video-card">
-                {video ? (
-                  <video
-                    ref={videoRef}
-                    className="oms-video"
-                    src={video}
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    aria-label={videoLabel || `${title}操作示範`}
-                  />
-                ) : (
-                  <div className="oms-video oms-video--pending" role="img" aria-label={`${title}操作示範（影片待補）`}>
-                    <span className="oms-video-pending-mark" aria-hidden="true" />
-                    <span className="oms-video-pending-label">示範影片</span>
-                  </div>
-                )}
+                {/* 影片絕對定位塞在這個框裡：<video> 有自己的內在尺寸，留在
+                    流排版裡的話那個高度會被算進 grid 的列高，卡片就沒辦法
+                    縮到跟左欄一樣高，下緣也就切不齊。 */}
+                <div className="oms-video-frame">
+                  {video ? (
+                    <video
+                      ref={videoRef}
+                      className="oms-video"
+                      src={video}
+                      muted
+                      loop
+                      playsInline
+                      preload="auto"
+                      aria-label={videoLabel || `${title}操作示範`}
+                    />
+                  ) : (
+                    <div className="oms-video oms-video--pending" role="img" aria-label={`${title}操作示範（影片待補）`}>
+                      <span className="oms-video-pending-mark" aria-hidden="true" />
+                      <span className="oms-video-pending-label">示範影片</span>
+                    </div>
+                  )}
+                </div>
                 {/* 敘述貼在影片下緣。步驟編號用 CSS counter 產生，不寫死在
                     文字裡：條目增減都不用回來改號碼。how 只有一句話的功能
                     （02、03）就直接放成一段字，不硬套成只有一項的編號列表。 */}

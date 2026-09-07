@@ -1852,21 +1852,24 @@ h2 {
   gap: 2rem;
 }
 
-/* 影片卡從「為什麼要做」那條線起跑（同一個 grid row），不是從大標題。
-   高度由影片本身決定，不拉滿左欄——拉滿的話字幕條會被撐開，一句話的
-   敘述就浮在一大塊空白中間，短的頁面還會把字幕條擠到剩幾個 px。 */
+/* 影片卡從「為什麼要做」那條線起跑（同一個 grid row），不是從大標題，
+   而且拉滿整列高度——左右兩欄的上下緣都要切齊。
+   高度由左欄的文字決定：影片本身 flex 到 0（見 .oms-video），所以這一欄
+   的自然高度只有標籤 + 字幕條，grid 這一列的高度就是左欄撐出來的。 */
 .oms-col-right {
   grid-column: 8 / span 6;
   grid-row: 2;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  align-self: start;
+  align-self: stretch;
 }
 
 .oms-col-right > .oms-block {
   display: flex;
   flex-direction: column;
+  flex: 1;
+  min-height: 0;
 }
 
 .oms-col-left .oms-block,
@@ -1879,6 +1882,8 @@ h2 {
   margin: 0;
   position: relative;
   display: flex;
+  flex: 1;
+  min-height: 0;
 }
 
 .oms-video-figure::before {
@@ -1908,6 +1913,7 @@ h2 {
   z-index: 1;
   flex: 1;
   min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--rule);
@@ -1917,12 +1923,25 @@ h2 {
   box-shadow: 0 16px 32px -18px rgba(0, 0, 0, 0.65);
 }
 
+/* 影片吃掉字幕條以外的全部高度，不鎖 16:9——鎖了的話卡片下緣就沒辦法跟
+   左欄的文字切齊（實測兩個方向的落差都有，1920 下右欄長 142px、1366 下
+   左欄長 90px）。object-fit: cover 讓畫面填滿不變形，多出來的部分從上下
+   裁掉；這幾支螢幕錄影上緣本來就是分頁列與書籤列，裁掉反而更好讀。
+   影片必須絕對定位：<video> 的內在尺寸會被算進 grid 的列高，留在流排版裡
+   的話列高會被它撐大，卡片就縮不到左欄的高度。min-height 是保險，避免
+   左欄極短時影片被壓成一條。 */
+.oms-video-frame {
+  position: relative;
+  flex: 1;
+  min-height: 11rem;
+}
+
 .oms-video {
+  position: absolute;
+  inset: 0;
   display: block;
   width: 100%;
-  /* 影片維持原比例，不跟著卡片一起被拉長 */
-  flex: none;
-  aspect-ratio: 1600 / 900;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -1967,6 +1986,7 @@ h2 {
   counter-reset: oms-step;
   display: flex;
   flex-direction: column;
+  flex: none;
   gap: 0.55rem;
 }
 
