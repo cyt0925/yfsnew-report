@@ -88,10 +88,12 @@ export default function OmsFeature({
           <span className="rail-label">{kicker}</span>
         </div>
 
-        {/* 標題收進左欄，右欄從同一條上緣起跑：「怎麼操作」對齊「功能 01」，
-            影片上緣就對齊大標題，兩邊像同一列的兩個格子。 */}
+        {/* 標題自己佔一列、只壓在左半邊；下面一列才分左右。這樣「怎麼操作」
+            會跟「為什麼要做」對齊在同一條線上，影片卡的上緣也從那裡起跑，
+            不會像標題那樣高出一截。 */}
+        {head}
+
         <div className="oms-col-left">
-          {head}
           {whyBlock}
           {pointsBlock}
         </div>

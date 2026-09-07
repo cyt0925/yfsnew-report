@@ -1826,7 +1826,7 @@ h2 {
   }
 }
 
-/* 功能頁的「有影片」變體：標題與文字收在左半邊，右邊是影片。
+/* 功能頁的分欄版面：標題自己一列、只壓左半邊，下面一列才分左右。
    文字欄只有滿版頁的一半寬，同樣字級一行才 23 個字，所以這裡
    可以（也應該）比滿版頁再大一階。 */
 .oms-feature--split {
@@ -1838,27 +1838,35 @@ h2 {
   font-size: 1.6rem;
 }
 
+/* 標題只佔左半邊，右欄才有辦法從下一列起跑 */
+.oms-feature--split .oms-head {
+  grid-column: 2 / span 6;
+  grid-row: 1;
+}
+
 .oms-col-left {
   grid-column: 2 / span 6;
+  grid-row: 2;
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
 
+/* 影片卡從「為什麼要做」那條線起跑（同一個 grid row），不是從大標題。
+   高度由影片本身決定，不拉滿左欄——拉滿的話字幕條會被撐開，一句話的
+   敘述就浮在一大塊空白中間，短的頁面還會把字幕條擠到剩幾個 px。 */
 .oms-col-right {
   grid-column: 8 / span 6;
+  grid-row: 2;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  /* 拉滿整列高度，影片卡下緣才會跟左欄文字的下緣切齊 */
-  align-self: stretch;
+  align-self: start;
 }
 
 .oms-col-right > .oms-block {
   display: flex;
   flex-direction: column;
-  flex: 1;
-  min-height: 0;
 }
 
 .oms-col-left .oms-block,
@@ -1871,8 +1879,6 @@ h2 {
   margin: 0;
   position: relative;
   display: flex;
-  flex: 1;
-  min-height: 0;
 }
 
 .oms-video-figure::before {
@@ -1901,6 +1907,7 @@ h2 {
   position: relative;
   z-index: 1;
   flex: 1;
+  min-width: 0;
   display: flex;
   flex-direction: column;
   border: 1px solid var(--rule);
@@ -1952,18 +1959,15 @@ h2 {
 /* 貼在影片下緣的步驟字幕條——講的就是畫面正在做的事 */
 .oms-video-steps {
   margin: 0;
-  padding: 0.75rem 1.1rem;
+  /* 上下留夠：字幕條不再被拉伸，padding 就是文字跟卡片上下緣的唯一距離 */
+  padding: 1.05rem 1.3rem;
   border-top: 1px solid var(--rule);
   background: rgba(255, 255, 255, 0.02);
   list-style: none;
   counter-reset: oms-step;
   display: flex;
   flex-direction: column;
-  /* 卡片被拉高時多出來的空間全給字幕條，步驟平均散開，
-     不會在影片下面留一塊莫名其妙的空白。 */
-  flex: 1;
-  justify-content: space-evenly;
-  gap: 0.4rem;
+  gap: 0.55rem;
 }
 
 .oms-video-steps li {
@@ -1983,11 +1987,8 @@ h2 {
   color: var(--accent);
 }
 
-/* how 只有一句話的功能（02、03）：外觀跟字幕條一樣，但不編號——
+/* how 只有一句話的功能（02、03、04）：外觀跟字幕條一樣，但不編號——
    一段話套上「01」看起來像列表被截斷了。 */
-.oms-video-steps--prose {
-  justify-content: center;
-}
 
 .oms-video-steps--prose p {
   margin: 0;
