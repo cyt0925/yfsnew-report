@@ -14,7 +14,7 @@ import Typewriter from '../../components/Typewriter.jsx';
 // layout="stacked" 是原本的滿版堆疊版面，留給第 6、7 章（簽名、採購表）：
 // 那兩章是獨立產品、條目也比較多（簽名頁有 5 條），分欄後的 1.6rem 會爆版。
 export default function OmsFeature({
-  n, kicker = '酷澎訂單管理系統', title, why, how, points, note,
+  n, kicker = '酷澎訂單管理系統', title, why, how, points, note, focus,
   video, videoLabel, layout = 'split', active,
 }) {
   const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.2}s` } : { opacity: 1, animation: 'none' });
@@ -64,10 +64,19 @@ export default function OmsFeature({
     </div>
   );
 
+  // 選用的第三塊，夾在「為什麼要做」跟「做到了什麼」中間：某些功能有一段
+  // 自成一格的說明（功能 05 的「網頁流程自動化」），塞進條列裡會失焦。
+  const focusBlock = focus && (
+    <div className="oms-block reveal-line" style={delay(1)}>
+      <span className="tag">{focus.label}</span>
+      <p className="prose">{focus.text}</p>
+    </div>
+  );
+
   const pointsBlock = (
     <div
       className="oms-block oms-block--points reveal-line"
-      style={delay(layout === 'split' ? 1 : 2)}
+      style={delay(layout === 'split' ? (focus ? 2 : 1) : 2)}
     >
       <span className="tag">做到了什麼</span>
       <ul className="oms-points">
@@ -95,6 +104,7 @@ export default function OmsFeature({
 
         <div className="oms-col-left">
           {whyBlock}
+          {focusBlock}
           {pointsBlock}
         </div>
 
@@ -156,6 +166,7 @@ export default function OmsFeature({
 
       {head}
       {whyBlock}
+      {focusBlock}
       {howBlock}
       {pointsBlock}
     </section>

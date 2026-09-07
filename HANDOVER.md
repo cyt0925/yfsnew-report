@@ -84,6 +84,8 @@
   - 影片還沒補的頁面放同比例佔位卡，之後補影片版面不會位移。
   - `how` 是一串步驟就編號成字幕條，只有一句話（功能 02、03、04）就直接放一段字，
     不硬套成只有一項的編號列表。
+  - 左欄預設是「為什麼要做 + 做到了什麼」兩塊。資料裡多給一個 `focus: { label, text }`
+    就會在中間插第三塊（功能 05 的「網頁流程自動化」）——自成一格的說明塞進條列裡會失焦。
 
 - **操作步驟是貼在影片下緣的字幕條**，編號用 CSS counter 產生，增減步驟不用回頭改號碼。
 
@@ -147,15 +149,11 @@ git worktree remove --force /tmp/gh-pages-deploy && git worktree prune
 
 ## 六、還沒做完的
 
-- [ ] **只剩功能 05（驗收狀態自動判定）沒有示範影片**。01～04 都補上了
-      （`oms-01-upload` / `oms-02-board` / `oms-03-edit` / `oms-04-export`.webm）。
-      右欄目前放的是跟影片同比例的佔位卡（播放三角形 +「示範影片」）。
-      要補影片：轉成 webm、放進 `public/`，然後在 `omsFeatures.js` 對應的功能加上
-      `video` 跟 `videoLabel` 兩個欄位，佔位卡就會換成真影片，版面高度不會位移，
-      不用改 `OmsFeature.jsx` 也不用改 CSS。
+- [x] ~~功能 01～05 的示範影片~~ 全部補齊了
+      （`oms-01-upload` / `oms-02-board` / `oms-03-edit` / `oms-04-export` / `oms-05-verify`.webm）。
       轉檔用的指令（這個容器沒有 ffmpeg，要先 `apt-get update && apt-get install -y ffmpeg`）：
       `ffmpeg -i in.mp4 -an -c:v libvpx-vp9 -crf 34 -b:v 0 -row-mt 1 -deadline good -cpu-used 2 -vf scale=1600:-2 out.webm`
-      ——1920 寬的螢幕錄影大約壓到原本的 1/6，小字仍然看得清楚。
+      ——1920 寬的螢幕錄影大約壓到原本的 1/6～1/29，小字仍然看得清楚。
       **檔名要換新的，不要覆蓋舊檔**：`public/` 的檔案不帶 hash，同名會被瀏覽器快取。
 - [ ] **第 6、7 章（簽名、採購表轉換）也還沒有影片**。這兩章走的是
       `layout="stacked"`（滿版堆疊），**沒有**跟著第 5 章改成分欄——簽名頁有 5 條
