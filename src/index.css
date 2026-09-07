@@ -1975,6 +1975,16 @@ h2 {
   color: var(--muted);
 }
 
+/* 夾在影片跟字幕條中間的橫幅截圖。高度由寬度決定（flex: none），
+   所以它對 grid 列高的貢獻是固定的，不會把卡片撐得比左欄高。 */
+.oms-video-still {
+  display: block;
+  width: 100%;
+  height: auto;
+  flex: none;
+  border-top: 1px solid var(--rule);
+}
+
 /* 貼在影片下緣的步驟字幕條——講的就是畫面正在做的事 */
 .oms-video-steps {
   margin: 0;

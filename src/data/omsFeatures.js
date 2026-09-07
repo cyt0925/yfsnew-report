@@ -39,9 +39,11 @@ export const FEATURES = [
     points: [
       { lead: '差異一眼看得到', text: '出貨數量只要跟酷澎下單數量不一樣就標成紅字，不用兩欄自己對，掃一眼就知道哪幾筆調過。' },
       { lead: '欄位級稽核歷程', text: '誰、什麼時候、把哪個欄位從 A 改成 B、來源是手動還是匯入，全部留痕，一鍵回溯。' },
+      { lead: '批次改狀態', text: '可一次更改多張訂單的 PO 狀態、驗收狀態、配送方式、拉單狀態等等。' },
     ],
     video: 'oms-03-edit.webm',
     videoLabel: '編輯出貨數量與備註操作示範',
+    still: { src: 'oms-batch-status.png', alt: '勾選多張 PO 後出現的批次操作列，可以一次改 PO 狀態、驗收狀態或配送方式' },
   },
   {
     n: '04',

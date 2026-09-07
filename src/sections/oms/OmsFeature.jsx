@@ -15,7 +15,7 @@ import Typewriter from '../../components/Typewriter.jsx';
 // 那兩章是獨立產品、條目也比較多（簽名頁有 5 條），分欄後的 1.6rem 會爆版。
 export default function OmsFeature({
   n, kicker = '酷澎訂單管理系統', title, why, how, points, note, focus,
-  video, videoLabel, layout = 'split', active,
+  video, videoLabel, still, layout = 'split', active,
 }) {
   const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.2}s` } : { opacity: 1, animation: 'none' });
   const howSteps = Array.isArray(how) ? how : null;
@@ -135,6 +135,12 @@ export default function OmsFeature({
                     </div>
                   )}
                 </div>
+                {/* 影片下面可以再夾一張橫幅截圖（功能 03 的批次操作列）：
+                    影片拍不到、但值得單獨看一眼的畫面就放這裡。它是固定高度
+                    （寬度決定），不影響卡片跟左欄切齊。 */}
+                {still && (
+                  <img className="oms-video-still" src={still.src} alt={still.alt} />
+                )}
                 {/* 敘述貼在影片下緣。步驟編號用 CSS counter 產生，不寫死在
                     文字裡：條目增減都不用回來改號碼。how 只有一句話的功能
                     （02、03）就直接放成一段字，不硬套成只有一項的編號列表。 */}
