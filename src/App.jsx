@@ -66,10 +66,13 @@ function Hero({ active }) {
 // 時看到了什麼問題，帶出「所以決定做酷澎系統」這個決定，敘事是連著的。
 // 酷澎系統章節內用上下鍵展開五個核心功能（開場頁 + 功能 01–05）；
 // 「驗收單自動簽名」跟「採購表格式轉換」刻意不塞進同一條下滑動線——
-// 它們是另外兩個獨立章節，靠左右鍵切，不搶「五個功能」這條主線的節奏。
+// 它們合成一章「額外功能」，靠左右鍵切到，不搶「五個功能」這條主線的節奏。
+// 這一章三個步驟：簽名的兩頁（為什麼要做＋SOP 截圖 / 怎麼操作＋做到了什麼）
+// 加上採購表格式轉換。
 const SOP_STEPS = 6;
 const ROADMAP_STEPS = 4;
 const OMS_STEPS = 1 + FEATURES.length;
+const EXTRA_STEPS = 3; // 簽名 × 2 + 採購表 × 1
 const CHAPTERS = [
   { id: 'hero', steps: 1 },
   { id: 'thesis', steps: 2 },
@@ -77,15 +80,13 @@ const CHAPTERS = [
   { id: 'sop-search', steps: SOP_STEPS },
   { id: 'roadmap', steps: ROADMAP_STEPS },
   { id: 'coupang-oms', steps: OMS_STEPS },
-  { id: 'coupang-sign', steps: 1 },
-  { id: 'coupang-purchase', steps: 1 },
+  { id: 'extras', steps: EXTRA_STEPS },
 ];
 const CHAPTER_COUNT = CHAPTERS.length;
 const SOP_CHAPTER = 3;
 const ROADMAP_CHAPTER = 4;
 const OMS_CHAPTER = 5;
-const SIGN_CHAPTER = 6;
-const PURCHASE_CHAPTER = 7;
+const EXTRA_CHAPTER = 6;
 
 // ── 讓每一頁在矮螢幕上也塞得下 ──
 // 每一頁的尺寸都是照著約 950px 高的視窗調出來的（詳見 HANDOVER）。筆電的視窗
@@ -387,17 +388,23 @@ export default function App() {
           );
         })()}
 
-        <Chapter stepCount={1} localStep={0}>
-          <div className="step">
-            <OmsSign key={visitKey(SIGN_CHAPTER, 0)} active={pos.chapter === SIGN_CHAPTER} />
-          </div>
-        </Chapter>
-
-        <Chapter stepCount={1} localStep={0}>
-          <div className="step">
-            <OmsPurchase key={visitKey(PURCHASE_CHAPTER, 0)} active={pos.chapter === PURCHASE_CHAPTER} />
-          </div>
-        </Chapter>
+        {(() => {
+          const step = pos.chapter === EXTRA_CHAPTER ? pos.step : 0;
+          const on = (i) => pos.chapter === EXTRA_CHAPTER && pos.step === i;
+          return (
+            <Chapter stepCount={EXTRA_STEPS} localStep={step}>
+              <div className="step">
+                <OmsSign part={0} key={visitKey(EXTRA_CHAPTER, 0)} active={on(0)} />
+              </div>
+              <div className="step">
+                <OmsSign part={1} key={visitKey(EXTRA_CHAPTER, 1)} active={on(1)} />
+              </div>
+              <div className="step">
+                <OmsPurchase key={visitKey(EXTRA_CHAPTER, 2)} active={on(2)} />
+              </div>
+            </Chapter>
+          );
+        })()}
       </div>
 
       {currentSteps > 1 && (
