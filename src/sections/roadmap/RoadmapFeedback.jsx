@@ -43,8 +43,8 @@ export default function RoadmapFeedback({ active }) {
       </p>
 
       <figure className="compare-panel roadmap-evidence-below reveal-line" style={delay(4)}>
-        <img src="shot-165840.png" alt="公槽裡的 PO 總表，實際長這樣" />
-        <figcaption>公槽裡的 PO 總表，實際長這樣</figcaption>
+        <img src="shot-165840.png" alt="營運人員自己紀錄的 Excel 總表" />
+        <figcaption>營運人員自己紀錄的 Excel 總表</figcaption>
       </figure>
     </section>
   );

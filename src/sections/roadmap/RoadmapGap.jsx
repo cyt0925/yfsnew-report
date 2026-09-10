@@ -14,7 +14,7 @@ const FLOW = [
 ];
 
 // 這三步是同一條「要繞三手」的路徑：先在酷澎那頭建單、
-// 進我們系統批次匯入、最後又落回公槽的 Excel 手抄——用紅框把
+// 進我們系統批次匯入、最後又落回各線別自己的 Excel 手抄——用紅框把
 // 這條隱藏的動線標出來，不用另外畫圖說明。
 const KEY_STEPS = new Set(['平台建立PO', '新PO匯入處理系統', 'PO彙總統合']);
 
@@ -35,7 +35,7 @@ export default function RoadmapGap({ active }) {
           營運人員和我反應「PO 彙總統合」這步，全靠在共用 Excel 上反覆手動抄寫、層層疊加紀錄。
         </p>
         <p className="prose reveal-line" style={delay(1)}>
-          要先去酷澎後台抓單，再到我們公司系統批次匯入，最後才回到公槽的 PO 總表 Excel 把新單抄進去——這中間繞了三手。
+          要先去酷澎後台抓單，再到我們公司系統批次匯入，最後依據線別回到各自製作的 Excel 做紀錄——這中間繞了三手。
         </p>
 
         <p className="flow-chain reveal-line" style={delay(2)}>
