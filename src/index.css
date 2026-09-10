@@ -722,6 +722,50 @@ h2 {
   gap: 1.5rem;
 }
 
+/* ── 「缺乏追蹤與防呆機制」：左欄回饋 + Excel 總表，右欄 LINE 對話 ── */
+
+/* 左欄 8 格：三句回饋 → 結論 → Excel 總表，由上往下讀。
+   Excel 那張 1624×568 在這個寬度（1920 下約 900px）是原比例、不裁，
+   走滿版要 479px 高，得裁掉右邊的篩選選單——那正是「改了又改」的證據。 */
+.feedback-main {
+  grid-column: 2 / span 8;
+  display: flex;
+  flex-direction: column;
+  gap: 1.3rem;
+}
+
+/* .findings / .roadmap-detail-lede 原本各自帶 grid-column，
+   進到 flex 欄裡沒有意義，順手歸零免得之後有人看了困惑 */
+.feedback-main .findings,
+.feedback-main .roadmap-detail-lede {
+  grid-column: auto;
+}
+
+/* 右欄 4 格：LINE 對話截圖，跟三句回饋齊頭放在右上角。
+   527×549 近正方形，在 1920 下約 440px 寬、字還讀得到。 */
+.feedback-chat {
+  grid-column: 10 / span 4;
+  align-self: start;
+}
+
+/* 兩張圖都用自然高度：.compare-panel img 預設鎖 15.5rem 是給那兩張矮寬的
+   SOP 截圖用的，這裡一張是寬扁的表格、一張近正方形，硬鎖高度不是裁就是留白。
+   要用複合選擇器疊兩個 class：.compare-panel img 寫在檔案後面、同權重會贏，
+   第一版只寫 .feedback-sheet img 就被蓋回去，圖兩側跑出黑邊。 */
+.compare-panel.feedback-sheet img,
+.compare-panel.feedback-chat img {
+  height: auto;
+  object-fit: fill;
+}
+
+/* 圖說第二行：補一句「原先靠這張表看改單、拉單」，比主標小半階、更淡 */
+.cap-sub {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--muted);
+  opacity: 0.75;
+}
+
 /* 圖擺最下面、放大：這張截圖是整個論證的證據，值得佔滿版面，
    跟三張卡片一樣滿版 12 欄，不再侷限在右邊那一小塊。 */
 .roadmap-evidence-below {
