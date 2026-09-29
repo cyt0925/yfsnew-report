@@ -2067,15 +2067,17 @@ h2 {
 }
 
 /* ══════════ 第 7 章：待完成的線別工具 ══════════
-   跟 .oms 共用 13 欄網格。上層引言（左 6 格）＋ 選單截圖（右 6 格），
-   下層寶僑卡（左 6 格）＋ 瑪氏卡（右 6 格）。字多圖多，內文壓到 1.25rem。 */
+   跟 .oms 共用 13 欄網格，明確排四列（見 LineTools.jsx 的說明）。
+   字多圖多，內文壓到 1.35rem。 */
 
 .line-tools {
   row-gap: 1.1rem;
+  grid-template-rows: auto auto auto auto;
 }
 
 .line-tools-head {
-  grid-column: 2 / span 12;
+  grid-column: 2 / span 6;
+  grid-row: 1;
 }
 
 /* 標題下面不留 1.4rem 的預設空隙：這頁下層兩張卡才是重點，上層越緊越好 */
@@ -2083,26 +2085,21 @@ h2 {
   margin-bottom: 0;
 }
 
-/* 引言跟選單截圖都靠上：第一版是 align-self: center，引言浮在圖的中線，
-   上下各空一截，白白浪費了 60px 給下層 */
 .line-tools-intro {
   grid-column: 2 / span 6;
+  grid-row: 2;
   max-width: none;
   font-size: 1.35rem;
   line-height: 1.75;
   align-self: start;
-  padding-top: 0.3rem;
 }
 
-/* 選單截圖 1419×353，在 674px 寬時 168px 高；不鎖 .compare-panel 預設的
-   15.5rem，用自然高度（複合選擇器才蓋得過預設，理由同 .feedback-* 那組） */
+/* 選單截圖跨列 1–2，從標題那一條線就起跑，跟左邊的標題齊頭；不鎖 .compare-panel
+   預設的 15.5rem，用自然高度（複合選擇器才蓋得過預設，理由同 .feedback-* 那組） */
 .line-tools-menu {
   grid-column: 8 / span 6;
+  grid-row: 1 / span 2;
   align-self: start;
-  /* 這張只是「工具掛在哪」的示意，不用撐滿右半欄：卡在 560px 寬（圖高 139px），
-     上層那一列矮 40px，省下來的高度給下層兩張卡的文字放大 */
-  max-width: 560px;
-  justify-self: end;
 }
 
 .compare-panel.line-tools-menu img {
@@ -2110,16 +2107,14 @@ h2 {
   object-fit: fill;
 }
 
-/* 兩張卡都拉滿這一列的高度（grid 預設 align-items: start 不會），截圖用
-   margin-top: auto 貼在卡片底部——兩張截圖高度不同（P&G 203px、瑪氏 170px），
-   這樣下緣才會切齊，而且不用裁圖。差的那 30px 落在文字跟截圖之間。 */
+/* 列 3：兩張文字卡 */
 .line-tool {
+  grid-row: 3;
   display: flex;
   flex-direction: column;
   gap: 0.85rem;
   padding-top: 1rem;
   border-top: 1px solid var(--rule);
-  align-self: stretch;
 }
 
 .line-tool--pg   { grid-column: 2 / span 6; }
@@ -2178,23 +2173,28 @@ h2 {
   margin-bottom: 0.35rem;
 }
 
-/* 1.35rem：上層省下 40px、原本還有 90px 餘裕，剛好夠把內文從 1.25 拉一階，
-   1920×963 仍塞得下不用縮 */
 .line-tool-block .prose {
   max-width: none;
   font-size: 1.35rem;
   line-height: 1.7;
 }
 
-/* 兩張工具截圖都是 1880 寬的橫圖（566 / 475 高），在 674px 寬時各約 203 / 170px，
-   維持原比例不裁；下緣對齊靠上面 .line-tool 的 stretch + 這裡的 margin-top: auto */
+/* 列 4：兩張截圖，同一列所以上緣天生切齊。再鎖同一個比例（P&G 那張的
+   1883:566）讓下緣也齊：瑪氏那張比較扁（1879:475），contain 進去上下各留
+   約 16px 的深色邊，看不太出來，而且一個像素都沒裁。 */
 .line-tool-shot {
-  margin-top: auto;
+  grid-row: 4;
+  aspect-ratio: 1883 / 566;
+  align-self: start;
 }
 
+.line-tool-shot--pg   { grid-column: 2 / span 6; }
+.line-tool-shot--mars { grid-column: 8 / span 6; }
+
 .compare-panel.line-tool-shot img {
-  height: auto;
-  object-fit: fill;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
 }
 
 /* ── 採購表格式轉換：兩頁 ── */

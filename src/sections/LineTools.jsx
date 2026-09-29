@@ -3,14 +3,18 @@ import { LINE_TOOLS, LINE_TOOLS_INTRO, LINE_TOOLS_MENU } from '../data/lineTools
 
 // 第 7 章、也是最後一章：待完成的線別工具。一頁講完。
 //
-// 版面兩層：
-//   上層左右——引言（左）＋ 訂單管理系統首頁那個「線別工具」下拉選單截圖（右），
-//   先讓人知道這些工具掛在哪、有哪三條線。
-//   下層左右——寶僑（左）／瑪氏（右）各一張卡：LOGO → 工具名 +「待開發」→
-//   現況 → 目標 → 那個工具的畫面截圖。兩張卡結構一樣，看的人可以左右對照。
-// 紙潔還在準備中，不另外開一張卡，只在上層那張選單截圖裡自然帶到。
+// 版面是 grid 四列，左右各 6 格：
+//   列 1–2：標題＋引言（左），「線別工具」選單截圖（右，從標題那一列就開始、
+//           跨兩列）——先讓人知道這些工具掛在哪、有哪三條線。
+//   列 3：寶僑（左）／瑪氏（右）的文字卡：LOGO → 工具名 +「待開發」→ 現況 → 目標。
+//   列 4：兩個工具的畫面截圖。
+// 截圖跟文字卡是不同的 grid 子項，不是同一張卡裡的最後一塊：這樣兩張截圖天生
+// 就在同一列、上緣切齊；文字量不同的差距落在列 3 的下方，不會把截圖推上推下。
+// 兩張截圖再鎖同一個比例（P&G 那張的 1883:566），瑪氏那張 contain 進去、上下
+// 各留 16px 深色邊，下緣也就齊了，而且沒有裁掉任何內容。
+// 紙潔還在準備中，不另外開一張卡，只在選單截圖裡自然帶到。
 //
-// 這頁字多圖多，內文用 1.25rem（比功能頁的 1.6rem 小兩階），1920×963 才塞得下；
+// 這頁字多圖多，內文用 1.35rem（比功能頁的 1.6rem 小一階），1920×963 才塞得下；
 // 筆電尺寸靠 useFitSteps 縮。
 export default function LineTools({ active }) {
   const delay = (i) => (active ? { animationDelay: `${0.5 + i * 0.2}s` } : { opacity: 1, animation: 'none' });
@@ -65,11 +69,17 @@ export default function LineTools({ active }) {
             <span className="tag">目標</span>
             <p className="prose">{tool.goal}</p>
           </div>
-
-          <figure className="compare-panel line-tool-shot">
-            <img src={tool.shot.src} alt={tool.shot.alt} />
-          </figure>
         </article>
+      ))}
+
+      {LINE_TOOLS.map((tool, i) => (
+        <figure
+          key={`${tool.id}-shot`}
+          className={`compare-panel line-tool-shot line-tool-shot--${tool.id} reveal-line`}
+          style={delay(2 + i)}
+        >
+          <img src={tool.shot.src} alt={tool.shot.alt} />
+        </figure>
       ))}
     </section>
   );
