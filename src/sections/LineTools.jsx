@@ -31,7 +31,13 @@ export default function LineTools({ active }) {
 
       <div className="oms-head line-tools-head">
         <h2 className="thesis-heading">
-          <Typewriter text="待完成的線別工具" active={active} />
+          <Typewriter
+            segments={[
+              { text: '待完成', className: 'heading-accent' },
+              { text: '的線別工具' },
+            ]}
+            active={active}
+          />
         </h2>
       </div>
 

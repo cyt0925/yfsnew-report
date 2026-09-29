@@ -1065,6 +1065,12 @@ h2 {
   color: var(--claude);
 }
 
+/* 標題裡要上主題紅的那幾個字（Typewriter segments 的 className），例如
+   「待完成」的線別工具 */
+.heading-accent {
+  color: var(--accent);
+}
+
 /* 機殼：讓終端機從「一塊會發光的矩形」變成「桌上一台監視器」。
    邊框做出雙層倒角的金屬感，一顆待機紅燈常駐右下角，
    跟畫面裡的開機日誌互相呼應。 */
