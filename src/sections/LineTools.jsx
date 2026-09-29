@@ -1,14 +1,16 @@
 import Typewriter from '../components/Typewriter.jsx';
-import { LINE_TOOLS, LINE_TOOLS_INTRO } from '../data/lineTools.js';
+import { LINE_TOOLS, LINE_TOOLS_INTRO, LINE_TOOLS_NOTE, LINE_TOOLS_MENU } from '../data/lineTools.js';
 
 // 第 7 章、也是最後一章：待完成的線別工具。一頁講完。
 //
 // 版面是 grid 四列：
-//   列 1：標題；列 2：引言（滿版）。
+//   列 1：標題。
+//   列 2：引言＋「紙潔：準備中」（左 7 格），「線別工具」選單裁圖（右 5 格）。
+//         那張裁圖只有 486×87，跟左邊兩行字一樣高，不會撐高這一列。
 //   列 3：寶僑（左 6 格）／瑪氏（右 6 格）的文字卡：LOGO → 工具名 +「待開發」→ 現況 → 目標。
 //   列 4：兩個工具的畫面截圖。
-// 曾經在右上放系統首頁「線別工具」選單的截圖（紙潔的「準備中」在那裡帶到），
-// 後來嫌擠拿掉了：它只是示意，佔 190px 不值得。
+// 選單圖曾經是整個首頁截圖（1419×353），太佔高度拿掉過一次；現在這張是只裁
+// 選單本身，才放得回來。
 // 截圖跟文字卡是不同的 grid 子項，不是同一張卡裡的最後一塊：這樣兩張截圖天生
 // 就在同一列、上緣切齊；文字量不同的差距落在列 3 的下方，不會把截圖推上推下。
 // 兩張截圖再鎖同一個比例（P&G 那張的 1883:566），瑪氏那張 contain 進去、上下
@@ -33,9 +35,14 @@ export default function LineTools({ active }) {
         </h2>
       </div>
 
-      <p className="prose line-tools-intro reveal-line" style={delay(0)}>
-        {LINE_TOOLS_INTRO}
-      </p>
+      <div className="line-tools-intro reveal-line" style={delay(0)}>
+        <p className="prose">{LINE_TOOLS_INTRO}</p>
+        <p className="line-tools-note">{LINE_TOOLS_NOTE}</p>
+      </div>
+
+      <figure className="line-tools-menu reveal-line" style={delay(0)}>
+        <img src={LINE_TOOLS_MENU.src} alt={LINE_TOOLS_MENU.alt} />
+      </figure>
 
       {LINE_TOOLS.map((tool, i) => (
         <article

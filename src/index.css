@@ -2092,14 +2092,48 @@ h2 {
   row-gap: 1.4rem;
 }
 
-/* 引言滿版一行：右上原本那張選單截圖拿掉了，這一列只剩一句話 */
+/* 列 2：引言＋紙潔那行（左 7 格）、選單裁圖（右 5 格）。兩邊都靠上，高度差不多
+   （左邊兩行字約 90px，圖 87px），這一列不會被誰撐高 */
 .line-tools-intro {
-  grid-column: 2 / span 12;
+  grid-column: 2 / span 7;
   grid-row: 2;
+  padding-top: 0.4rem;
+}
+
+.line-tools-intro .prose {
   max-width: none;
   font-size: 1.4rem;
   line-height: 1.75;
+}
+
+/* 「紙潔：準備中」：跟「待開發」同一套 mono 小字、紅色，但不加框——
+   它不是狀態標籤，是名單裡的一行 */
+.line-tools-note {
+  margin: 0.45rem 0 0;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.95rem;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+}
+
+/* 選單裁圖：原尺寸 486×87 顯示，不放大（放大會糊）、靠右靠上。
+   白底圖放深色版面上，加一圈細框跟圓角，看起來像一張小卡 */
+.line-tools-menu {
+  grid-column: 9 / span 5;
+  grid-row: 2;
+  margin: 0;
+  justify-self: end;
+  align-self: start;
   padding-top: 0.4rem;
+}
+
+.line-tools-menu img {
+  display: block;
+  width: 486px;
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
 }
 
 /* 列 3：兩張文字卡 */
