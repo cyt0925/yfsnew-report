@@ -6,6 +6,7 @@ import { PURCHASE_FEATURE } from '../../data/omsFeatures.js';
 //   part 0：上下——為什麼要做（含原本「做到了什麼」的內容，合成一段）在上，
 //           Before／After 對照圖在下。
 //   part 1：左右——怎麼操作 + 縮小版 Before／After 收在左欄，右欄放示範影片。
+//           這頁沒有大標題，「怎麼操作」升格當標題。
 //
 // Before／After 是同一組圖：瑪氏自己開的訂貨通知單（匯入）→ 公司採購範本（匯出）。
 // After 那張 1749×113、超寬扁，跟 Before 並排會縮成一條線，所以一律上下疊，
@@ -52,14 +53,17 @@ export default function OmsPurchase({ part = 0, active }) {
         <span className="rail-label">{kicker}</span>
       </div>
 
-      <div className="oms-head">
-        <span className="tag oms-kicker">{eyebrow}</span>
-        <h2 className="thesis-heading">
-          <Typewriter text={title} active={active} />
-        </h2>
-        {/* 「跟訂單管理系統完全獨立」這句只在第一頁講一次就好 */}
-        {part === 0 && <p className="oms-note">{standalone}</p>}
-      </div>
+      {/* 大標題（連同「跟訂單管理系統完全獨立」那句）只在第一頁：第二頁是
+          同一個功能的延續，改讓「怎麼操作」升格當這一頁的標題（.oms-lead-tag）。 */}
+      {part === 0 && (
+        <div className="oms-head">
+          <span className="tag oms-kicker">{eyebrow}</span>
+          <h2 className="thesis-heading">
+            <Typewriter text={title} active={active} />
+          </h2>
+          <p className="oms-note">{standalone}</p>
+        </div>
+      )}
 
       {part === 0 ? (
         <>
@@ -76,7 +80,7 @@ export default function OmsPurchase({ part = 0, active }) {
         <>
           <div className="oms-col-left">
             <div className="oms-block reveal-line" style={delay(0)}>
-              <span className="tag">怎麼操作</span>
+              <h3 className="oms-lead-tag">怎麼操作</h3>
               <p className="prose">{how}</p>
             </div>
             <div className="oms-block reveal-line" style={delay(1)}>

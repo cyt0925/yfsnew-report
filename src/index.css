@@ -2019,6 +2019,34 @@ h2 {
   color: var(--muted);
 }
 
+/* 第 6 章第二頁沒有大標題（第一頁講過了），區塊標籤升格當這一頁的標題：
+   字級介於 .tag（0.85rem）跟 .thesis-heading（2.85rem）之間、加粗、用主文字色，
+   不再是小小的紅色 mono 標籤。上面 grid row 1 是空的（沒有 .oms-head），
+   兩欄直接從 row 1 起跑，不然頁面上方會多一條空列的 row-gap。 */
+.oms-lead-tag {
+  margin: 0 0 0.6rem;
+  font-family: "Zen Kaku Gothic New", "Noto Sans TC", sans-serif;
+  font-size: 1.85rem;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--fg);
+}
+
+.oms-sign-detail .oms-col-left,
+.oms-sign-detail .oms-col-right,
+.oms-purchase-detail .oms-col-left,
+.oms-purchase-detail .oms-col-right {
+  grid-row: 1;
+}
+
+/* 右欄的「操作示範」標籤跟左欄升格後的標題要齊頭，兩邊字級差很多，
+   標籤那行補上跟 .oms-lead-tag 一樣的行高，卡片上緣才會對齊左欄內文 */
+.oms-sign-detail .oms-col-right > .oms-block > .tag,
+.oms-purchase-detail .oms-col-right > .oms-block > .tag {
+  line-height: calc(1.85rem * 1.4);
+  margin-bottom: 0.6rem;
+}
+
 /* 簽名章第二頁：怎麼操作、做到了什麼兩塊收在左欄，右欄放示範影片。
    跟功能頁的差別在「下緣怎麼對齊」：功能頁是讓影片填滿剩下的高度（裁切），
    這裡的影片沒有字幕條可以吸收高度，硬填會裁掉將近三成——畫面正中央就是

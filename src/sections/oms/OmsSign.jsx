@@ -6,7 +6,7 @@ import { SIGN_FEATURE } from '../../data/omsFeatures.js';
 //   part 0：上下——為什麼要做在上，SOP 檢索網站上那份舊流程的截圖在下。
 //           那張圖上的字很小，走滿版才讀得到，擠在半個欄寬裡沒有意義。
 //   part 1：左右——怎麼操作、做到了什麼兩塊都收在左欄，右欄放示範影片，
-//           跟第 5 章的功能頁同一套版面。
+//           跟第 5 章的功能頁同一套版面。這頁沒有大標題，「怎麼操作」升格當標題。
 // 拆頁是因為那張 SOP 截圖值得單獨看——它就是「為什麼要做」在講的那一長串
 // Colab 步驟，跟文字擠在同一頁會兩邊都讀不清楚。
 //
@@ -36,12 +36,16 @@ export default function OmsSign({ part = 0, active }) {
         <span className="rail-label">{kicker}</span>
       </div>
 
-      <div className="oms-head">
-        <span className="tag oms-kicker">{eyebrow}</span>
-        <h2 className="thesis-heading">
-          <Typewriter text={title} active={active} />
-        </h2>
-      </div>
+      {/* 大標題只在第一頁：第二頁是同一個功能的延續，重複標題沒意義，
+          改讓「怎麼操作」升格當這一頁的標題（.oms-lead-tag）。 */}
+      {part === 0 && (
+        <div className="oms-head">
+          <span className="tag oms-kicker">{eyebrow}</span>
+          <h2 className="thesis-heading">
+            <Typewriter text={title} active={active} />
+          </h2>
+        </div>
+      )}
 
       {part === 0 ? (
         <>
@@ -61,11 +65,11 @@ export default function OmsSign({ part = 0, active }) {
         <>
           <div className="oms-col-left">
             <div className="oms-block reveal-line" style={delay(0)}>
-              <span className="tag">怎麼操作</span>
+              <h3 className="oms-lead-tag">怎麼操作</h3>
               <p className="prose">{how}</p>
             </div>
             <div className="oms-block reveal-line" style={delay(1)}>
-              <span className="tag">做到了什麼</span>
+              <h3 className="oms-lead-tag">做到了什麼</h3>
               <p className="prose">{points}</p>
             </div>
           </div>
