@@ -61,6 +61,41 @@ function Hero({ active }) {
   );
 }
 
+// 結尾頁：跟封面同一套骨架（3D 場景、房子線框、漸層遮罩、品牌角標），
+// 只把文字換成「謝謝大家」——開頭那個動畫在最後一頁再出現一次，前後呼應。
+// LogicCore 一樣只在這頁顯示時才掛載，理由同 Hero。
+function Closing({ active }) {
+  return (
+    <section className="hero hero--closing">
+      <div className="hero-sphere">
+        {active && <LogicCore />}
+      </div>
+
+      <svg className="hero-house" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">
+        <path d="M50,3 L95,34 L95,97 L5,97 L5,34 Z" />
+      </svg>
+
+      <div className="hero-scrim" />
+
+      <div className="brand-mark">
+        <img src="logo.png" alt="永豐商店" />
+        <span>YFS</span>
+      </div>
+
+      <div className="hero-content">
+        <p className="eyebrow">AI 流程再造 · 儲備幹部試用期報告</p>
+        <h1>
+          <Typewriter text="謝謝大家" active={active} />
+        </h1>
+        <div className="divider" />
+        <div className="meta">
+          <span><b>Jerry Tsai</b> 蔡政穎</span>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // 每個章節（橫向）底下可以有好幾個步驟（縱向）。
 // 「全貌」章節刻意排在 SOP 檢索網站後面、酷澎系統前面：它不是目錄，
 // 是轉場——先講完 SOP 檢索網站做了什麼，再講我在自己做的網站上讀 SOP
@@ -70,7 +105,8 @@ function Hero({ active }) {
 // 它們合成一章「額外功能」，靠左右鍵切到，不搶「五個功能」這條主線的節奏。
 // 這一章四個步驟：簽名的兩頁（為什麼要做＋SOP 截圖 / 怎麼操作＋做到了什麼）
 // 加上採購表格式轉換的兩頁（為什麼要做＋Before/After / 怎麼操作＋影片）。
-// 最後再一章「待完成的線別工具」收尾：一頁，講訂單管理系統之外還有什麼要做。
+// 再一章「待完成的線別工具」：一頁，講訂單管理系統之外還有什麼要做。
+// 最後是結尾頁「謝謝大家」：封面那套動畫再出現一次收尾。
 const SOP_STEPS = 6;
 const ROADMAP_STEPS = 4;
 const OMS_STEPS = 1 + FEATURES.length;
@@ -84,6 +120,7 @@ const CHAPTERS = [
   { id: 'coupang-oms', steps: OMS_STEPS },
   { id: 'extras', steps: EXTRA_STEPS },
   { id: 'line-tools', steps: 1 },
+  { id: 'closing', steps: 1 },
 ];
 const CHAPTER_COUNT = CHAPTERS.length;
 const SOP_CHAPTER = 3;
@@ -91,6 +128,7 @@ const ROADMAP_CHAPTER = 4;
 const OMS_CHAPTER = 5;
 const EXTRA_CHAPTER = 6;
 const LINE_TOOLS_CHAPTER = 7;
+const CLOSING_CHAPTER = 8;
 
 // ── 讓每一頁在矮螢幕上也塞得下 ──
 // 每一頁的尺寸都是照著約 950px 高的視窗調出來的（詳見 HANDOVER）。筆電的視窗
@@ -417,6 +455,13 @@ export default function App() {
         <Chapter stepCount={1} localStep={0}>
           <div className="step">
             <LineTools key={visitKey(LINE_TOOLS_CHAPTER, 0)} active={pos.chapter === LINE_TOOLS_CHAPTER} />
+          </div>
+        </Chapter>
+
+        {/* 結尾：封面動畫再來一次，謝謝大家 */}
+        <Chapter stepCount={1} localStep={0}>
+          <div className="step">
+            <Closing key={visitKey(CLOSING_CHAPTER, 0)} active={pos.chapter === CLOSING_CHAPTER} />
           </div>
         </Chapter>
       </div>
