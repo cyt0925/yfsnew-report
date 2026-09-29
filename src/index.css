@@ -2078,7 +2078,7 @@ h2 {
 }
 
 .line-tools-head {
-  grid-column: 2 / span 6;
+  grid-column: 2 / span 12;
   grid-row: 1;
 }
 
@@ -2087,26 +2087,19 @@ h2 {
   margin-bottom: 0;
 }
 
+/* 上面省下來的高度回饋給兩張卡：列 3、4 之間、卡片內部都鬆一點 */
+.line-tools {
+  row-gap: 1.4rem;
+}
+
+/* 引言滿版一行：右上原本那張選單截圖拿掉了，這一列只剩一句話 */
 .line-tools-intro {
-  grid-column: 2 / span 6;
+  grid-column: 2 / span 12;
   grid-row: 2;
   max-width: none;
-  font-size: 1.35rem;
+  font-size: 1.4rem;
   line-height: 1.75;
-  align-self: start;
-}
-
-/* 選單截圖跨列 1–2，從標題那一條線就起跑，跟左邊的標題齊頭；不鎖 .compare-panel
-   預設的 15.5rem，用自然高度（複合選擇器才蓋得過預設，理由同 .feedback-* 那組） */
-.line-tools-menu {
-  grid-column: 8 / span 6;
-  grid-row: 1 / span 2;
-  align-self: start;
-}
-
-.compare-panel.line-tools-menu img {
-  height: auto;
-  object-fit: fill;
+  padding-top: 0.4rem;
 }
 
 /* 列 3：兩張文字卡 */
