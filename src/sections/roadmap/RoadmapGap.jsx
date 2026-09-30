@@ -1,4 +1,3 @@
-import Typewriter from '../../components/Typewriter.jsx';
 
 // 這一頁是轉場的起點：做 SOP 檢索網站不是只上線就結束，
 // 上線之後我自己也在用，讀著讀著就讀出了問題——這是酷澎系統的起點，
@@ -27,18 +26,14 @@ export default function RoadmapGap({ active }) {
         <span className="rail-label">全貌</span>
       </div>
 
-      <div className="roadmap-lead">
-        <h2 className="thesis-heading">
-          <Typewriter text="關鍵步驟缺乏系統支撐" active={active} />
-        </h2>
+      {/* 這頁沒有大標題（使用者拿掉的）：開頭直接講營運端的流程，底下流程鏈
+          用紅框標出繞三手的那三步，再一句話點出「SOP 文件寫的就是這件事」。 */}
+      <div className="roadmap-lead roadmap-lead--untitled">
         <p className="prose reveal-line" style={delay(0)}>
-          營運人員和我反應「PO 彙總統合」這步，全靠在共用 Excel 上反覆手動抄寫、層層疊加紀錄。
-        </p>
-        <p className="prose reveal-line" style={delay(1)}>
-          要先去酷澎後台抓單，再到我們公司系統批次匯入，最後依據線別回到各自製作的 Excel 做紀錄——這中間繞了三手。
+          營運人員要先去酷澎後台抓單，再到我們公司系統批次匯入，最後依據線別回到各自製作的 Excel 做紀錄，非常繁瑣。
         </p>
 
-        <p className="flow-chain reveal-line" style={delay(2)}>
+        <p className="flow-chain reveal-line" style={delay(1)}>
           {FLOW.map((step, i) => (
             <span key={step}>
               <span className={KEY_STEPS.has(step) ? 'flow-step flow-step--key' : 'flow-step'}>
@@ -49,12 +44,16 @@ export default function RoadmapGap({ active }) {
           ))}
         </p>
 
-        <p className="prose prose--accent reveal-line" style={delay(3)}>
-          對應 SOP 網站上，酷澎 PO 單確認作業流程（SOP-CP-CP-001）這份文件，步驟寫的是打開公槽那個 PO 總表 Excel，把新單抄進去，確實驗證了營運端所反應的情況。
+        {/* 這句是整頁的重點（使用者要求強調）：字級比內文大一階、文件名用
+            主色標紅，讓「營運講的 = SOP 寫的」這個對應一眼就抓到。 */}
+        <p className="prose prose--accent roadmap-callout reveal-line" style={delay(2)}>
+          以上的情況，剛好對應到 SOP 網站上，
+          <b className="roadmap-callout-doc">酷澎 PO 單確認作業流程（SOP-CP-CP-001）</b>
+          這份文件
         </p>
       </div>
 
-      <div className="roadmap-evidence reveal-line" style={delay(4)}>
+      <div className="roadmap-evidence reveal-line" style={delay(3)}>
         <figure className="compare-panel">
           <img src="po-sop.png" alt="酷澎 PO 單確認作業流程，SOP-CP-CP-001 的目的與流程總覽" />
           <figcaption>SOP-CP-CP-001，目的與流程總覽</figcaption>

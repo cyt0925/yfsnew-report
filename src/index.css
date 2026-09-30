@@ -680,6 +680,23 @@ h2 {
   max-width: none;
 }
 
+/* 「關鍵步驟」那頁沒有標題，內文直接從頁面上緣開始；上方留一點呼吸空間
+   跟其他有標題的頁齊頭（標題的 padding-top 大概就是這個量）。 */
+.roadmap-lead--untitled {
+  padding-top: 0.6rem;
+}
+
+/* 整頁的重點句（使用者要求強調）：比內文大一階，文件名標主色。 */
+.roadmap-callout {
+  font-size: 1.55rem;
+  line-height: 1.7;
+}
+
+.roadmap-callout-doc {
+  color: var(--accent);
+  font-weight: 700;
+}
+
 /* PO 流程鏈：一整排步驟名稱用箭頭串起來，中間那個沒有系統撐著的
    環節（PO彙總統合）用底色跟粗體標出來，不用額外畫圖也看得出重點。 */
 .flow-chain {
