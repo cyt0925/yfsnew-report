@@ -30,7 +30,7 @@ export default function RoadmapGap({ active }) {
           用紅框標出繞三手的那三步，再一句話點出「SOP 文件寫的就是這件事」。 */}
       <div className="roadmap-lead roadmap-lead--untitled">
         <p className="prose reveal-line" style={delay(0)}>
-          營運人員要先去酷澎後台抓單，再到我們公司系統批次匯入，最後依據線別回到各自製作的 Excel 做紀錄，非常繁瑣。
+          營運人員和我反應，他們要先去酷澎後台抓單，再到我們公司系統批次匯入，最後依據線別回到各自製作的 Excel 做紀錄，非常繁瑣。
         </p>
 
         <p className="flow-chain reveal-line" style={delay(1)}>
