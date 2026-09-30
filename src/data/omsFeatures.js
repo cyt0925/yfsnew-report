@@ -21,7 +21,7 @@ export const FEATURES = [
   },
   {
     n: '02',
-    title: '首頁 PO 總表',
+    title: 'PO 總表與改單警示',
     why: '徹底取代過去每個人都要分別將自己的 Excel 表放在公司公槽，格式各自不同的情況。',
     how: '以 PO 單號為核心視野，支援線別、狀態、交期篩選與即時全域搜尋。',
     points: [
@@ -29,11 +29,11 @@ export const FEATURES = [
       { lead: '重點標記', text: '任何一張單點一下就能標記，勾「只看已標記」畫面就只留這幾張，盯特殊狀況的單不用每次重新設篩選條件。' },
     ],
     video: 'oms-02-board.webm',
-    videoLabel: '首頁 PO 總表操作示範',
+    videoLabel: 'PO 總表與改單警示操作示範',
   },
   {
     n: '03',
-    title: '編輯出貨數量與備註',
+    title: '出貨數量編輯與稽核留痕',
     why: '酷澎拋出的下單量不等於工廠或倉庫實際可出量，OP 需要調整彈性，而且手動修正後的數字不能被隔天重新匯入的新表洗掉。',
     how: '直接在列表上點擊欄位，即時調整出貨數量、備註或 PO 狀態。',
     points: [
@@ -42,12 +42,12 @@ export const FEATURES = [
       { lead: '批次改狀態', text: '可一次更改多張訂單的 PO 狀態、驗收狀態、配送方式、拉單狀態等等。' },
     ],
     video: 'oms-03-edit.webm',
-    videoLabel: '編輯出貨數量與備註操作示範',
+    videoLabel: '出貨數量編輯與稽核留痕操作示範',
     still: { src: 'oms-batch-status.png', alt: '勾選多張 PO 後出現的批次操作列，可以一次改 PO 狀態、驗收狀態或配送方式' },
   },
   {
     n: '04',
-    title: '匯出報表',
+    title: '報表匯出與拉單鎖定',
     why: '過去每日靠手動複製 Excel 分頁、手寫註記「今天拉單拉到第幾張」，容易人為漏單或重複出單。',
     how: '勾選匯出格式 → 勾選是否標記為已拉單 → 一鍵下載。',
     points: [
@@ -56,7 +56,7 @@ export const FEATURES = [
       { lead: '試算不卡單', text: '純預覽不影響鎖定狀態；要解鎖必須填理由，並自動留下稽核歷程。' },
     ],
     video: 'oms-04-export.webm',
-    videoLabel: '匯出報表操作示範',
+    videoLabel: '報表匯出與拉單鎖定操作示範',
   },
   {
     n: '05',
