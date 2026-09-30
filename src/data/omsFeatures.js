@@ -39,7 +39,9 @@ export const FEATURES = [
     points: [
       { lead: '差異一眼看得到', text: '出貨數量只要跟酷澎下單數量不一樣就標成紅字，不用兩欄自己對，掃一眼就知道哪幾筆調過。' },
       { lead: '欄位級稽核歷程', text: '誰、什麼時候、把哪個欄位從 A 改成 B、來源是手動還是匯入，全部留痕，一鍵回溯。' },
-      { lead: '批次改狀態', text: '可一次更改多張訂單的 PO 狀態、驗收狀態、配送方式、拉單狀態等等。' },
+      // 欄位清單照 app.py 的 SKU_OVERRIDE_FIELDS / ALWAYS_EDITABLE_FIELDS / PO_EDITABLE_FIELDS
+      // / PO_COUPANG_FIELDS 列的，只挑常用的幾個；影片下面那張批次操作列截圖對應句尾。
+      { lead: '可細項編輯', text: '出貨數量、驗收註記逐筆改，PO 狀態、交期、倉別、備註整張單一起改，勾多張還能一次改狀態。' },
     ],
     video: 'oms-03-edit.webm',
     videoLabel: '出貨數量編輯與稽核留痕操作示範',
