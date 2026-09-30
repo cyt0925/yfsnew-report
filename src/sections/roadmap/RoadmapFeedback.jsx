@@ -27,7 +27,7 @@ export default function RoadmapFeedback({ active }) {
 
       <div className="sop-head">
         <h2 className="thesis-heading">
-          <Typewriter text="缺乏追蹤與防呆機制" active={active} />
+          <Typewriter text="傳統 Excel 缺乏追蹤與防呆" active={active} />
         </h2>
       </div>
 
