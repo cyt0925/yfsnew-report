@@ -3,7 +3,6 @@ import Typewriter from './components/Typewriter.jsx';
 import LogicCore from './effects/logic-core/LogicCore.jsx';
 import ThesisPain from './sections/ThesisPain.jsx';
 import ThesisSolution from './sections/ThesisSolution.jsx';
-import AiImportance1 from './sections/AiImportance1.jsx';
 import AiImportance2 from './sections/AiImportance2.jsx';
 import AiImportance3 from './sections/AiImportance3.jsx';
 import RoadmapOverview from './sections/RoadmapOverview.jsx';
@@ -114,7 +113,7 @@ const EXTRA_STEPS = 4; // 簽名 × 2 + 採購表 × 2
 const CHAPTERS = [
   { id: 'hero', steps: 1 },
   { id: 'thesis', steps: 2 },
-  { id: 'ai-importance', steps: 3 },
+  { id: 'ai-importance', steps: 2 },
   { id: 'sop-search', steps: SOP_STEPS },
   { id: 'roadmap', steps: ROADMAP_STEPS },
   { id: 'coupang-oms', steps: OMS_STEPS },
@@ -353,15 +352,13 @@ export default function App() {
           </div>
         </Chapter>
 
-        <Chapter stepCount={3} localStep={pos.chapter === 2 ? pos.step : 0}>
+        {/* 原本第一頁是「痛點」，併進第 1 章第一頁後這章剩兩頁。 */}
+        <Chapter stepCount={2} localStep={pos.chapter === 2 ? pos.step : 0}>
           <div className="step">
-            <AiImportance1 key={visitKey(2, 0)} active={pos.chapter === 2 && pos.step === 0} />
+            <AiImportance2 key={visitKey(2, 0)} active={pos.chapter === 2 && pos.step === 0} />
           </div>
           <div className="step">
-            <AiImportance2 key={visitKey(2, 1)} active={pos.chapter === 2 && pos.step === 1} />
-          </div>
-          <div className="step">
-            <AiImportance3 key={visitKey(2, 2)} active={pos.chapter === 2 && pos.step === 2} />
+            <AiImportance3 key={visitKey(2, 1)} active={pos.chapter === 2 && pos.step === 1} />
           </div>
         </Chapter>
 

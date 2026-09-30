@@ -27,13 +27,18 @@
 |---|---|---|---|
 | 0 | 封面 | 1 | `App.jsx` 的 `Hero()` + `effects/logic-core/` |
 | 1 | 論點 | 2 | `sections/ThesisPain·ThesisSolution` |
-| 2 | 為什麼是 AI | 3 | `sections/AiImportance1~3` |
+| 2 | 為什麼是 AI | 2 | `sections/AiImportance2·AiImportance3` |
 | 3 | SOP 檢索網站 | 6 | `sections/sop/` |
 | 4 | 全貌（轉場） | 4 | `sections/RoadmapOverview` + `sections/roadmap/` |
 | 5 | 酷澎訂單管理系統 | 6 | `sections/oms/OmsTitle` + `OmsFeature` × 5 |
 | 6 | 額外功能 | 4 | `sections/oms/OmsSign` × 2 + `OmsPurchase` × 2 |
 | 7 | 待完成的線別工具 | 1 | `sections/LineTools` + `data/lineTools.js` |
 | 8 | 結尾（謝謝大家） | 1 | `App.jsx` 的 `Closing()`，跟 `Hero()` 同一套骨架 |
+
+第 1 章第一頁是「痛點：作業重複的日常消耗」：原本第 1 章的「作業重複的日常消耗」跟
+第 2 章第一頁「痛點」講的是同一件事（都在說每日重複的作業），併成一頁，標題比照 SOP 那章
+「痛點：……」的格式，右邊放原本痛點頁的筆電圖（`bottleneck.png`，借用 `.ai-figure--image`
+那套掃描進場）。第 2 章因此剩「自主開發：流程優化」跟「透過 AI 輔助」兩頁，文案是使用者重寫的。
 
 第 4 章「全貌」刻意夾在 SOP 跟酷澎中間：它不是目錄，是**轉場**——先講完 SOP
 網站做了什麼，再講「我在自己做的網站上讀 SOP 時看到了什麼問題」，帶出做酷澎系統
