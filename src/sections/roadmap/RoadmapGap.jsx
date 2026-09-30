@@ -29,8 +29,10 @@ export default function RoadmapGap({ active }) {
       {/* 這頁沒有大標題（使用者拿掉的）：開頭直接講營運端的流程，底下流程鏈
           用紅框標出繞三手的那三步，再一句話點出「SOP 文件寫的就是這件事」。 */}
       <div className="roadmap-lead roadmap-lead--untitled">
-        <p className="prose reveal-line" style={delay(0)}>
-          營運人員和我反應，他們要先去酷澎後台抓單，再到我們公司系統批次匯入，最後依據線別回到各自製作的 Excel 做紀錄，非常繁瑣。
+        {/* 三個加粗的動作就是底下流程鏈紅框的那三步（建單 → 匯入 → 回 Excel），
+            文字跟圖用同一組重點互相對照；「非常繁瑣」標主色當這段的落點。 */}
+        <p className="prose roadmap-intro reveal-line" style={delay(0)}>
+          營運人員和我反應，他們要先去<b>酷澎後台抓單</b>，再到<b>我們公司系統批次匯入</b>，最後依據線別<b>回到各自製作的 Excel 做紀錄</b>，<em className="roadmap-intro-hot">非常繁瑣</em>。
         </p>
 
         <p className="flow-chain reveal-line" style={delay(1)}>

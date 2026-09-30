@@ -686,6 +686,19 @@ h2 {
   padding-top: 0.6rem;
 }
 
+/* 「關鍵步驟」頁開頭那段：三個動作加粗（對應流程鏈的三個紅框），結尾
+   「非常繁瑣」用主色、不斜體。 */
+.roadmap-intro b {
+  color: var(--fg);
+  font-weight: 700;
+}
+
+.roadmap-intro-hot {
+  font-style: normal;
+  font-weight: 700;
+  color: var(--accent);
+}
+
 /* 整頁的重點句（使用者要求強調）：比內文大一階，文件名標主色。 */
 .roadmap-callout {
   font-size: 1.55rem;
