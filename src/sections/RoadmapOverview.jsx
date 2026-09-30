@@ -7,7 +7,7 @@ export default function RoadmapOverview({ active }) {
       <div className="roadmap-rail">
         <span className="rail-label">全貌</span>
         <h2 className="thesis-heading roadmap-heading">
-          <Typewriter text="從觀察到落地：把流程變成實作" active={active} />
+          <Typewriter text="把流程變成實作的過程" active={active} />
         </h2>
       </div>
       <div className="roadmap-stage">{active && <RoadmapScene />}</div>
