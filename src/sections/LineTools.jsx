@@ -76,7 +76,9 @@ export default function LineTools({ active }) {
 
           <div className="line-tool-block">
             <span className="tag">目標</span>
-            <p className="prose">{tool.goal}</p>
+            {(Array.isArray(tool.goal) ? tool.goal : [tool.goal]).map((para) => (
+              <p className="prose" key={para}>{para}</p>
+            ))}
           </div>
         </article>
       ))}
