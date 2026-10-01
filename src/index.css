@@ -2456,11 +2456,37 @@ h2 {
    沿用 SOP「我個人的想法是」那頁的 .verdict 樣式（大字一句＋紅字、小字一段＋
    底線關鍵詞），只是這頁右邊沒有圖，文字欄放寬到 10 格。 */
 .summary-verdict {
-  grid-column: 2 / span 10;
+  grid-column: 2 / span 7;
+}
+
+/* 文字收到 7 格後，大字縮一級：最長一行「再找出中間可被系統化、標準化的
+   重複步驟，」約 20 個字寬，2.3vw 在 1366 寬剛好放得下一行。 */
+.summary-verdict .verdict-line {
+  font-size: clamp(1.6rem, 2.3vw, 2.4rem);
 }
 
 .summary-verdict .verdict-line--sub {
-  max-width: 40em;
+  font-size: clamp(1.25rem, 1.75vw, 1.75rem);
+}
+
+/* 右邊插圖：跟文字同列、垂直置中；四邊羽化、進場動畫沿用 .ai-figure--image */
+.summary-figure {
+  grid-column: 9 / span 5;
+  grid-row: 1 / span 2;
+  align-self: center;
+  position: relative;
+  margin: 0;
+  /* 圖吃到最右一格，筆電寬度下會壓到右邊的換頁箭頭（箭頭離視窗右緣約
+     28–78px，版心只留 32px padding）。寬螢幕版心兩側本來就有留白，不用讓；
+     視窗越窄讓越多，最多讓 3.5rem。 */
+  margin-right: max(0px, calc(3.5rem - max(0px, (100vw - 1600px) / 2)));
+}
+
+/* 這張圖的背景是亮紅光暈，邊緣是硬的直角，直接貼在黑底上會像一塊色塊。
+   比筆電圖那張羽化得更多：橢圓遮罩讓四邊中點也淡掉，四角完全透明。 */
+.summary-figure img {
+  -webkit-mask-image: radial-gradient(ellipse 56% 56% at 50% 50%, #000 52%, transparent 100%);
+  mask-image: radial-gradient(ellipse 56% 56% at 50% 50%, #000 52%, transparent 100%);
 }
 
 /* 小字兩段之間不用跟大字那麼大的距離 */
