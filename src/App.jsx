@@ -300,6 +300,16 @@ export default function App() {
       } else if (e.key === 'PageUp') {
         e.preventDefault();
         goLinear(-1);
+      } else if (e.code === 'KeyF' && !e.ctrlKey && !e.metaKey && !e.altKey) {
+        // F 切換全螢幕（像一般簡報軟體）。用 e.code 判斷實體按鍵而不是 e.key：
+        // 開著注音輸入法時 e.key 會是 'Process'，用 e.key 會按不出來。
+        // 進出全螢幕會觸發 resize，useFitSteps 會自己重算每頁縮放。
+        e.preventDefault();
+        if (document.fullscreenElement) {
+          document.exitFullscreen?.().catch(() => {});
+        } else {
+          document.documentElement.requestFullscreen?.().catch(() => {});
+        }
       }
     }
     window.addEventListener('keydown', onKeyDown);
