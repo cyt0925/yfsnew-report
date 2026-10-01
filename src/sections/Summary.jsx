@@ -20,18 +20,22 @@ export default function Summary({ active }) {
       </div>
 
       <div className="verdict summary-verdict">
+        {/* 斷行是手動排的：在逗號處斷，紅字那句再從「步驟，」後面斷一次，
+            不然寬螢幕會把幾個字單獨擠到下一行。 */}
         <p className="verdict-line reveal-line" style={delay(0)}>
-          {/* 在逗號處手動斷三行：不斷的話 1920 寬會把「Output，」單獨擠到第二行 */}
-          我目前在做的事情，
+          我認為目前所做的一切，不外乎都是為了一個目標
           <br />
-          都是先釐清每個流程的 <em>Input</em> 跟 <em>Output</em>，
+          就是重新釐清流程的 <em>Input</em> 與 <em>Output</em>，
           <br />
-          <b>再把中間重複的步驟交給系統</b>。
+          <b>再找出中間可被系統化、標準化的重複步驟，</b>
+          <br />
+          <b>逐步交由系統處理</b>。
         </p>
         <p className="verdict-line verdict-line--sub reveal-line" style={delay(1)}>
-          我做到的，是把原本只存在某個人腦袋裡、或某張 Excel 裡的流程，變成<em>大家都看得到</em>、<em>改了會留紀錄</em>的東西。
-          <br />
-          即便現在離完整的自動化還很遠，<span className="nowrap">寶僑、瑪氏、紙潔的工具</span>也都還沒做完，但方向已經確定了，接下來就是一條一條搬進來。
+          我希望做到的，是把原本只存在於個人經驗或 Excel 裡的流程，轉化成<em>視覺化</em>、<em>能共同維護</em>，<em>能保有紀錄</em>的系統化流程。
+        </p>
+        <p className="verdict-line verdict-line--sub summary-closing reveal-line" style={delay(2)}>
+          即使目前距離完整自動化還有一段距離，但只要善用 AI，同時保有自己的思考，系統終究能成為流程的一部分。
         </p>
       </div>
     </section>

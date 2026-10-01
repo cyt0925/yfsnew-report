@@ -2463,6 +2463,11 @@ h2 {
   max-width: 40em;
 }
 
+/* 小字兩段之間不用跟大字那麼大的距離 */
+.summary-verdict .summary-closing {
+  margin-top: 1.1rem;
+}
+
 .nowrap {
   white-space: nowrap;
 }
