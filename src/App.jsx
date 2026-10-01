@@ -14,6 +14,7 @@ import OmsFeature from './sections/oms/OmsFeature.jsx';
 import OmsSign from './sections/oms/OmsSign.jsx';
 import OmsPurchase from './sections/oms/OmsPurchase.jsx';
 import LineTools from './sections/LineTools.jsx';
+import Summary from './sections/Summary.jsx';
 import SopTitle from './sections/sop/SopTitle.jsx';
 import SopPain from './sections/sop/SopPain.jsx';
 import SopJudgement from './sections/sop/SopJudgement.jsx';
@@ -105,6 +106,7 @@ function Closing({ active }) {
 // 這一章四個步驟：簽名的兩頁（為什麼要做＋SOP 截圖 / 怎麼操作＋做到了什麼）
 // 加上採購表格式轉換的兩頁（為什麼要做＋Before/After / 怎麼操作＋影片）。
 // 再一章「待完成的線別工具」：一頁，講訂單管理系統之外還有什麼要做。
+// 接著「總結」：一頁，一句核心概念＋做到了／還差的進度軌道。
 // 最後是結尾頁「謝謝大家」：封面那套動畫再出現一次收尾。
 const SOP_STEPS = 6;
 const ROADMAP_STEPS = 4;
@@ -119,6 +121,7 @@ const CHAPTERS = [
   { id: 'coupang-oms', steps: OMS_STEPS },
   { id: 'extras', steps: EXTRA_STEPS },
   { id: 'line-tools', steps: 1 },
+  { id: 'summary', steps: 1 },
   { id: 'closing', steps: 1 },
 ];
 const CHAPTER_COUNT = CHAPTERS.length;
@@ -127,7 +130,8 @@ const ROADMAP_CHAPTER = 4;
 const OMS_CHAPTER = 5;
 const EXTRA_CHAPTER = 6;
 const LINE_TOOLS_CHAPTER = 7;
-const CLOSING_CHAPTER = 8;
+const SUMMARY_CHAPTER = 8;
+const CLOSING_CHAPTER = 9;
 
 // ── 讓每一頁在矮螢幕上也塞得下 ──
 // 每一頁的尺寸都是照著約 950px 高的視窗調出來的（詳見 HANDOVER）。筆電的視窗
@@ -448,10 +452,17 @@ export default function App() {
           );
         })()}
 
-        {/* 最後一章：訂單管理系統之外，各線別自己的工具還有哪些要做。一頁。 */}
+        {/* 訂單管理系統之外，各線別自己的工具還有哪些要做。一頁。 */}
         <Chapter stepCount={1} localStep={0}>
           <div className="step">
             <LineTools key={visitKey(LINE_TOOLS_CHAPTER, 0)} active={pos.chapter === LINE_TOOLS_CHAPTER} />
+          </div>
+        </Chapter>
+
+        {/* 總結：不重講功能，講做這些事的核心概念＋一條「做到了／還差」的進度軌道 */}
+        <Chapter stepCount={1} localStep={0}>
+          <div className="step">
+            <Summary key={visitKey(SUMMARY_CHAPTER, 0)} active={pos.chapter === SUMMARY_CHAPTER} />
           </div>
         </Chapter>
 

@@ -2451,3 +2451,233 @@ h2 {
   line-height: 1.6;
   color: var(--body);
 }
+
+/* ── 總結（線別工具之後、謝謝大家之前） ──
+   上：一句概念當大標題。下：一條進度軌道——亮紅實線是做到的，灰色虛線是
+   還沒到的，終點是目標；軌道下面兩個括號各用一句話講「做到了／還差」。
+   軌道跟括號共用同一組欄寬（--summary-cols），括號才會剛好罩住對應的節點。 */
+.summary {
+  display: grid;
+  grid-template-columns: var(--rail) repeat(12, 1fr);
+  column-gap: var(--gutter);
+  row-gap: 4rem;
+  align-items: start;
+}
+
+.summary-head {
+  grid-column: 2 / span 12;
+}
+
+.summary-head .thesis-heading {
+  font-size: clamp(2.2rem, 3.8vw, 3.5rem);
+  margin: 0;
+}
+
+.summary-map {
+  --summary-cols: repeat(5, minmax(0, 1fr)) minmax(0, 1.55fr);
+  grid-column: 2 / span 12;
+  display: grid;
+  grid-template-columns: var(--summary-cols);
+  row-gap: 2.6rem;
+}
+
+.summary-track {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: var(--summary-cols);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.summary-node {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-right: 1.2rem;
+}
+
+/* 往下一個節點的連線：從自己的菱形右邊拉到格子右緣（= 下一個菱形的左邊） */
+.summary-node::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  left: 22px;
+  right: 4px;
+  height: 2px;
+  background: var(--accent);
+}
+
+/* 「現在」這個節點之後、以及還沒做的節點之間，都是虛線 */
+.summary-node--now::after,
+.summary-node--todo::after {
+  background: repeating-linear-gradient(90deg, var(--muted) 0 8px, transparent 8px 15px);
+  opacity: 0.7;
+}
+
+.summary-node--goal::after {
+  display: none;
+}
+
+.summary-dot {
+  width: 18px;
+  height: 18px;
+  transform: rotate(45deg);
+  border: 2px solid var(--accent);
+  background: var(--accent);
+  margin-bottom: 1.3rem;
+  flex: none;
+}
+
+.summary-node--todo .summary-dot {
+  border-color: var(--muted);
+  background: var(--bg);
+}
+
+/* 目標的菱形大一號、空心；往上提 4px 讓中心跟其他菱形同一條線 */
+.summary-node--goal .summary-dot {
+  position: relative;
+  width: 26px;
+  height: 26px;
+  margin-top: -4px;
+  background: transparent;
+  box-shadow: 0 0 18px var(--accent-dim);
+}
+
+.summary.is-active .summary-node--goal .summary-dot::after {
+  content: "";
+  position: absolute;
+  inset: -2px;
+  border: 2px solid var(--accent);
+  animation: summary-goal-pulse 2.4s ease-out 1.8s infinite;
+}
+
+@keyframes summary-goal-pulse {
+  0%   { transform: scale(1);   opacity: 0.8; }
+  100% { transform: scale(2.1); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .summary.is-active .summary-node--goal .summary-dot::after { animation: none; }
+}
+
+/* 「現在在這裡」標在「現在」節點往外那段虛線的正中間，下面一根短刻度插在線上 */
+.summary-now {
+  position: absolute;
+  top: -2.4rem;
+  left: calc(22px + (100% - 26px) / 2);
+  transform: translateX(-50%);
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+.summary-now::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 0.25rem);
+  width: 2px;
+  height: calc(2.4rem - 100% - 0.25rem + 12px);
+  background: var(--accent);
+}
+
+/* 節點名稱不折行：筆電寬度下欄位只剩約 150px，「酷澎訂單管理系統」會被拆成
+   「酷澎訂單管理／系統」。字級跟著視窗寬度縮，最小 1.1rem 剛好八個字放得下。 */
+.summary-name {
+  font-size: clamp(1.1rem, 1.25vw, 1.4rem);
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--fg);
+  white-space: nowrap;
+}
+
+.summary-node--todo .summary-name {
+  color: var(--muted);
+}
+
+.summary-sub {
+  margin-top: 0.4rem;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: var(--accent);
+}
+
+.summary-node--todo .summary-sub {
+  color: var(--muted);
+}
+
+.summary-node--goal .summary-name {
+  color: var(--accent);
+}
+
+.summary-goal {
+  margin-top: 0.3rem;
+  font-size: 1.55rem;
+  font-weight: 700;
+  line-height: 1.5;
+  color: var(--fg);
+}
+
+/* 「做到了／還差」兩個括號：上緣一條線罩住對應的節點，兩端各一根短刻度 */
+.summary-brace {
+  position: relative;
+  padding-top: 1.1rem;
+  border-top: 2px solid var(--accent);
+}
+
+.summary-brace::before,
+.summary-brace::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  width: 2px;
+  height: 10px;
+  background: var(--accent);
+}
+
+.summary-brace::before { left: 0; }
+.summary-brace::after { right: 0; }
+
+.summary-brace--done {
+  grid-column: 1 / span 3;
+  margin-right: 1.2rem;
+}
+
+.summary-brace--todo {
+  grid-column: 4 / span 2;
+  margin-right: 1.2rem;
+  border-top: 2px dashed var(--muted);
+}
+
+.summary-brace--todo::before,
+.summary-brace--todo::after {
+  background: var(--muted);
+}
+
+.summary-brace-label {
+  display: block;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.2em;
+  color: var(--accent);
+  margin-bottom: 0.5rem;
+}
+
+.summary-brace--todo .summary-brace-label {
+  color: var(--muted);
+}
+
+/* keep-all：中文只在標點處折行，不會剩一個「統」字掉到下一行 */
+.summary-brace p {
+  margin: 0;
+  padding-right: 1rem;
+  word-break: keep-all;
+  font-size: 1.35rem;
+  line-height: 1.7;
+  color: var(--body);
+}
