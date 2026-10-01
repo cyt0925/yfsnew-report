@@ -106,7 +106,7 @@ function Closing({ active }) {
 // 這一章四個步驟：簽名的兩頁（為什麼要做＋SOP 截圖 / 怎麼操作＋做到了什麼）
 // 加上採購表格式轉換的兩頁（為什麼要做＋Before/After / 怎麼操作＋影片）。
 // 再一章「待完成的線別工具」：一頁，講訂單管理系統之外還有什麼要做。
-// 接著「總結」：一頁，一句核心概念＋做到了／還差的進度軌道。
+// 接著「總結」：一頁，一句核心概念（Input／Output）＋一段做到了什麼、還差什麼。
 // 最後是結尾頁「謝謝大家」：封面那套動畫再出現一次收尾。
 const SOP_STEPS = 6;
 const ROADMAP_STEPS = 4;
@@ -459,7 +459,7 @@ export default function App() {
           </div>
         </Chapter>
 
-        {/* 總結：不重講功能，講做這些事的核心概念＋一條「做到了／還差」的進度軌道 */}
+        {/* 總結：不重講功能，講做這些事的核心概念 */}
         <Chapter stepCount={1} localStep={0}>
           <div className="step">
             <Summary key={visitKey(SUMMARY_CHAPTER, 0)} active={pos.chapter === SUMMARY_CHAPTER} />

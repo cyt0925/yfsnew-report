@@ -33,7 +33,7 @@
 | 5 | 酷澎訂單管理系統 | 6 | `sections/oms/OmsTitle` + `OmsFeature` × 5 |
 | 6 | 額外功能 | 4 | `sections/oms/OmsSign` × 2 + `OmsPurchase` × 2 |
 | 7 | 待完成的線別工具 | 1 | `sections/LineTools` + `data/lineTools.js` |
-| 8 | 總結 | 1 | `sections/Summary`：一句核心概念＋做到了／還差的進度軌道 |
+| 8 | 總結 | 1 | `sections/Summary`：沿用 SOP「我個人的想法是」的 `.verdict` 樣式，純文字 |
 | 9 | 結尾（謝謝大家） | 1 | `App.jsx` 的 `Closing()`，跟 `Hero()` 同一套骨架 |
 
 第 1 章第一頁是「痛點：作業重複的日常消耗」：原本第 1 章的「作業重複的日常消耗」跟
