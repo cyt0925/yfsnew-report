@@ -4,7 +4,7 @@ import Typewriter from '../components/Typewriter.jsx';
 // 版面跟 SOP「我個人的想法是」那頁同一套（.verdict）：小標、一句大字＋紅字、
 // 一段小字＋底線關鍵詞。文案是使用者定的（核心句要有 Input／Output）。
 // 曾經做過一版「進度軌道」圖解，使用者看過後改回純文字；後來使用者給了一張
-// 插圖（summary-illustration.jpg，原檔 1536×1024 壓到 1200 寬），放右邊空白處，
+// 插圖（summary-illustration-2.jpg，原檔 1536×1024 壓到 1200 寬；第一版人物太搶，換成人物較小的這張），放右邊空白處，
 // 文字收到左邊 7 格。插圖借用痛點頁筆電圖那套 .ai-figure--image（四邊羽化＋
 // 掃描進場＋慢速浮動），兩張圖首尾呼應。
 export default function Summary({ active }) {
@@ -46,8 +46,8 @@ export default function Summary({ active }) {
 
       <figure className={`summary-figure ai-figure--image${active ? ' is-active' : ''}`}>
         <img
-          src="summary-illustration.jpg"
-          alt="坐在筆電前思考的人，左邊是散落的 Excel 與文件，右邊是流程圖、儀表板跟 AI 助手"
+          src="summary-illustration-2.jpg"
+          alt="坐在筆電前工作的人，周圍是 Excel、文件、流程圖、儀表板，旁邊有 AI 助手"
         />
       </figure>
     </section>
