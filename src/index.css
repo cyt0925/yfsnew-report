@@ -847,6 +847,96 @@ h2 {
   font-weight: 900;
 }
 
+/* 補了訂單量跟處理時間之後改成左右兩欄：左 7 格文字、右 5 格時間對比卡。
+   文字跟著縮一級，不然左欄塞不下。 */
+.roadmap-decision {
+  align-content: center;
+  padding-top: 0;
+}
+
+/* 要用兩個 class 才蓋得過上面的 .roadmap-detail .verdict（span 9）；
+   兩欄都釘在第 1 列，不然卡片會被擠到文字下面。 */
+.roadmap-decision .decision-verdict {
+  grid-column: 2 / span 7;
+  grid-row: 1;
+}
+
+.roadmap-decision .decision-verdict .verdict-line {
+  font-size: clamp(1.6rem, 2.3vw, 2.3rem);
+}
+
+.roadmap-decision .decision-verdict .decision-line {
+  margin-top: 1.6rem;
+}
+
+.roadmap-decision .decision-verdict .verdict-line--sub {
+  margin-top: 1.8rem;
+  font-size: clamp(1.25rem, 1.75vw, 1.7rem);
+}
+
+.decision-time {
+  grid-column: 9 / span 5;
+  grid-row: 1;
+  align-self: center;
+  margin-right: max(0px, calc(3.5rem - max(0px, (100vw - 1600px) / 2)));
+  padding: 2rem 2.2rem;
+  border: 1px solid var(--rule);
+  border-radius: 14px;
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+}
+
+.decision-time .tag {
+  margin-bottom: 1.4rem;
+}
+
+.decision-time-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.decision-time-label {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+}
+
+.decision-time-row--before .decision-time-value {
+  font-size: clamp(1.3rem, 1.8vw, 1.75rem);
+  font-weight: 700;
+  color: var(--body);
+}
+
+.decision-time-row--after .decision-time-label {
+  color: var(--accent);
+}
+
+.decision-time-row--after .decision-time-value {
+  font-size: clamp(2.6rem, 4.2vw, 4rem);
+  font-weight: 900;
+  line-height: 1.15;
+  color: var(--accent);
+}
+
+.decision-time-arrow {
+  margin: 0.9rem 0;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--muted);
+}
+
+.decision-time-note {
+  margin: 1.4rem 0 0;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--rule);
+  font-size: clamp(1.05rem, 1.3vw, 1.3rem);
+  line-height: 1.6;
+  color: var(--body);
+}
+
 /* ── AI 的重要性 ── */
 
 .ai {
