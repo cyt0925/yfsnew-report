@@ -45,6 +45,7 @@ class Rec {
       this.timer = setInterval(() => { if (this.rp.getCurrentTime() >= to || performance.now() - t0 > max) { clearInterval(this.timer); this.rp.pause(); setTimeout(done, 120); } }, 20);
     });
   }
+  left(id) { return this.has(id) ? Math.max(0, Math.min(this.marks[id].t + 60, this.end - 5) - this.rp.getCurrentTime()) : 0; }   // 離某個記號還有多久（錄影時間）
   box(sels) {                                              // 重播出來的網頁裡，這些元素合起來佔哪一塊（原始座標）
     let doc; try { doc = this.rp.iframe.contentDocument; } catch (e) { return null; }
     let x0 = 1e9, y0 = 1e9, x1 = -1e9, y1 = -1e9, hit = 0;
@@ -148,10 +149,9 @@ const LSTEPS = window.__LSTEPS = [
   { st: 3, lay: 'both', go: { momo: 's4_typed', shopee: 's4_typed' } },
   { st: 3, lay: 'both', go: { momo: 's4_done', shopee: 's4_done' } },
   { st: 4, lay: 'both', drop: 's5_drop', go: { momo: 's5_preview', shopee: 's5_result' } },
-  { st: 4, lay: 'momo', go: { momo: 's5_result', shopee: 's5_ship' }, veil: { shopee: '蝦皮特選：拋單檔已產出' } },
+  { st: 4, lay: 'both', go: { momo: 's5_result', shopee: 's5_ship' } },
   { st: 5, lay: 'shopee', go: { shopee: 's6_notify', momo: 's6_list' }, veil: { momo: '先看蝦皮特選' } },
-  { st: 5, lay: 'shopee', go: { shopee: 's6_pdf' }, veil: { momo: '先看蝦皮特選' } },
-  { st: 5, lay: 'momo', drop: 's6_drop', go: { momo: 's6_done' }, veil: { shopee: '蝦皮採購單已標示完成' } },
+  { st: 5, lay: 'both', drop: 's6_drop', go: { momo: 's6_done', shopee: 's6_pdf' }, focus: { momo: ['.pv'] } },
   { st: 5, lay: 'momo', cmp: 1 },
   { st: 5, lay: 'momo', cmp: 2 },
   { st: 5, lay: 'both', big: true },
@@ -164,7 +164,7 @@ function lanesLayout(mode) {
 }
 function lanesAim(step) {
   const l = LAY[step.lay];
-  const info = KS.filter(k => L.recs[k]).map(k => { const rec = L.recs[k], vh = l[k][1] - 28, box = rec.box(rec.focusOf(rec.at)); return { k, vh, box }; });
+  const info = KS.filter(k => L.recs[k]).map(k => { const rec = L.recs[k], vh = l[k][1] - 28, box = rec.box((step.focus && step.focus[k]) || rec.focusOf(rec.at)); return { k, vh, box }; });
   const same = step.lay === 'both' && info.every(i => i.box);        // 兩邊一樣大的版面，拉近程度也要一樣
   const z = same ? Math.min(...info.map(i => zoomFor(VW, i.vh, i.box, { pad: 26 }))) : null;
   for (const i of info) aim($('#cam-' + i.k), VW, i.vh, i.box, { pad: 26, z });
@@ -201,7 +201,10 @@ const lanesScene = { el: $('#s-lanes'), steps: LSTEPS.length, async go(n, fwd) {
       for (const k of ks) flyChip(k, L.recs[k].marks[step.drop].file || '檔案');
       if (ks.length) await sleep(1000);
     }
-    await Promise.all(KS.map(k => step.go && step.go[k] ? L.recs[k].play(step.go[k]) : null));
+    // 兩邊都有動作時，用同樣的時間演完（長的加速、短的放慢），看起來才是一起跑
+    const ks = KS.filter(k => step.go && step.go[k] && L.recs[k].has(step.go[k])), left = k => L.recs[k].left(step.go[k]);
+    const wall = Math.min(Math.max(1, ...ks.map(left)), 5000);
+    await Promise.all(ks.map(k => L.recs[k].play(step.go[k], ks.length > 1 ? Math.max(.5, Math.min(6, left(k) / wall)) : undefined)));
     for (const k of KS) if (L.recs[k].at !== lanesMarkAt(n, k)) L.recs[k].jump(lanesMarkAt(n, k));
   } else { for (const k of KS) L.recs[k].jump(lanesMarkAt(n, k)); await sleep(220); }
   lanesAim(step); setTimeout(() => { if (L.i === n) lanesAim(step); }, 500);
