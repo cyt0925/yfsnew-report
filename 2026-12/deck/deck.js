@@ -12,7 +12,14 @@ function swap(node, html) {                                // 換字：先淡出
 }
 
 // ── 舞台縮放 ──
-function fit() { const k = Math.min(innerWidth / 1920, innerHeight / 1080); $('#stage').style.transform = `scale(${k}) translate(-50%,-50%)`; }
+function fit() {
+  const k = Math.min(innerWidth / 1920, innerHeight / 1080); $('#stage').style.transform = `scale(${k}) translate(-50%,-50%)`;
+  // 封面的三色帶畫在舞台外面，視窗比 16:9 寬或高的時候顏色一路延伸到邊緣
+  const sl = (innerWidth - 1920 * k) / 2, st = (innerHeight - 1080 * k) / 2, y1 = Math.round(st + 360 * k), y2 = Math.round(st + 720 * k);
+  const b = document.querySelectorAll('#bleed i'); if (!b.length) return;
+  document.getElementById('bleed').style.setProperty('--bx', Math.round(sl + 1220 * k) + 'px');
+  b[0].style.top = '0'; b[0].style.height = y1 + 'px'; b[1].style.top = y1 + 'px'; b[1].style.height = (y2 - y1) + 'px'; b[2].style.top = y2 + 'px'; b[2].style.bottom = '0';
+}
 addEventListener('resize', fit); fit();
 
 // ── 重播器 ──
@@ -228,7 +235,7 @@ const CHAPTERS = ['課題', '成果', '中控台', '蝦皮特選與 MOMO', '改�
 const SC = [];            // { id, ch 章節, topic 回應哪個課題, scene }
 let si = 0, step = 0, busy = false, queued = 0;
 function chrome() {
-  const s = SC[si]; $('#foot').classList.toggle('hide', s.ch < 0);
+  const s = SC[si]; $('#foot').classList.toggle('hide', s.ch < 0); document.body.dataset.scene = s.id; document.body.dataset.step = step;
   $$('#chapters span').forEach((e, i) => e.classList.toggle('now', i === s.ch));
   $('#tp1').classList.toggle('on', (s.topic || []).includes(1)); $('#tp2').classList.toggle('on', (s.topic || []).includes(2));
   const total = SC.reduce((a, x) => a + x.scene.steps, 0), now = SC.slice(0, si).reduce((a, x) => a + x.scene.steps, 0) + step + 1;
@@ -237,7 +244,11 @@ function chrome() {
 async function goto(i, st, fwd) {
   if (i < 0 || i >= SC.length) return;
   busy = true;
+  // 換章節時，三色帶掃過畫面（跟封面同一個元素）；同一章裡換頁只做淡入
+  const sw = document.getElementById('sweep'), wipe = i !== si && SC[i].ch !== SC[si].ch && SC[i].ch >= 0 && SC[si].ch >= 0;
+  if (wipe) { sw.classList.remove('out'); sw.classList.add('in'); await sleep(600); }
   if (i !== si || !SC[i].scene.el.classList.contains('on')) { SC[si].scene.leave && SC[si].scene.leave(); $$('.scene').forEach(e => e.classList.toggle('on', e === SC[i].scene.el)); }
+  if (wipe) { sw.classList.replace('in', 'out'); setTimeout(() => sw.classList.remove('out'), 650); }
   si = i; step = st; chrome();
   try { await SC[i].scene.go(st, !!fwd); } catch (err) { console.error(err); }
   busy = false;
