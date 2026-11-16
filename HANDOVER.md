@@ -189,6 +189,10 @@ cd /path/to/repo
 git worktree remove --force /tmp/gh-pages-deploy && git worktree prune
 ```
 
+**注意**：`gh-pages` 底下現在還有 `2026-12/`（第二次報告，見 `2026-12/README.md`）。
+上面的 `git rm -rq .` 會把它一起刪掉——重新部署舊簡報時，`cp` 完要把 `2026-12/` 放回去
+（`git checkout $SHA -- 2026-12`），確認 `git status` 沒有刪到它再 commit。
+
 推完跟使用者說一聲要 **Ctrl+F5** 硬重新整理，瀏覽器會快取舊的。
 
 ---

@@ -2,3 +2,11 @@ node_modules
 dist
 .DS_Store
 shots
+
+# 2026-12 簡報的截圖與錄製暫存
+2026-12/out_*/
+2026-12/data_*/
+2026-12/rec/check/
+2026-12/rec/dbg*/
+2026-12/rec/files_*/
+__pycache__/

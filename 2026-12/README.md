@@ -1,0 +1,130 @@
+# 2026-12 簡報：AI 流程再造 邁向制度化
+
+第二次階段報告（約 20 分鐘，聽眾含總經理）。跟根目錄那份 Vite + React 的舊簡報**完全獨立**：
+純靜態網頁，不用 build，也不共用任何程式。
+
+- 線上：<https://cyt0925.github.io/yfsnew-report/2026-12/>
+- 舊簡報仍在 <https://cyt0925.github.io/yfsnew-report/>，兩份並存
+
+## 一、東西在哪
+
+```
+2026-12/
+  deck/            ← 簡報本體，整個資料夾就是要上線的內容
+    index.html     ← 14 個場景的文字與結構
+    deck.css       ← 版面與配色
+    deck.js        ← 換頁、鏡頭縮放、重播系統操作、各場景的步驟腳本
+    rec/*.json     ← 系統操作的錄製檔（rrweb 事件，不是影片）
+    img/           ← 系統真的產出的單據圖（入庫通知單 標示前／後）
+    sys/static/    ← 錄製檔會用到的系統圖檔與圖示字型
+    lib/           ← rrweb 2.2.2
+  rec/             ← 錄製工具（Python + Playwright）
+  shoot_all.py     ← 逐步截圖檢查版面
+```
+
+## 二、這份簡報是怎麼做的
+
+使用者的要求：畫面要大、要清楚、要「像真的有人在操作系統」，而且不要再用自己錄的影片
+（上一份畫面太小）。所以做法是：
+
+1. 把 `cyt0925/yfs` 的 `coupang-oms` 在本機跑起來（SQLite、**全部是假資料**）。
+2. 用 Playwright 照實際流程操作，同時用 **rrweb** 把「網頁本身的變化」錄下來，
+   並在重點時刻打上記號（mark），記號裡帶著「這一刻要拉近看哪些元素」。
+3. 簡報用 rrweb 的 Replayer 重播，講者按一下播一段；鏡頭縮放是把重播的畫面整塊放大，
+   因為重播的是真的網頁，放大不會糊。
+
+舞台固定 1920×1080，整塊等比例縮放去適應螢幕，所以**不同螢幕看到的版面完全一樣**，
+不會有舊簡報那種「某個尺寸才爆版」的問題。檢查版面看 1920×1080 一種尺寸就夠。
+
+## 三、內容的規矩
+
+- **大標題不放標點符號**（使用者指定），用空格斷句。內文正常使用標點。
+- **講人話，但不失正式**。這份是報告給總經理聽的。
+- 封面：左邊淺灰、黑體、標題兩行左右對齊（`text-align-last: justify`）。使用者明確否決過酒紅底。
+- 整份簡報圍繞上次的兩個主管回饋（第 2 頁「兩個課題」），後面的章節右下角會標「回應課題一／二」，
+  最後一頁回頭作答。「醫生開藥／養身體」是譬喻，**只在第 2 頁引用一次**，其他地方不要再用。
+- 酷澎上次講過了，這次只帶過。重點是蝦皮特選＋MOMO（放在同一條線上對照）、首頁中控台、改單統計。
+- 這是**公開網址**：
+  - 畫面上只能有假資料，不放真實的廠商價格、訂單。
+  - 不放同仁名字。錄製檔裡的操作人員會由 `rec/sanitize.py` 換成「同仁A、同仁B…」。
+  - 後扣防護只在時間軸上出現名稱，不放畫面。
+- 寫了「待補」的地方是在等使用者提供真實數字（實際使用人數、作業時間前後比較、
+  改單統計的正式站數字、同仁回饋）。**沒有來源的數字不要自己填。**
+- 簡報上寫的系統行為都對過程式與實際錄到的畫面。要改文案，先看錄製檔裡畫面上實際是什麼。
+
+## 四、要改東西時
+
+### 只改文字或版面
+
+改 `deck/index.html`、`deck/deck.css`，各場景的旁白在 `deck/deck.js` 的
+`PORTAL`、`STATIONS`、`LSTEPS`、`STATS`、`HABITS`。改完：
+
+```bash
+python 2026-12/shoot_all.py --only s-topics      # 只截某個場景（id 見 index.html 的 <section id>）
+python 2026-12/shoot_all.py                      # 全部，約 4 分鐘
+```
+
+圖在 `2026-12/out_1920/`（已列入 .gitignore），`sheet_*.jpg` 是縮圖總覽。**要真的看圖**。
+
+本機預覽：`cd 2026-12/deck && python -m http.server 8000`。
+網址後面加 `#s-lanes/4` 可以直接跳到某個場景的第幾步。
+
+### 要重錄系統操作
+
+需要 `cyt0925/yfs`（只讀，**不要改它、不要推它**）、Python 的 `flask`、`playwright` 等
+（`pip install -r <yfs>/coupang-oms/requirements.txt playwright pillow`）。
+
+```bash
+export YFS_OMS=/path/to/yfs/coupang-oms      # 預設 /home/user/yfs/coupang-oms
+export YFS_DEMO_PW=...                       # 本機測試帳號的密碼，見 coupang-oms 的 README
+cd 2026-12/rec
+python rec_shopee.py        # → deck/rec/shopee.json
+python rec_momo.py          # → deck/rec/momo.json
+python rec_portal.py        # → deck/rec/portal.json、stats.json、guide.json
+python sanitize.py ../deck/rec        # 一定要跑：換掉同仁名字、剪掉沒用到的內部手冊段落
+python replay_check.py shopee         # 每個記號截一張，確認重播出來是對的
+```
+
+`rec_common.py` 開頭有寫錄製腳本的寫法。記號（mark）的 id 被 `deck.js` 的步驟腳本引用，
+改了 id 兩邊要一起改。
+
+## 五、踩過的坑
+
+- **重播的畫面會搶走鍵盤焦點**：系統裡的 `<dialog>.showModal()` 在重播時一樣會執行，
+  焦點跑進 iframe 之後方向鍵就失效。現在重播容器設了 `inert`，另外有一個計時器把焦點拉回來。
+  兩個都不要拿掉。
+- **播到錄製檔最後一個記號會卡住**：rrweb 播到結尾不會觸發我們等的事件。`Rec.play()` 把終點
+  往前收 5ms 並加了逾時保險。
+- **兩條線的縮放比例要一致**：蝦皮和 MOMO 的畫面寬度不同，各算各的會一大一小。
+  並排時取兩邊較小的那個倍率。
+- **無頭瀏覽器抓不到 Google Fonts 會卡住**：`shoot_all.py` 有帶 proxy 設定，並且等的是
+  `domcontentloaded`，不要改成等 `load`。
+- **Playwright 內建錄影在雲端環境不能用**（ffmpeg 版本對不上）。要出影片就逐格截圖再用 ffmpeg 接。
+- HTML 屬性裡的 `font-family` 用單引號包字型名稱，雙引號會把屬性截斷。
+
+## 六、部署
+
+上線的是 `2026-12/deck/` 整個資料夾，放到 `gh-pages` 分支的 `2026-12/` 底下。
+
+```bash
+SHA=$(git ls-remote origin refs/heads/gh-pages | cut -f1)
+git worktree add /tmp/gh-pages-deploy $SHA --detach
+cd /tmp/gh-pages-deploy
+rm -rf 2026-12 && cp -r /path/to/repo/2026-12/deck 2026-12
+git add -A 2026-12 && git commit -m "deploy(2026-12): ..."
+git push origin HEAD:gh-pages
+cd /path/to/repo && git worktree remove --force /tmp/gh-pages-deploy && git worktree prune
+```
+
+**注意**：根目錄 HANDOVER.md 第五節部署舊簡報的步驟有一行 `git rm -rq .`，會把 `2026-12/` 一起刪掉。
+之後如果要重新部署舊簡報，要改成只刪舊簡報自己的檔案，或是部署完再把 `2026-12/` 放回去。
+
+推完等 GitHub Pages 建置完成（約 1 分鐘，可以看 Actions 的 pages build 有沒有成功），
+再請使用者 **Ctrl+F5**。
+
+## 七、還沒做完的
+
+- 「待補」的數字（見第三節），等使用者提供。位置：`s-nums` 的兩格、`s-stats` 最後一步。
+- 「MOMO 約兩週完成主要流程」是用需求提出日（10/27）到主流程完成的 commit（11/11）推的，
+  請使用者確認這個說法。
+- 同仁回饋：使用者會去收集，收到後看要放在「配合同仁」還是「總結」。
