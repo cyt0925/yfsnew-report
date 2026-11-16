@@ -17,7 +17,7 @@ function fit() {
   // 封面的三色帶畫在舞台外面，視窗比 16:9 寬或高的時候顏色一路延伸到邊緣
   const sl = (innerWidth - 1920 * k) / 2, st = (innerHeight - 1080 * k) / 2, y1 = Math.round(st + 360 * k), y2 = Math.round(st + 720 * k);
   const b = document.querySelectorAll('#bleed i'); if (!b.length) return;
-  document.getElementById('bleed').style.setProperty('--bx', Math.round(sl + 1220 * k) + 'px');
+  document.getElementById('bleed').style.setProperty('--bx', Math.round(sl + 1220 * k) + 'px'); document.getElementById('bleed').style.setProperty('--k', k);
   b[0].style.top = '0'; b[0].style.height = y1 + 'px'; b[1].style.top = y1 + 'px'; b[1].style.height = (y2 - y1) + 'px'; b[2].style.top = y2 + 'px'; b[2].style.bottom = '0';
 }
 addEventListener('resize', fit); fit();
