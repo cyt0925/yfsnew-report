@@ -244,11 +244,10 @@ function chrome() {
 async function goto(i, st, fwd) {
   if (i < 0 || i >= SC.length) return;
   busy = true;
-  // 換章節時，三色帶掃過畫面（跟封面同一個元素）；同一章裡換頁只做淡入
+  // 換章節時，一條細的三色直條掃過畫面（跟封面同一組顏色）；同一章裡換頁只做淡入
   const sw = document.getElementById('sweep'), wipe = i !== si && SC[i].ch !== SC[si].ch && SC[i].ch >= 0 && SC[si].ch >= 0;
-  if (wipe) { sw.classList.remove('out'); sw.classList.add('in'); await sleep(600); }
+  if (wipe) { sw.classList.remove('run'); void sw.offsetWidth; sw.classList.add('run'); await sleep(240); }
   if (i !== si || !SC[i].scene.el.classList.contains('on')) { SC[si].scene.leave && SC[si].scene.leave(); $$('.scene').forEach(e => e.classList.toggle('on', e === SC[i].scene.el)); }
-  if (wipe) { sw.classList.replace('in', 'out'); setTimeout(() => sw.classList.remove('out'), 650); }
   si = i; step = st; chrome();
   try { await SC[i].scene.go(st, !!fwd); } catch (err) { console.error(err); }
   busy = false;
