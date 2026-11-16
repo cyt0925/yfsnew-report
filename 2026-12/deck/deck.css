@@ -3,7 +3,7 @@
    規矩：大標題不放標點（用空格或換行斷句）；內文講人話、用詞正式。 */
 :root{
   --bg:#f1eef0; --paper:#fff; --ink:#1d1220; --soft:#6d6270; --line:#e2dadd;
-  --wine:#8c0a2e; --red:#e02424; --orange:#ee4d2d; --pink:#e4007f; --blue:#1f4fd8;
+  --wine:#8c0a2e; --crimson:#b8102e; --red:#e02424; --orange:#ee4d2d; --pink:#e4007f; --blue:#1f4fd8;
   --pink-bg:#fce4f1; --orange-bg:#ffece2;
   --spring:cubic-bezier(.34,1.56,.64,1); --ease:cubic-bezier(.22,.8,.22,1);
 }
@@ -38,17 +38,27 @@ b.hl{color:var(--wine);font-weight:900}
 #pageno{font-variant-numeric:tabular-nums}
 
 /* ───────── 封面／結尾 ───────── */
-.cover .brand{position:absolute;left:96px;top:72px;display:flex;align-items:center;gap:16px;font-weight:700;font-size:26px}
-.cover .brand img{height:64px}
-.cover h1{position:absolute;left:96px;top:300px;margin:0;font-size:150px;font-weight:900;line-height:1.14;letter-spacing:.01em;width:max-content}
+
+/* 左側走瑞士國際主義排版：只用字級、粗細、對齊、細線、留白；不放漸層、陰影、圖示 */
+.cover .brand,.cover .by{position:absolute;left:100px;display:flex;align-items:center;font-size:30px;font-weight:900;letter-spacing:.02em}
+.cover .brand{top:104px} .cover .by{bottom:104px}
+.cover .brand::before,.cover .by::before{content:"";width:8px;height:38px;background:var(--red);margin-right:26px;transform-origin:50% 100%}
+.cover .brand i,.cover .by i{width:2px;height:42px;background:#c3bac0;margin:0 40px}
+.cover .brand span{font-size:22px;font-weight:500;letter-spacing:.42em;color:var(--soft)}
+.cover .by small{font-size:27px;font-weight:500;color:var(--soft);letter-spacing:.04em}
+.cover h1{position:absolute;left:94px;top:262px;margin:0;font-size:168px;font-weight:900;line-height:1.15;letter-spacing:.01em;width:max-content}
 .cover h1 span{display:block;text-align:justify;text-align-last:justify;text-justify:inter-character}
-.cover .sub{position:absolute;left:100px;top:680px;margin:0;font-size:36px;font-weight:500;color:var(--soft)}
-.cover .by{position:absolute;left:100px;bottom:84px;font-size:28px;font-weight:700}
-.cover .by small{font-weight:500;color:var(--soft);margin-left:14px;font-size:26px}
+.cover h1 .r{color:var(--crimson)}
+.cover .sub{position:absolute;left:100px;top:696px;width:1010px;margin:0;display:flex;align-items:center;gap:40px;font-size:38px;font-weight:500;color:var(--soft)}
+.cover .sub i{flex:1;height:2px;background:#a59ba1;transform-origin:0 50%}
+.cover.on .brand::before,.cover.on .by::before{animation:growy .6s var(--ease) .5s backwards}
+.cover.on .brand{animation:fadeup .7s ease .45s backwards}
+.cover.on .sub i{animation:growx 1s var(--ease) 1.7s backwards}
+@keyframes growy{from{transform:scaleY(0)}} @keyframes growx{from{transform:scaleX(0)}}
 .cover .blk{position:absolute;right:0;width:700px;height:360px;display:flex;align-items:center;gap:26px;padding-left:64px;opacity:0;color:#fff}
 .cover.on .blk{animation:pop .7s var(--spring) forwards}
 @keyframes pop{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:none}}
-.cover .blk img{width:250px;filter:drop-shadow(0 18px 16px rgba(0,0,0,.28))}
+.cover .blk img{width:250px}
 .cover.on .blk img{animation:float 5s ease-in-out 2s infinite}
 @keyframes float{50%{transform:translateY(-12px)}}
 .cover .blk span{font-size:52px;font-weight:900;line-height:1.2}
@@ -241,7 +251,7 @@ p.dsub.swap{opacity:0}
 .goal b{display:block;font-size:29px;font-weight:900;margin-bottom:8px;line-height:1.35}
 .goal p{margin:0;font-size:22px;line-height:1.6;font-weight:500;color:var(--soft)}
 
-.thanks h1{top:360px;font-size:170px}
+.thanks h1{top:380px;font-size:190px}
 
 /* ───────── 三色帶：封面的底色（畫到視窗邊緣，不留黑邊）、換章節時掃過畫面 ───────── */
 #bleed{position:fixed;inset:0;opacity:0;transition:opacity .45s ease;pointer-events:none}
@@ -249,28 +259,24 @@ p.dsub.swap{opacity:0}
 #bleed i:nth-child(2){animation-delay:.12s;transition-delay:.06s} #bleed i:nth-child(3){animation-delay:.24s;transition-delay:.12s}
 @keyframes bandin{from{transform:translateX(101%)}}
 body[data-scene="s-cover"] #bleed,body[data-scene="s-thanks"] #bleed{opacity:1}
-body[data-scene="s-cover"][data-step="0"] #bleed i{left:0}
-#sweep{position:fixed;inset:0;pointer-events:none;z-index:60}
-#sweep i{position:absolute;left:0;right:0;height:33.5%;transform:translateX(-101%)}
-#sweep i:nth-child(2){top:33.3%} #sweep i:nth-child(3){top:66.6%;height:33.5%}
-#sweep.in i,#sweep.out i{transition:transform .46s var(--ease)}
-#sweep.in i{transform:none} #sweep.out i{transform:translateX(101%)}
-#sweep i:nth-child(2){transition-delay:.06s!important} #sweep i:nth-child(3){transition-delay:.12s!important}
 
-/* 封面：第一步三色帶鋪滿、標題在色帶上；按一下，色帶收到右邊，露出淺灰底 */
-.cover .gate{display:none}
-.cover .brand{transition:opacity .6s ease .5s}
-.cover h1{transition:top 1.05s var(--ease), line-height 1.05s var(--ease), color .5s ease .2s}
-.cover .sub,.cover .by,.cover .by small{transition:top 1.05s var(--ease), bottom 1.05s var(--ease), color .5s ease .2s}
-#s-cover:not(:has(.gate.in)) .brand{opacity:0;transition:none}
-#s-cover:not(:has(.gate.in)) h1{top:0;line-height:360px;color:#fff}
-#s-cover:not(:has(.gate.in)) .sub{top:800px;color:#fff}
-#s-cover:not(:has(.gate.in)) .by{bottom:118px;color:#fff}
-#s-cover:not(:has(.gate.in)) .by small{color:#fff}
 .cover.on h1 span{animation:rise .95s var(--ease) backwards} .cover.on h1 span:nth-child(1){animation-delay:.8s} .cover.on h1 span:nth-child(2){animation-delay:.98s}
 .cover.on .sub{animation:fadeup .7s ease 1.45s backwards} .cover.on .by{animation:fadeup .7s ease 1.6s backwards}
 @keyframes rise{from{transform:translateY(70px);clip-path:inset(0 0 100% 0)}to{transform:none;clip-path:inset(-10% 0 -10% 0)}}
 @keyframes fadeup{from{opacity:0;transform:translateY(18px)}}
+
+#sweep{position:fixed;top:0;bottom:0;left:0;width:44px;transform:translateX(-50px);pointer-events:none;z-index:60;display:flex;flex-direction:column}
+#sweep i{flex:1}
+#sweep.run{animation:sweepx .85s cubic-bezier(.62,0,.3,1) forwards}
+@keyframes sweepx{to{transform:translateX(100vw)}}
+
+/* 劃重點：重點詞出現後，底下畫出一道線 */
+.ul{background:linear-gradient(var(--crimson),var(--crimson)) no-repeat 0 100%/0% .1em;padding-bottom:.07em;transition:background-size .85s var(--ease) .6s}
+[data-at].in .ul,.big.on .ul,.wrapup.on .ul{background-size:100% .1em}
+/* 蓋章：「已上線」壓上去 */
+.prow .done{background:none;color:var(--crimson);border:3px solid var(--crimson);border-radius:7px;font-size:19px;font-weight:900;letter-spacing:.1em;padding:1px 12px 2px;transform:rotate(-3deg);opacity:0}
+[data-at].in .done{animation:stamp .5s cubic-bezier(.2,1.3,.4,1) .6s forwards}
+@keyframes stamp{0%{opacity:0;transform:rotate(-3deg) scale(2.6)}55%{opacity:1;transform:rotate(-3deg) scale(.93)}100%{opacity:1;transform:rotate(-3deg) scale(1)}}
 
 /* 每一頁的大標題：進場時由下往上露出 */
 .scene.on h2.title,.scene.on h2.dtitle,#s-lanes.on h2{animation:rise .75s var(--ease) .12s backwards}
