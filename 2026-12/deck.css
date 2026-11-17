@@ -90,16 +90,16 @@ b.hl{color:var(--wine);font-weight:900}
 
 .tl{position:absolute;left:96px;right:96px;top:300px;height:560px}
 .tl .axis{position:absolute;left:0;right:0;top:270px;height:8px;border-radius:4px;background:var(--line);overflow:hidden}
-.tl .axis i{position:absolute;inset:0;background:var(--wine);transform:scaleX(0);transform-origin:0 50%;transition:transform 1.6s var(--ease)}
+.tl .axis i{position:absolute;inset:0;background:var(--wine);transform:scaleX(0);transform-origin:0 50%}
+.scene.go .tl .axis i{transition:transform 3s linear .3s}
 .scene.go .tl .axis i{transform:scaleX(1)}
 .tl .mon{position:absolute;top:296px;font-size:22px;font-weight:700;color:var(--soft)}
-.tl .ev{position:absolute;width:250px;margin-left:-125px;text-align:center;opacity:0;transition:opacity .5s ease, transform .6s var(--spring)}
-.tl .ev.up{bottom:296px;transform:translateY(20px)} .tl .ev.down{top:300px;transform:translateY(-20px)}
-.scene.go .tl .ev{opacity:1;transform:none}
+.tl .ev{position:absolute;width:250px;margin-left:-125px;text-align:center}
+.tl .ev.up{bottom:306px} .tl .ev.down{top:300px}
 .tl .ev b{display:block;font-size:27px;font-weight:900;line-height:1.35}
 .tl .ev small{display:block;font-size:21px;color:var(--soft);font-weight:700;margin-top:4px}
-.tl .ev::after{content:"";position:absolute;left:50%;width:22px;height:22px;margin-left:-11px;border-radius:50%;border:5px solid var(--bg);background:var(--c, var(--wine))}
-.tl .ev.up::after{bottom:-45px} .tl .ev.down::after{top:-47px}
+.tl .ev::after{content:"";position:absolute;left:50%;width:22px;height:22px;margin-left:-11px;border-radius:50%;border:5px solid var(--bg);background:#cdc3c8}
+.tl .ev.up::after{bottom:-36px} .tl .ev.down::after{top:-42px}   /* 圓點連外框共 32px，中心要剛好落在線上（線的中心在 274px） */
 .tl .ev.down{padding-top:34px}
 
 .promise{position:absolute;left:96px;right:96px;top:230px;display:grid;gap:26px}
@@ -305,3 +305,19 @@ body[data-scene="s-cover"] #bleed,body[data-scene="s-thanks"] #bleed{opacity:1}
 .cover.on .blk span{animation:fadeup .6s ease calc(2.05s + var(--d)) backwards}
 @keyframes wipe{from{clip-path:inset(-10% 100% -10% 0)}to{clip-path:inset(-10% -6% -10% 0)}}
 @keyframes shine{0%{background-position:0 100%}22%,100%{background-position:0 0%}}   /* 停在封面時，色條上每隔幾秒有一道光由上往下滑過 */
+
+/* ───────── 時間軸逐點亮起：一開始八個點都是灰的，線走到的那一點變色、放大一下、外圈散開，文字跟著出現 ───────── */
+.tl .ev b,.tl .ev small{opacity:0}
+.tl .ev.up b,.tl .ev.up small{transform:translateY(16px)} .tl .ev.down b,.tl .ev.down small{transform:translateY(-16px)}
+.scene.go .tl .ev b,.scene.go .tl .ev small{opacity:1;transform:none;transition:opacity .45s ease var(--t), transform .6s var(--spring) var(--t)}
+.scene.go .tl .ev::after{background:var(--c, var(--wine));transition:background-color .15s linear var(--t);animation:lit .9s ease-out var(--t)}
+@keyframes lit{0%{transform:scale(1);box-shadow:0 0 0 0 color-mix(in srgb, var(--c, var(--wine)) 45%, transparent)}
+  35%{transform:scale(1.55)}100%{transform:scale(1);box-shadow:0 0 0 26px transparent}}
+
+/* ───────── 數字跳動：卡片出現時數字一格一格跳上去；通路那張，數到幾就亮出第幾個圖示 ───────── */
+.cnt{display:inline-block}
+.cnt.tick{animation:tick .28s var(--ease)}
+@keyframes tick{from{transform:translateY(34%);opacity:.2}}
+.num .icons img{opacity:0}
+.num.in .icons img{animation:pop .5s var(--spring) forwards}
+.num.in .icons img:nth-child(1){animation-delay:.3s} .num.in .icons img:nth-child(2){animation-delay:.75s} .num.in .icons img:nth-child(3){animation-delay:1.2s}
