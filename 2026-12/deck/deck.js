@@ -107,10 +107,20 @@ function demoScene(sec, demo, steps, hook) {
     demo.say(st.note, b);
   } };
 }
+// 數字跳動：<span class="cnt" data-from="1" data-to="3">，所在的卡片出現時從 from 一格一格跳到 to
+function countUp(el) {
+  const from = +el.dataset.from || 0, to = +el.dataset.to, n = Math.abs(to - from), dir = to > from ? 1 : -1;
+  if (!n) return; clearTimeout(el._t); el.textContent = from;
+  const gap = Math.max(40, Math.min(450, 900 / n)); let v = from;
+  const step = () => { v += dir; el.textContent = v; el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); if (v !== to) el._t = setTimeout(step, gap); };
+  el._t = setTimeout(step, 700);
+}
 // 純文字的場景：有 data-at="n" 的元素，走到第 n 步才出現
 function staticScene(sec) {
   const n = Math.max(0, ...$$('[data-at]', sec).map(e => +e.dataset.at));
-  return { el: sec, steps: n + 1, async go(i) { $$('[data-at]', sec).forEach(e => e.classList.toggle('in', +e.dataset.at <= i)); sec.classList.add('go'); },
+  return { el: sec, steps: n + 1, async go(i) {
+      $$('[data-at]', sec).forEach(e => { const was = e.classList.contains('in'), now = +e.dataset.at <= i; e.classList.toggle('in', now); if (now && !was) $$('.cnt', e).forEach(countUp); });
+      sec.classList.add('go'); },
     leave() { sec.classList.remove('go'); } };
 }
 
