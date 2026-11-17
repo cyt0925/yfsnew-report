@@ -7,6 +7,8 @@ NAMES = {"Alice": "同仁A", "小真": "同仁B", "Penny": "同仁C", "Becky": "
 # 簡報沒用到的段落（從 from 這個標記之後的第一次換頁，剪到 until 標記所在那一頁的開頭）
 CUT = {"guide": [("g_history_all", "g_due")]}
 DROP_MARKS = {"guide": {"g_manual", "g_handbook", "g_handbook_2"}}
+# 系統內建的倉別主檔會把通路倉庫的地址、電話帶進網頁原始碼（畫面上不一定看得到）。公開網址上一律遮掉
+SCRUB = [(r"0\d{1,2}-\d{3,4}-?\d{3,4}", "00-0000-0000"), (r"(?:台北|新北|桃園|台中|台南|高雄)市[^\"\\<,，。；\s]{3,30}?號", "（倉庫地址）")]
 
 
 def mark(e):
@@ -35,6 +37,8 @@ def main(d):
         before = len(s)
         for k, v in NAMES.items():
             s = s.replace(k, v)
+        for pat, to in SCRUB:
+            s = re.sub(pat, to, s)
         ev = json.loads(s)
         for a, b in CUT.get(name, []):
             if any(mark(e) == a for e in ev) and any(mark(e) in DROP_MARKS[name] for e in ev):

@@ -2,16 +2,22 @@
 另外把系統畫好的入庫通知單存成兩張圖：deck/img/momo_notice_before.png、momo_notice_after.png。
 
 全部是假資料（單號、數量、品名、印章都是編的）；瑪氏商品總表拿 repo 裡那份假的再加三個假品項。
+
+三張入庫單：-1001、-1002 是瑪氏（原廠直出：產 EIP → 回填 → 勇信表核缺貨 → 畫入庫通知單）；
+-1003 是組合品（AAA 開頭的料號，系統匯入時就定成竹運出貨，不產 EIP），走「待產拋單檔」那一格（2026-11-17.5 版新增）：
+丟竹運的 EC 即時庫存、庫存效期表 → 系統算出貨量 → 產出拋單檔＋缺貨清單。記號 z_drop、z_list、z_done 就是這一段，
+排在 s4_done 之後、s5_drop 之前（跟畫面上格子的順序一樣）。
 用法：python rec_momo.py          錄影
       python rec_momo.py --dry    只用 API 跑一遍流程、印出每一步結果（不開瀏覽器，用來確認假資料走得通）
 """
-import io, json, os, re, sys
+import io, json, os, re, sys, zipfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from rec_common import Session, OMS, PROTO, DECK  # noqa: E402
 
 import openpyxl  # noqa: E402
+import xlwt  # noqa: E402
 import pymupdf  # noqa: E402
 from PIL import Image, ImageDraw, ImageFont  # noqa: E402
 
@@ -19,7 +25,7 @@ DRY = "--dry" in sys.argv
 
 # ── 假資料 ───────────────────────────────────────────────────────────────────
 ARRIVE, BUY_DAY = "2026/11/20", "2026/11/13"
-NO_A, NO_B = "26111358-1001", "26111358-1002"
+NO_A, NO_B, NO_C = "26111358-1001", "26111358-1002", "26111358-1003"
 PO_A, PO_B = "PO202611168", "PO202611169"
 # (商品編號, 單品編號, MOMO 品名, 數量(盒), 商品原廠編號, 保存天數, 入庫最低有效期限)
 A_ITEMS = [("13800101", "001", "【喵愛餡】貓點心 化毛配方 60g（12入/盒）", 48, "M69072565_QMN", "540", "2027/07/18"),
@@ -28,6 +34,20 @@ A_ITEMS = [("13800101", "001", "【喵愛餡】貓點心 化毛配方 60g（12�
            ("13800104", "001", "【喵喵鮮】貓餐包 雞肉 70g（24入/盒）", 48, "M80676520_QMN", "730", "2027/11/20")]
 B_ITEMS = [("13800201", "001", "【汪汪嚴選】狗點心 主廚牛肉 4入（12入/盒）", 24, "M66238912_QMN", "730", "2027/11/20"),
            ("13800202", "001", "【汪汪嚴選】狗點心 潔牙骨 4入（12入/盒）", 60, "M66238920_QMN", "730", "2027/11/20")]
+# 竹運出貨的那張：三個組合品（料號 AAA 開頭＝在竹運倉組好的，系統一律竹運出貨）。單位代碼 T＝組
+C_ITEMS = [("13800301", "001", "【喵喵鮮】貓餐包 綜合口味（6包/組）", 24, "AAAP260301_TNN", "730", "2027/11/20"),
+           ("13800302", "001", "【喵愛餡】貓點心 化毛＋潔牙（2包/組）", 36, "AAAP260302_TNN", "540", "2027/07/18"),
+           ("13800303", "001", "【汪汪嚴選】狗點心 主廚牛肉（3袋/組）", 48, "AAAP260303_TNN", "730", "2027/11/20")]
+# 竹運庫存（假的）。EC 即時庫存：(料號, 單位, 品名, EC可用量)；庫存效期表：(客戶品號＝料號＋單位代碼, 儲位, 可出貨量, 效期, 製造日期)
+#   -301 要 24：EC 60、效期合格 60 → 全出
+#   -302 要 36：EC 50；兩批，30 組 2027/05/31 到期（早於 MOMO 的入庫最低有效期限 2027/07/18，不合格）、12 組 2028/02/28（合格）→ 出 12、效期不足 24
+#   -303 要 48：EC 只有 30 → 出 30、庫存不足 18
+ZY_EC = [("AAAP260301", "組", "喵喵鮮 貓餐包 綜合口味 6包組", 60), ("AAAP260302", "組", "喵愛餡 貓點心 化毛＋潔牙 2包組", 50),
+         ("AAAP260303", "組", "汪汪嚴選 狗點心 主廚牛肉 3袋組", 30), ("0199001", "箱", "【示範】抽取式衛生紙 100抽x72包", 140), ("0199002", "包", "【示範】廚房紙巾 60抽x6捲", 96)]
+ZY_LOTS = [("AAAP260301T", "K-01-02", 60, "20280930", "20261001"),
+           ("AAAP260302T", "K-01-05", 30, "20270531", "20251207"), ("AAAP260302T", "K-01-06", 12, "20280228", "20260906"),
+           ("AAAP260303T", "K-02-01", 30, "20281015", "20261016"),
+           ("0199001R", "P-11-03", 140, "20291031", "20261101"), ("0199002C", "P-12-08", 96, "20290915", "20260916")]
 B_QTY_NEW = 36                                   # 第二站：MOMO 把主廚牛肉從 24 盒改成 36 盒
 # 勇信實際出的箱數與效期：(瑪氏貨號, 箱數, 效期)。A 的潔牙配方（69072570）沒印＝沒出；鮪魚訂 4 箱只出 3 箱
 YX_A = [("69072565", 4, "2028/03/11"), ("80676511", 3, "2028/08/20"), ("80676520", 2, "2028/09/02")]
@@ -71,6 +91,26 @@ def price_xlsx(path):
     wb = openpyxl.Workbook(); ws = wb.active; ws.title = "紙品價格本"; ws.append(["料號", "單位", "品名", "料號3", "箱入數"])
     for code3, unit, name, box in [("0199001R", "箱", "【示範】抽取式衛生紙 100抽x72包", 1), ("0199002C", "包", "【示範】廚房紙巾 60抽x6捲", 8)]:
         ws.append([code3[:-1], unit, name, code3, box])
+    wb.save(path); return path
+
+
+def ec_xls(path):
+    """假的竹運 EC 即時庫存（全商品_yyyymmdd.xls，舊版 Excel；欄位照 rec_shopee.ec_xls）。"""
+    wb = xlwt.Workbook(); sh = wb.add_sheet("全商品")
+    for j, h in enumerate(["結餘日期", "料號", "單位", "品名", "EC可用量"]):
+        sh.write(0, j, h)
+    for i, row in enumerate(ZY_EC, start=1):
+        for j, v in enumerate(("2026/11/18",) + row):
+            sh.write(i, j, v)
+    wb.save(path); return path
+
+
+def lots_xlsx(path):
+    """假的竹運庫存效期表（欄位照 rec_shopee.lots_xlsx）。"""
+    wb = openpyxl.Workbook(); ws = wb.active; ws.title = "sheet1"
+    ws.append(["儲區", "客戶品號", "儲位", "可出貨量", "庫存量", "效期", "製造日期"])
+    for code, loc, qty, exp, mfg in ZY_LOTS:
+        ws.append(["良品區", code, loc, qty, qty, exp, mfg])
     wb.save(path); return path
 
 
@@ -165,11 +205,12 @@ s = Session("momo_dry" if DRY else "momo")
 tc = s.tc
 IN = os.path.join(s.data, "in"); os.makedirs(IN, exist_ok=True)
 f = lambda n: os.path.join(IN, n)  # noqa: E731
-F1 = unsend_xlsx(f("UnsendList_1.xlsx"), [("DC6", NO_A, A_ITEMS)])
+F1 = unsend_xlsx(f("UnsendList_1.xlsx"), [("DC6", NO_A, A_ITEMS), ("DC6", NO_C, C_ITEMS)])      # 一份下載檔裡兩張入庫單：瑪氏那張＋組合品那張
 F2 = unsend_xlsx(f("UnsendList_2.xlsx"), [("SDC", NO_B, B_ITEMS)])
 B_NEW = [B_ITEMS[0][:3] + (B_QTY_NEW,) + B_ITEMS[0][4:], B_ITEMS[1]]
 F2B = unsend_xlsx(f("UnsendList_2_重新下載.xlsx"), [("SDC", NO_B, B_NEW)])
 FEXP = unsend_xlsx(f("UnsendList_效期匯入.xlsx"), [("DC6", NO_A, A_ITEMS), ("SDC", NO_B, B_NEW)])
+FEC, FLOTS = ec_xls(f("全商品_20261118.xls")), lots_xlsx(f("竹運庫存效期表_1118.xlsx"))
 FYX = yx_pdf(f("勇信配送明細表_1119.pdf"), [(PO_A, "DC6", YX_A), (PO_B, "SDC", YX_B)])
 FNT = notice_pdf(f(f"入庫通知單_{NO_A}.pdf"), NO_A, "DC6", A_ITEMS, EXP_A)
 r = s.upload("/api/mars/products/import", master_xlsx(f("假_瑪氏商品總表.xlsx"))); assert r.status_code == 200, r.get_json()
@@ -207,6 +248,18 @@ if DRY:
     eips = tc.get("/api/momo/eips").get_json()["eips"]; print([(e["id"], e["filename"], e["warehouse"], e["rows"], e["boxes"], e["orders"]) for e in eips])
     ids = eip_ids()
     print(tc.put(f"/api/momo/eips/{ids['DC6']}", json={"eip_po": PO_A}).get_json(), tc.put(f"/api/momo/eips/{ids['SDC']}", json={"eip_po": PO_B}).get_json(), stages())
+    zplan = lambda: [(g["inbound_no"], g["lines"], g["need"], g["ship"], g["short"], g["blocking"], g["dispatch_status"],          # noqa: E731
+                      [(x["code"], x["unit"], x["need"], x["ec"], x["qualified"], x["final"], x["short"], x["reasons"], x["alloc"], x["threshold"], x["problems"]) for x in g["items"]])
+                     for g in tc.get("/api/momo/ship/plan").get_json()["orders"]]
+    print("zy 還沒丟庫存", zplan())
+    print("kinds", up("/api/momo/kinds", [FEC, FLOTS]).get_json())
+    for p_ in (FEC, FLOTS):
+        r = s.upload("/api/shopee/stock/import", p_); print("stock", r.status_code, {k: v for k, v in r.get_json().items() if k != "stock"})
+    print("zy 丟了庫存", json.dumps(zplan(), ensure_ascii=False))
+    r = tc.post("/api/momo/ship/generate", json={"inbound_nos": [NO_C]})
+    print("zy gen", r.status_code, r.headers.get("Content-Disposition"), r.headers.get("X-Momo-Orders"), r.headers.get("X-Momo-Short"),
+          zipfile.ZipFile(io.BytesIO(r.data)).namelist() if r.status_code == 200 else r.get_json(), stages())
+    print("zy 產出後", json.dumps(zplan(), ensure_ascii=False))
     print("kinds", up("/api/momo/kinds", [FYX, FNT, FEXP]).get_json())
     d = up("/api/momo/yx", [FYX]).get_json(); print("yx", json.dumps(d, ensure_ascii=False))
     for no in (NO_A, NO_B):
@@ -236,10 +289,10 @@ def mark(id, focus, **kw):
     W(650); s.mark(id, focus=focus, **kw); s.shot(os.path.join(LIVE, id + ".png"))
 
 
-def drop(id, paths, focus, shown=None):
+def drop(id, paths, focus, shown=None, **kw):
     """游標移到上傳區 → 記號 → 把檔案交給上傳入口（等於拖進去）。"""
     s.move_to(".dzbox", dx=.22, dy=.5); W(300)
-    mark(id, focus, file=shown or "、".join(os.path.basename(p) for p in paths)); W(700)
+    mark(id, focus, file=shown or "、".join(os.path.basename(p) for p in paths), **kw); W(700)
     pg.set_input_files("#file", paths)
 
 
@@ -289,12 +342,62 @@ s.click("#e-all"); pg.wait_for_function(f"document.querySelector('#e-tbl').inner
 s.move_to("#e-tbl .eip-dl", nth=1); W(200)
 mark("s4_done", ["#stages", "#e-tbl"]); W(2000)
 
+# 第五站之一 竹運出貨的那張（組合品）：到「待產拋單檔」，丟竹運的 EC 即時庫存、庫存效期表 → 系統照庫存與效期算出貨量 → 勾選、產出拋單檔＋缺貨清單
+ZROW = f"#tbl tr.og[data-no='{NO_C}']"
+ZST = "#stages .st[data-st='zy']"
+
+
+def wheel(dy, n=6):
+    """用滾輪慢慢捲（一次捲到底重播起來是瞬間跳過去）。"""
+    for _ in range(n):
+        pg.mouse.wheel(0, dy / n); W(45)
+    W(250)
+
+
+# 先到「全部入庫單」看一眼三張單的狀況（兩張 EIP 已回填、-1003 竹運出貨不用下採），再進「待產拋單檔」。
+# 這一下也順便避開系統目前的一個小毛病：從「待產 EIP」→「待回填」直接進「待產拋單檔」，清單下面會多一顆沒收起來的「產出 EIP 採購單」。
+s.click("#stages .st[data-st='all']"); pg.wait_for_function("document.querySelectorAll('#tbl tr.og').length === 3", timeout=8000)
+assert "竹運出貨" in pg.inner_text(ZROW), pg.inner_text(ZROW)
+s.move_to(f"{ZROW} td:nth-child(6)"); W(1100); s.shot(os.path.join(LIVE, "x_z_all.png"))
+s.click(ZST); pg.wait_for_selector(f"{ZROW} .zk", timeout=8000)
+assert "請先上傳 EC 即時庫存、竹運庫存效期表" in pg.inner_text("#tbl"), pg.inner_text("#tbl")      # 還沒丟庫存檔：三品都擋著
+assert not pg.is_visible("#buy-go"), "「產出 EIP 採購單」那顆不該出現在待產拋單檔"
+W(900)
+drop("z_drop", [FEC, FLOTS], [".dzbox"], files=[os.path.basename(FEC), os.path.basename(FLOTS)])
+pg.wait_for_function("(() => { const t = document.querySelector('#tbl').innerText; return t.includes('效期不足') && t.includes('庫存不足') && !t.includes('請先上傳'); })()", timeout=15000)
+W(900); s.shot(os.path.join(LIVE, "x_z_toast.png"))
+ztxt = pg.inner_text("#tbl"); print("  待產拋單檔：", " / ".join(ztxt.split("\n")))
+assert all(k in ztxt for k in ("要出", "EC 可用", "合格效期可出", "出貨量", "結果", "OK", "效期不足 24", "庫存不足 18", "缺 42")), ztxt
+pg.mouse.move(700, 560, steps=14); wheel(150)                                                  # 清單在畫面下緣被切掉，往下捲一點
+s.move_to(f"{ZROW} + tr + tr td:nth-child(8)", steps=14)
+pg.wait_for_selector("#toasts .toast", state="detached", timeout=8000); W(200)
+box = pg.locator("#tbl").bounding_box(); assert box["y"] > 0 and box["y"] + box["height"] < 800, box   # 整張清單都在畫面裡
+mark("z_list", ["#tbl"]); W(1800)
+s.click("#z-show"); pg.wait_for_selector("#z-show.on", timeout=5000)                           # 「顯示已產出」先打開：產出之後這張才會留在清單上（不然就離開這一格了）
+s.click(f"{ZROW} .zk"); pg.wait_for_selector("#z-go:not([disabled])", timeout=5000); s.move_to("#z-go"); W(500)
+with pg.expect_download(timeout=15000) as dl:
+    pg.click("#z-go")
+zy_zip = f(dl.value.suggested_filename); dl.value.save_as(zy_zip)
+print("  竹運拋單壓縮檔：", dl.value.suggested_filename, zipfile.ZipFile(zy_zip).namelist())
+pg.wait_for_function("document.querySelector('#toasts').innerText.includes('已產出 1 張入庫單的拋單檔')", timeout=8000)
+pg.wait_for_function(f"document.querySelector(\"{ZST} .n\").innerText.trim() === '0'", timeout=8000); pg.wait_for_selector(f"{ZROW} .z-undo", timeout=8000)
+ztxt = pg.inner_text("#tbl"); print("  產出之後：", " / ".join(ztxt.split("\n")))
+assert "已產出" in ztxt and "效期不足 24" in ztxt and "庫存不足 18" in ztxt, ztxt
+s.move_to(f"{ZROW} td:last-child .badge", steps=18); W(300)
+assert pg.is_visible("#toasts .toast")
+mark("z_done", [ZST, "#toasts .toast"], table=["#tbl"], made=[f"{ZROW} td:last-child"]); W(1600)   # table／made：想改看清單、或只看「已產出」那一格時可以用的選擇器
+
 # 第五站 核對缺貨與效期：丟勇信配送明細表 → 系統一品一品比 → 短出的那品由人決定照出
-s.click("#stages .st[data-st='yx']"); pg.wait_for_function("document.querySelectorAll('#tbl tr.og').length === 2", timeout=8000); W(700)
+s.click("#stages .st[data-st='yx']"); pg.wait_for_function("document.querySelectorAll('#tbl tr.og').length === 2", timeout=8000); W(500)
+wheel(-240); assert pg.evaluate("scrollY") == 0                                                # 捲回最上面，之後幾站的畫面位置才跟以前一樣
+pg.wait_for_selector("#toasts .toast", state="detached", timeout=10000); W(300)               # 等「已產出拋單檔」的提示消失再丟下一個檔
 drop("s5_drop", [FYX], [".dzbox", "#tbl"])
 pg.wait_for_selector(".pv h3:has-text('勇信配送明細表')", timeout=15000); pg.wait_for_selector(f"{ROW(NO_A)}.ask", timeout=8000); W(500)
+wheel(70, n=4)                                                # 上傳區多了竹運兩顆燈、格子多一格，頁面比以前高：往下捲一點，預覽和兩張單才都在畫面裡
+box = pg.locator("#tbl").bounding_box(); top = pg.locator(".pv").bounding_box()["y"]; assert top > 0 and box["y"] + box["height"] < 806, (top, box)
 mark("s5_preview", [".pv", "#tbl"]); W(2600)
 s.click(".pv [data-a=x]"); W(300)
+wheel(-120, n=4); assert pg.evaluate("scrollY") == 0
 s.click(f"{ROW(NO_A)} td:nth-child(1)"); pg.wait_for_selector("#sd-items th:has-text('③ 結果')", timeout=10000); W(2400); s.shot(os.path.join(LIVE, "x_s5_pending.png"))
 s.click("#sd-items tr.ask [data-ship1]"); pg.wait_for_function("!document.querySelector('#sd-items tr.ask')", timeout=8000); W(1500)   # 訂 4 箱只出 3 箱 → 人決定：照出
 s.click("#side .sd-fl[data-f='cut']"); W(1200)                # 只看不出貨／短出的品項
@@ -309,6 +412,7 @@ s.click("#sd-close2"); pg.wait_for_selector("#side", state="hidden", timeout=500
 
 # 第六站 標示單據：到「待畫入庫通知單」，丟 MOMO 的入庫通知單 PDF → 系統畫線、改數量、蓋章
 s.click("#stages .st[data-st='notice']"); pg.wait_for_selector(ROW(NO_A), timeout=8000); W(400)
+assert pg.evaluate("scrollY") == 0
 mark("s6_list", ["#stages", "#tbl"]); W(1600)
 drop("s6_drop", [FNT], [".dzbox"])
 pg.wait_for_selector(".pv a.btn", timeout=15000); pg.wait_for_selector("#tbl a.btn", timeout=8000); s.move_to(".pv a.btn", dx=.9, dy=.85); W(200)
