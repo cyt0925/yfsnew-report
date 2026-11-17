@@ -52,15 +52,10 @@ b.hl{color:var(--wine);font-weight:900}
 .cover h1{font-style:italic}   /* 斜體：使用者照參考圖指定 */
 .cover .sub{position:absolute;left:100px;top:696px;width:1010px;margin:0;display:flex;align-items:center;gap:40px;font-size:38px;font-weight:500;color:var(--soft)}
 .cover .sub i{flex:1;height:2px;background:#a59ba1;transform-origin:0 50%}
-.cover.on .brand::before,.cover.on .by::before{animation:growy .6s var(--ease) .5s backwards}
-.cover.on .brand{animation:fadeup .7s ease .45s backwards}
-.cover.on .sub i{animation:growx 1s var(--ease) 1.7s backwards}
 @keyframes growy{from{transform:scaleY(0)}} @keyframes growx{from{transform:scaleX(0)}}
 .cover .blk{position:absolute;right:0;width:700px;height:360px;display:flex;align-items:center;gap:26px;padding-left:64px;opacity:0;color:#fff}
-.cover.on .blk{animation:pop .7s var(--spring) forwards}
 @keyframes pop{from{opacity:0;transform:scale(.82)}to{opacity:1;transform:none}}
 .cover .blk img{width:250px}
-.cover.on .blk img{animation:float 5s ease-in-out 2s infinite}
 @keyframes float{50%{transform:translateY(-12px)}}
 .cover .blk span{font-size:52px;font-weight:900;line-height:1.2}
 .cover .blk small{display:block;font-size:24px;font-weight:500;opacity:.92;margin-top:6px}
@@ -265,8 +260,6 @@ p.dsub.swap{opacity:0}
 #bleed .c2{left:calc(var(--bx,64%) - var(--k,1)*620px);bottom:0;width:calc(var(--k,1)*620px);height:calc(var(--k,1)*200px)}
 body[data-scene="s-cover"] #bleed,body[data-scene="s-thanks"] #bleed{opacity:1}
 
-.cover.on h1 span{animation:rise .95s var(--ease) backwards} .cover.on h1 span:nth-child(1){animation-delay:.8s} .cover.on h1 span:nth-child(2){animation-delay:.98s}
-.cover.on .sub{animation:fadeup .7s ease 1.45s backwards} .cover.on .by{animation:fadeup .7s ease 1.6s backwards}
 @keyframes rise{from{transform:translateY(70px);clip-path:inset(0 0 100% 0)}to{transform:none;clip-path:inset(-10% 0 -10% 0)}}
 @keyframes fadeup{from{opacity:0;transform:translateY(18px)}}
 
@@ -286,3 +279,29 @@ body[data-scene="s-cover"] #bleed,body[data-scene="s-thanks"] #bleed{opacity:1}
 /* 每一頁的大標題：進場時由下往上露出 */
 .scene.on h2.title,.scene.on h2.dtitle,#s-lanes.on h2{animation:rise .75s var(--ease) .12s backwards}
 .scene.on p.lead,.scene.on .prev{animation:fadeup .6s ease .45s backwards}
+
+/* ───────── 封面／結尾：白底細色條（使用者選的 B 版）─────────
+   整頁白，三個通路的顏色只留每列左邊一小條；顏色維持原本的飽和度，不調淡。 */
+#bleed i,#bleed .c2{display:none}
+#bleed .c1{opacity:.6}
+.cover .blk{opacity:1;color:var(--ink);padding-left:96px}
+.cover .blk small{color:var(--soft);opacity:1}
+.cover .blk[style*="top:0"]{--c:var(--red);--d:0s} .cover .blk[style*="top:360px"]{--c:var(--orange);--d:.14s} .cover .blk[style*="top:720px"]{--c:var(--pink);--d:.28s}
+.cover .blk::before{content:"";position:absolute;left:0;top:96px;bottom:96px;width:10px;transform-origin:50% 0;
+  background:var(--c) linear-gradient(180deg,transparent 36%,rgba(255,255,255,.8) 50%,transparent 64%) no-repeat 0 100%/100% 300%}
+.cover .blk[style*="top:360px"]::after,.cover .blk[style*="top:720px"]::after{content:"";position:absolute;left:0;right:96px;top:0;height:2px;background:#e4dde0;transform-origin:0 50%}
+
+/* 進場順序：標題 → 副標題與延伸線 → 線畫到底後，三條色條依序長出來、圖示彈出、名稱浮現 */
+.cover.on .brand{animation:fadeup .6s ease .1s backwards}
+.cover.on .brand::before,.cover.on .by::before{animation:growy .55s var(--ease) .2s backwards}
+.cover.on h1 span{animation:rise .9s var(--ease) .3s backwards}
+.cover.on h1 span.r{animation:wipe .95s var(--ease) .62s backwards}          /* 第二行像被筆刷過一樣由左到右出現 */
+.cover.on .sub{animation:fadeup .6s ease 1.05s backwards}
+.cover.on .sub i{animation:growx .8s var(--ease) 1.25s backwards}
+.cover.on .by{animation:fadeup .6s ease 1.3s backwards}
+.cover.on .blk::after{animation:growx .7s var(--ease) calc(1.6s + var(--d)) backwards}
+.cover.on .blk::before{animation:growy .6s var(--ease) calc(1.75s + var(--d)) backwards, shine 7s ease-in-out calc(4.5s + var(--d) * 2.5) infinite}
+.cover.on .blk img{animation:pop .7s var(--spring) calc(1.9s + var(--d)) backwards, float 5s ease-in-out calc(3s + var(--d) * 3) infinite}
+.cover.on .blk span{animation:fadeup .6s ease calc(2.05s + var(--d)) backwards}
+@keyframes wipe{from{clip-path:inset(-10% 100% -10% 0)}to{clip-path:inset(-10% -6% -10% 0)}}
+@keyframes shine{0%{background-position:0 100%}22%,100%{background-position:0 0%}}   /* 停在封面時，色條上每隔幾秒有一道光由上往下滑過 */
