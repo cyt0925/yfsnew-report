@@ -23,7 +23,7 @@ with sync_playwright() as p:
     scenes = pg.evaluate("__SC.map(s => [s.id, s.scene.steps])"); n = 0
     for i, (sid, steps) in enumerate(scenes):
         if only and sid not in only: n += steps; continue
-        pg.evaluate("i => __goto(i, 0, false)", i); pg.wait_for_function("!__busy()", timeout=20000); pg.wait_for_timeout(2600)
+        pg.evaluate("i => __goto(i, 0, false)", i); pg.wait_for_function("!__busy()", timeout=20000); pg.wait_for_timeout(3600)
         for st in range(steps):
             if st: pg.keyboard.press("ArrowRight"); pg.wait_for_timeout(250); pg.wait_for_function("!__busy()", timeout=30000); pg.wait_for_timeout(1900)
             pg.screenshot(path=f"{OUT}/{n:02d}_{sid}_{st}.png"); n += 1

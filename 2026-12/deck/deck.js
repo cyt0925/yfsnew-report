@@ -115,13 +115,14 @@ function countUp(el) {
   const step = () => { v += dir; el.textContent = v; el.classList.remove('tick'); void el.offsetWidth; el.classList.add('tick'); if (v !== to) el._t = setTimeout(step, gap); };
   el._t = setTimeout(step, 700);
 }
-// 純文字的場景：有 data-at="n" 的元素，走到第 n 步才出現
+// 純文字的場景：一頁只按一次。有 data-at="n" 的元素會依 n 的順序自己出現，不用逐一點擊（使用者指定）
 function staticScene(sec) {
-  const n = Math.max(0, ...$$('[data-at]', sec).map(e => +e.dataset.at));
-  return { el: sec, steps: n + 1, async go(i) {
-      $$('[data-at]', sec).forEach(e => { const was = e.classList.contains('in'), now = +e.dataset.at <= i; e.classList.toggle('in', now); if (now && !was) $$('.cnt', e).forEach(countUp); });
-      sec.classList.add('go'); },
-    leave() { sec.classList.remove('go'); } };
+  const els = $$('[data-at]', sec); let timers = [];
+  const clear = () => { timers.forEach(clearTimeout); timers = []; };
+  return { el: sec, steps: 1, async go() {                 // 只有一步：按一下進到這頁，內容自己依 data-at 的順序出現
+      clear(); sec.classList.add('go');
+      els.forEach(e => { if (!e.classList.contains('in')) timers.push(setTimeout(() => { e.classList.add('in'); $$('.cnt', e).forEach(countUp); }, 350 + (+e.dataset.at - 1) * 480)); }); },
+    leave() { clear(); sec.classList.remove('go'); setTimeout(() => { if (!sec.classList.contains('on')) els.forEach(e => e.classList.remove('in')); }, 500); } };
 }
 
 // ───────── 一條線：上 MOMO、下蝦皮特選 ─────────
@@ -251,8 +252,7 @@ function chrome() {
   const s = SC[si]; $('#foot').classList.toggle('hide', s.ch < 0); document.body.dataset.scene = s.id; document.body.dataset.step = step;
   $$('#chapters span').forEach((e, i) => e.classList.toggle('now', i === s.ch));
   $('#tp1').classList.toggle('on', (s.topic || []).includes(1)); $('#tp2').classList.toggle('on', (s.topic || []).includes(2));
-  const total = SC.reduce((a, x) => a + x.scene.steps, 0), now = SC.slice(0, si).reduce((a, x) => a + x.scene.steps, 0) + step + 1;
-  $('#pageno').textContent = `${now} / ${total}`;
+  $('#pageno').textContent = `${si + 1} / ${SC.length}`;
 }
 async function goto(i, st, fwd) {
   if (i < 0 || i >= SC.length) return;
@@ -306,7 +306,7 @@ addEventListener('click', e => { if (e.clientX < innerWidth * .15) prev(); else 
     { ch: 3, topic: [1], scene: lanesScene },
     { ch: 4, topic: [1], scene: demoScene($('#s-stats'), dStats, STATS, (i, st) => $('#stats-real').classList.toggle('on', !!st.real)) },
     { ch: 5, topic: [1], scene: habitScene },
-    { ch: 6, topic: [2], scene: S('s-fit') },
+    { ch: 6, topic: [2], scene: S('s-fit') }, { ch: 6, topic: [2], scene: S('s-voices') },
     { ch: 7, topic: [1, 2], scene: S('s-ask') },
     { ch: 8, scene: S('s-next') },
     { ch: 9, topic: [1, 2], scene: S('s-answer') },
