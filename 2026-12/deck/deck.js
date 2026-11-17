@@ -135,8 +135,8 @@ const STATIONS = [
     momo: '可以勾選多張入庫單，合併成一張採購單。', shopee: '勾選的訂單會合併產出。這裡是兩張訂單合成一個採購單檔。' },
   { name: '回填單號', say: '在公司系統取得 EIP 採購單號之後回填，就可以下載要給原廠的採購單。',
     momo: '瑪氏調整數量後回傳的採購單可以直接上傳，系統會重新計算。', shopee: '回填之後這筆資料會鎖定，避免之後被誤改。' },
-  { name: '核對缺貨', say: '把倉庫與物流提供的資料上傳，系統逐項比對數量與效期，把缺貨列出來，不必人工逐筆核對。',
-    momo: '上傳勇信的配送明細表，核對箱數與效期。', shopee: '上傳庫存與效期表，系統依允收效期判斷可出數量，並產出拋單檔。' },
+  { name: '核對缺貨', say: '兩個通路共用同一份竹運庫存。系統依庫存與效期算出可以出貨的數量，產出拋單檔，並把缺貨列出來。',
+    momo: '會先扣掉蝦皮特選已經排出去的量，同一批貨不會重複計算。原廠直出的訂單另外核對勇信的配送明細。', shopee: '同一批庫存兩邊都要用的時候，蝦皮特選優先分配。' },
   { name: '標示單據', say: '缺貨結果會直接標在通路的單據上：不出貨的品項畫線，短出的改成實際數量並蓋章。',
     momo: '入庫通知單和嘜頭都由系統畫好，箱數也一併填上。', shopee: '產生要給蝦皮的 LINE 通知內容，蝦皮採購單也由系統標好。' },
 ];
@@ -159,8 +159,10 @@ const LSTEPS = window.__LSTEPS = [
   { st: 2, lay: 'both', go: { momo: 's3_done', shopee: 's3_done' } },
   { auto: 1100, st: 3, lay: 'both', go: { momo: 's4_typed', shopee: 's4_typed' } },
   { st: 3, lay: 'both', go: { momo: 's4_done', shopee: 's4_done' } },
-  { auto: 1700, st: 4, lay: 'both', drop: 's5_drop', go: { momo: 's5_preview', shopee: 's5_result' } },
-  { st: 4, lay: 'both', go: { momo: 's5_result', shopee: 's5_ship' } },
+  { auto: 1700, st: 4, lay: 'both', drop: { momo: 'z_drop', shopee: 's5_drop' }, go: { momo: 'z_list', shopee: 's5_result' } },
+  { st: 4, lay: 'both', go: { momo: 'z_done', shopee: 's5_ship' } },
+  { auto: 1300, st: 4, lay: 'momo', drop: { momo: 's5_drop' }, go: { momo: 's5_preview' }, veil: { shopee: '原廠直出的訂單：MOMO 另外核對勇信的配送明細' } },
+  { st: 4, lay: 'momo', go: { momo: 's5_result' }, veil: { shopee: '原廠直出的訂單：MOMO 另外核對勇信的配送明細' } },
   { auto: 3000, st: 5, lay: 'shopee', go: { shopee: 's6_notify', momo: 's6_list' }, veil: { momo: '先看蝦皮特選' } },
   { st: 5, lay: 'both', drop: 's6_drop', go: { momo: 's6_done', shopee: 's6_pdf' }, focus: { momo: ['.pv'] } },
   { auto: 2400, st: 5, lay: 'momo', cmp: 1 },
@@ -207,9 +209,10 @@ const lanesScene = { el: $('#s-lanes'), steps: LSTEPS.length, script: LSTEPS, as
   const step = LSTEPS[n]; L.i = n; lanesLayout(step.lay); lanesTexts(step);
   if (fwd && (step.go || step.drop)) {
     if (step.drop) {
-      const ks = KS.filter(k => L.recs[k].has(step.drop) && step.go && step.go[k]);
-      await Promise.all(ks.map(k => L.recs[k].play(step.drop)));
-      for (const k of ks) flyChip(k, L.recs[k].marks[step.drop].file || '檔案');
+      const dropOf = k => typeof step.drop === 'string' ? step.drop : step.drop[k];       // 兩邊可以各指定一個記號
+      const ks = KS.filter(k => dropOf(k) && L.recs[k].has(dropOf(k)) && step.go && step.go[k]);
+      await Promise.all(ks.map(k => L.recs[k].play(dropOf(k))));
+      for (const k of ks) flyChip(k, L.recs[k].marks[dropOf(k)].file || '檔案');
       if (ks.length) await sleep(1000);
     }
     // 兩邊都有動作時，用同樣的時間演完（長的加速、短的放慢），看起來才是一起跑
