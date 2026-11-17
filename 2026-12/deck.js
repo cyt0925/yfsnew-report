@@ -93,7 +93,7 @@ class Demo {
 }
 // 照劇本走的示範場景。每一步：play 演到哪個記號（往前走時）／at 直接停在哪個記號；focus 鏡頭看哪裡（預設用記號自己帶的）；note 說明。
 function demoScene(sec, demo, steps, hook) {
-  return { el: sec, steps: steps.length, async go(i, fwd) {
+  return { el: sec, steps: steps.length, script: steps, async go(i, fwd) {
     const st = steps[i]; sec.classList.toggle('mini', !!st.mini);
     if (st.sub !== undefined) swap($('.dsub', sec), st.sub);
     if (hook) hook(i, st, fwd);
@@ -149,21 +149,21 @@ const VW = 1920 - 356 - 40, KS = ['momo', 'shopee'];
 // 每一步：st 第幾站；lay 版面；go 這一步各自演到哪個記號（沒寫就停在原地）；drop 先演到這個記號、讓檔案飛進去；veil 遮起來時寫的字
 const LSTEPS = window.__LSTEPS = [
   { st: 0, lay: 'both', at: { momo: 's1_start', shopee: 's1_start' } },
-  { st: 0, lay: 'both', drop: 's1_drop', go: { momo: 's1_preview', shopee: 's1_preview' } },
-  { st: 0, lay: 'shopee', go: { shopee: 's1_fulfil' }, veil: { momo: 'MOMO 不需要選履約方式' } },
+  { auto: 1500, st: 0, lay: 'both', drop: 's1_drop', go: { momo: 's1_preview', shopee: 's1_preview' } },
+  { auto: 2800, st: 0, lay: 'shopee', go: { shopee: 's1_fulfil' }, veil: { momo: 'MOMO 不需要選履約方式' } },
   { st: 0, lay: 'both', go: { momo: 's1_done', shopee: 's1_done' } },
-  { st: 1, lay: 'both', drop: 's2_drop', go: { momo: 's2_preview', shopee: 's2_preview' } },
-  { st: 1, lay: 'shopee', go: { shopee: 's2_diff' }, veil: { momo: 'MOMO 的差異在預覽時就已列出' } },
+  { auto: 1500, st: 1, lay: 'both', drop: 's2_drop', go: { momo: 's2_preview', shopee: 's2_preview' } },
+  { auto: 2800, st: 1, lay: 'shopee', go: { shopee: 's2_diff' }, veil: { momo: 'MOMO 的差異在預覽時就已列出' } },
   { st: 1, lay: 'both', go: { momo: 's2_done', shopee: 's2_done' } },
-  { st: 2, lay: 'both', go: { momo: 's3_list', shopee: 's3_list' } },
+  { auto: 1300, st: 2, lay: 'both', go: { momo: 's3_list', shopee: 's3_list' } },
   { st: 2, lay: 'both', go: { momo: 's3_done', shopee: 's3_done' } },
-  { st: 3, lay: 'both', go: { momo: 's4_typed', shopee: 's4_typed' } },
+  { auto: 1100, st: 3, lay: 'both', go: { momo: 's4_typed', shopee: 's4_typed' } },
   { st: 3, lay: 'both', go: { momo: 's4_done', shopee: 's4_done' } },
-  { st: 4, lay: 'both', drop: 's5_drop', go: { momo: 's5_preview', shopee: 's5_result' } },
+  { auto: 1700, st: 4, lay: 'both', drop: 's5_drop', go: { momo: 's5_preview', shopee: 's5_result' } },
   { st: 4, lay: 'both', go: { momo: 's5_result', shopee: 's5_ship' } },
-  { st: 5, lay: 'shopee', go: { shopee: 's6_notify', momo: 's6_list' }, veil: { momo: '先看蝦皮特選' } },
+  { auto: 3000, st: 5, lay: 'shopee', go: { shopee: 's6_notify', momo: 's6_list' }, veil: { momo: '先看蝦皮特選' } },
   { st: 5, lay: 'both', drop: 's6_drop', go: { momo: 's6_done', shopee: 's6_pdf' }, focus: { momo: ['.pv'] } },
-  { st: 5, lay: 'momo', cmp: 1 },
+  { auto: 2400, st: 5, lay: 'momo', cmp: 1 },
   { st: 5, lay: 'momo', cmp: 2 },
   { st: 5, lay: 'both', big: true },
 ];
@@ -203,7 +203,7 @@ function lanesMarkAt(n, k) {
   for (let i = n; i >= 0; i--) { const s = LSTEPS[i], id = (s.go && s.go[k]) || (s.at && s.at[k]); if (id && L.recs[k].has(id)) return id; }
   return Object.keys(L.recs[k].marks)[0];
 }
-const lanesScene = { el: $('#s-lanes'), steps: LSTEPS.length, async go(n, fwd) {
+const lanesScene = { el: $('#s-lanes'), steps: LSTEPS.length, script: LSTEPS, async go(n, fwd) {
   const step = LSTEPS[n]; L.i = n; lanesLayout(step.lay); lanesTexts(step);
   if (fwd && (step.go || step.drop)) {
     if (step.drop) {
@@ -223,7 +223,7 @@ const lanesScene = { el: $('#s-lanes'), steps: LSTEPS.length, async go(n, fwd) {
 
 // ───────── 各場景的劇本 ─────────
 const PORTAL = [
-  { rec: 'portal', at: 'p_start', mini: true, wide: true, ring: false },
+  { auto: 1700, rec: 'portal', at: 'p_start', mini: true, wide: true, ring: false },
   { at: 'p_start', wide: true, ring: false, sub: '酷澎、蝦皮特選、MOMO 共用的首頁。' },
   { at: 'p_today', sub: '今天該處理的事，系統先列出來。', note: ['今日事項', '快到貨還沒完成的訂單、通路改過的訂單、還沒產出的出貨檔，都會列在這裡。點一下就到那一頁處理。'] },
   { at: 'p_channels', sub: '三個通路的狀況放在同一頁。', note: ['各通路系統', '今天進了幾張新訂單、還有幾張等待出貨，不必分別登入各個後台查看。'] },
@@ -231,8 +231,8 @@ const PORTAL = [
   { play: 'p_bottom', sub: '改單次數與操作紀錄。', note: ['本月改單與操作紀錄', '這個月處理了幾次改單，以及最近誰在哪個系統做了什麼，都查得到。'] },
 ];
 const STATS = [
-  { rec: 'stats', at: 'r_list', wide: true, ring: false, sub: '通路改了數量或到貨日，同仁處理完之後，要記下這一次做了什麼。' },
-  { play: 'r_open', sub: '每張訂單都有自己的修改紀錄。', note: ['修改紀錄', '打開訂單，系統已經列出這張單被改了哪些地方。'] },
+  { auto: 2400, rec: 'stats', at: 'r_list', wide: true, ring: false, sub: '通路改了數量或到貨日，同仁處理完之後，要記下這一次做了什麼。' },
+  { auto: 2000, play: 'r_open', sub: '每張訂單都有自己的修改紀錄。', note: ['修改紀錄', '打開訂單，系統已經列出這張單被改了哪些地方。'] },
   { play: 'r_filled', sub: '用點選的方式記錄，不必打字。', note: ['記下這一次處理', '選擇處理的階段、做了什麼、主要原因。幾個點選就完成。'] },
   { play: 'r_done', sub: '沒有記錄，就不能結案。', note: ['處理完成', '紀錄填完才能按「處理完成」。這一步由系統把關，不靠同仁自己記得。'] },
   { play: 't_cards', sub: '一筆一筆的紀錄，累積成統計。', note: ['改單統計', '這段期間有幾張訂單、其中幾張被修改過、總共處理了幾次。'] },
@@ -254,9 +254,10 @@ function chrome() {
   $('#tp1').classList.toggle('on', (s.topic || []).includes(1)); $('#tp2').classList.toggle('on', (s.topic || []).includes(2));
   $('#pageno').textContent = `${si + 1} / ${SC.length}`;
 }
+let autoT = 0;                                            // 「自動接下一步」的計時器
 async function goto(i, st, fwd) {
   if (i < 0 || i >= SC.length) return;
-  busy = true;
+  busy = true; clearTimeout(autoT);
   // 換章節時，一條細的三色直條掃過畫面（跟封面同一組顏色）；同一章裡換頁只做淡入
   const sw = document.getElementById('sweep'), wipe = i !== si && SC[i].ch !== SC[si].ch && SC[i].ch >= 0 && (SC[si].ch >= 0 || SC[si].id === 's-cover');
   if (wipe) { sw.classList.remove('run'); void sw.offsetWidth; sw.classList.add('run'); await sleep(240); }
@@ -264,10 +265,17 @@ async function goto(i, st, fwd) {
   si = i; step = st; chrome();
   try { await SC[i].scene.go(st, !!fwd); } catch (err) { console.error(err); }
   busy = false;
-  if (queued) { const q = queued; queued = 0; q > 0 ? next() : prev(); }
+  if (queued) { const q = queued; queued = 0; q > 0 ? next() : prev(); return; }
+  // 劇本裡標了 auto 的步驟：往前演完後停一下就自己接下一步（中途按 → 可以直接跳過等待）
+  const sc = SC[i].scene.script, ms = fwd && !window.__noauto && sc && sc[st] && sc[st].auto;
+  if (ms) autoT = setTimeout(() => { if (si === i && step === st && !busy) next(); }, ms);
 }
 function next() { if (busy) { queued = 1; return; } if (step < SC[si].scene.steps - 1) goto(si, step + 1, true); else if (si < SC.length - 1) goto(si + 1, 0, true); }
-function prev() { if (busy) { queued = -1; return; } if (step > 0) goto(si, step - 1, false); else if (si > 0) goto(si - 1, SC[si - 1].scene.steps - 1, false); }
+function prev() {
+  if (busy) { queued = -1; return; }
+  if (step > 0) { const sc = SC[si].scene.script; let s = step - 1; while (s > 0 && sc && sc[s - 1] && sc[s - 1].auto) s--; goto(si, s, false); }   // 往回時跳過自動接上的那幾步，回到上一次按的地方
+  else if (si > 0) goto(si - 1, SC[si - 1].scene.steps - 1, false);
+}
 addEventListener('keydown', e => {
   if (e.ctrlKey || e.metaKey || e.altKey) return;
   if (['ArrowRight', 'ArrowDown', ' ', 'PageDown', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
