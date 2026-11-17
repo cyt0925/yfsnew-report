@@ -20,6 +20,7 @@ with sync_playwright() as p:
     pg.on("response", lambda r: errs.append(f"{r.status} {r.url[-60:]}") if r.status >= 400 else None)
     pg.goto(f"http://127.0.0.1:{port}/index.html", wait_until="domcontentloaded"); pg.wait_for_function("window.__ready", timeout=60000)
     pg.evaluate("document.fonts.ready"); pg.wait_for_timeout(1500)
+    pg.evaluate("window.__noauto = true")          # 逐步截圖時不要自動接下一步
     scenes = pg.evaluate("__SC.map(s => [s.id, s.scene.steps])"); n = 0
     for i, (sid, steps) in enumerate(scenes):
         if only and sid not in only: n += steps; continue
