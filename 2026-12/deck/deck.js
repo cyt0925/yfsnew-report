@@ -235,7 +235,7 @@ const PORTAL = [
   { at: 'p_today', sub: '今天該處理的事，系統先列出來。', note: ['今日事項', '快到貨還沒完成的訂單、通路改過的訂單、還沒產出的出貨檔，都會列在這裡。點一下就到那一頁處理。'] },
   { at: 'p_channels', sub: '三個通路的狀況放在同一頁。', note: ['各通路系統', '今天進了幾張新訂單、還有幾張等待出貨，不必分別登入各個後台查看。'] },
   { play: 'p_charts', sub: '訂單與出貨的趨勢。', note: ['訂單與出貨', '近 30 天每天進了多少訂單、未來 7 天要出多少箱，可以提早安排人力。'] },
-  { play: 'p_bottom', sub: '改單次數與操作紀錄。', note: ['本月改單與操作紀錄', '這個月處理了幾次改單，以及最近誰在哪個系統做了什麼，都查得到。'] },
+  { play: 'p_bottom', sub: '改單次數與操作紀錄。', note: ['本月改單與操作紀錄', '三個通路這個月各改了幾次單、主要原因是什麼，以及最近誰在哪個系統做了什麼，都查得到。'] },
 ];
 const STATS = [
   { auto: 2400, rec: 'stats', at: 'r_list', wide: true, ring: false, sub: '通路改了數量或到貨日，同仁處理完之後，要記下這一次做了什麼。' },
@@ -245,7 +245,14 @@ const STATS = [
   { play: 't_cards', sub: '一筆一筆的紀錄，累積成統計。', note: ['改單統計', '這段期間有幾張訂單、其中幾張被修改過、總共處理了幾次。'] },
   { play: 't_lines', sub: '哪一條線別改單最多。', note: ['各線別', '每條線別的處理次數、平均每張訂單改幾次、最常見的原因，一眼就能比較。'] },
   { play: 't_reasons', sub: '改單的原因是什麼。', note: ['主因與階段', '原因看得出來，才能回頭和通路、廠商討論如何減少改單。'] },
-  { at: 't_reasons', ring: false, real: true, sub: '以上為示範資料。' },
+  { play: 'c_shopee', sub: '蝦皮特選與 MOMO 也有各自的統計。', note: ['蝦皮特選', '分成三種來源：通路自己改的、我方改的、系統自動下修的。各有幾次、原因是什麼，分開列出。'] },
+  { play: 'c_momo', sub: '三個通路用同一種方式看。', note: ['MOMO', '同樣分成三種來源。三個通路的數字分開計算，不混在一起。'] },
+  { at: 'c_momo', ring: false, real: true, sub: '以上為示範資料。' },
+];
+const SURVEY = [
+  { auto: 2200, rec: 'survey', at: 'q_start', wide: true, ring: false, sub: '開始做 PChome 之前，先請同仁填這份問卷。' },
+  { play: 'q_step', sub: '照系統的步驟，一步一步問。', note: ['對照現有的做法', '每一步都列出蝦皮特選與 MOMO 現在怎麼做。同仁只要回答 PChome 是不是一樣、哪裡不同。'] },
+  { play: 'q_answer', sub: '用選的，不必寫長篇說明。', note: ['選擇題', '同仁點選就能回答。答案會成為 PChome 的作業規則，不必再靠口頭轉述。'] },
 ];
 const HABITS = [
   { rec: 'guide', at: 'g_due' }, { rec: 'stats', at: 'r_filled' }, { rec: 'guide', at: 'g_help' }, { rec: 'guide', at: 'g_history' },
@@ -298,13 +305,13 @@ addEventListener('click', e => { if (e.clientX < innerWidth * .15) prev(); else 
 (async function boot() {
   $('#chapters').innerHTML = CHAPTERS.map(c => `<span>${c}</span>`).join('');
   $('#rail-stops').innerHTML = STATIONS.map((s, i) => `<div class="st" style="left:${456 + (VW - 200) * i / (STATIONS.length - 1)}px">${s.name}<i></i></div>`).join('');
-  const dPortal = new Demo($('#d-portal')), dStats = new Demo($('#d-stats')), dHabit = new Demo($('#d-habit'));
+  const dPortal = new Demo($('#d-portal')), dStats = new Demo($('#d-stats')), dHabit = new Demo($('#d-habit')), dSurvey = new Demo($('#d-survey'));
   const safe = p => p.catch(err => console.warn('錄影載入失敗', err));
   await Promise.all([
-    safe(dPortal.add('portal')), safe(dStats.add('stats')), safe(dHabit.add('guide')), safe(dHabit.add('stats')),
+    safe(dPortal.add('portal')), safe(dStats.add('stats')), safe(dSurvey.add('survey')), safe(dHabit.add('guide')), safe(dHabit.add('stats')),
     safe(load('momo').then(ev => L.recs.momo = new Rec(ev, $('#rr-momo')))), safe(load('shopee').then(ev => L.recs.shopee = new Rec(ev, $('#rr-shopee')))),
   ]);
-  dPortal.use('portal'); dStats.use('stats'); if (dHabit.recs.guide) dHabit.use('guide');
+  dPortal.use('portal'); dStats.use('stats'); if (dSurvey.recs.survey) dSurvey.use('survey'); if (dHabit.recs.guide) dHabit.use('guide');
   const habitScene = { el: $('#s-habit'), steps: HABITS.length + 1, async go(i) {
     $$('#s-habit .habit').forEach((e, k) => { e.classList.toggle('now', k === i); e.classList.toggle('seen', k < i || i >= HABITS.length); });
     $('#habit-wrap').classList.toggle('on', i >= HABITS.length);
@@ -322,7 +329,7 @@ addEventListener('click', e => { if (e.clientX < innerWidth * .15) prev(); else 
     { ch: 4, topic: [1], scene: demoScene($('#s-stats'), dStats, STATS, (i, st) => $('#stats-real').classList.toggle('on', !!st.real)) },
     { ch: 5, topic: [1], scene: habitScene },
     { ch: 6, topic: [2], scene: S('s-fit') }, { ch: 6, topic: [2], scene: S('s-voices') },
-    { ch: 7, topic: [1, 2], scene: S('s-ask') },
+    { ch: 7, topic: [1, 2], scene: S('s-ask') }, { ch: 7, topic: [1, 2], scene: demoScene($('#s-survey'), dSurvey, SURVEY) },
     { ch: 8, scene: S('s-next') },
     { ch: 9, topic: [1, 2], scene: S('s-answer') },
     { ch: -1, scene: S('s-thanks') },
