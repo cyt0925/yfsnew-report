@@ -7,6 +7,8 @@
 -1003 是組合品（AAA 開頭的料號，系統匯入時就定成竹運出貨，不產 EIP），走「待產拋單檔」那一格（2026-11-17.5 版新增）：
 丟竹運的 EC 即時庫存、庫存效期表 → 系統算出貨量 → 產出拋單檔＋缺貨清單。記號 z_drop、z_list、z_done 就是這一段，
 排在 s4_done 之後、s5_drop 之前（跟畫面上格子的順序一樣）。
+2026-11-18.10 版重錄：竹運出貨的效期門檻預設改成「同蝦皮特選」，-1003 第二品那批不合格的效期跟著調（見 ZY_LOTS 上面的說明）；
+竹運出貨的短出也要畫入庫通知單，所以 -1003 產完拋單檔就進「待畫入庫通知單」，s6_list、s6_done 那一格是兩張（這段只丟 -1001 的通知單，-1003 留著）。
 用法：python rec_momo.py          錄影
       python rec_momo.py --dry    只用 API 跑一遍流程、印出每一步結果（不開瀏覽器，用來確認假資料走得通）
 """
@@ -40,12 +42,14 @@ C_ITEMS = [("13800301", "001", "【喵喵鮮】貓餐包 綜合口味（6包/組
            ("13800303", "001", "【汪汪嚴選】狗點心 主廚牛肉（3袋/組）", 48, "AAAP260303_TNN", "730", "2027/11/20")]
 # 竹運庫存（假的）。EC 即時庫存：(料號, 單位, 品名, EC可用量)；庫存效期表：(客戶品號＝料號＋單位代碼, 儲位, 可出貨量, 效期, 製造日期)
 #   -301 要 24：EC 60、效期合格 60 → 全出
-#   -302 要 36：EC 50；兩批，30 組 2027/05/31 到期（早於 MOMO 的入庫最低有效期限 2027/07/18，不合格）、12 組 2028/02/28（合格）→ 出 12、效期不足 24
+#   -302 要 36：EC 50；兩批，30 組 2027/04/30 到期（不合格）、12 組 2028/02/28（合格）→ 出 12、效期不足 24
+#     效期門檻 2026-11-18 版起預設「同蝦皮特選」：到貨日 11/20 ＋ 保存天數 540 × 1/3 ＝ 2027/05/19（-301、-303 是 730 × 1/3 ＝ 2027/07/21）。
+#     原本那批是 2027/05/31，舊版拿 MOMO 的入庫最低有效期限 2027/07/18 比；改成 2027/04/30，新舊兩種門檻都不合格。
 #   -303 要 48：EC 只有 30 → 出 30、庫存不足 18
 ZY_EC = [("AAAP260301", "組", "喵喵鮮 貓餐包 綜合口味 6包組", 60), ("AAAP260302", "組", "喵愛餡 貓點心 化毛＋潔牙 2包組", 50),
          ("AAAP260303", "組", "汪汪嚴選 狗點心 主廚牛肉 3袋組", 30), ("0199001", "箱", "【示範】抽取式衛生紙 100抽x72包", 140), ("0199002", "包", "【示範】廚房紙巾 60抽x6捲", 96)]
 ZY_LOTS = [("AAAP260301T", "K-01-02", 60, "20280930", "20261001"),
-           ("AAAP260302T", "K-01-05", 30, "20270531", "20251207"), ("AAAP260302T", "K-01-06", 12, "20280228", "20260906"),
+           ("AAAP260302T", "K-01-05", 30, "20270430", "20251106"), ("AAAP260302T", "K-01-06", 12, "20280228", "20260906"),
            ("AAAP260303T", "K-02-01", 30, "20281015", "20261016"),
            ("0199001R", "P-11-03", 140, "20291031", "20261101"), ("0199002C", "P-12-08", 96, "20290915", "20260916")]
 B_QTY_NEW = 36                                   # 第二站：MOMO 把主廚牛肉從 24 盒改成 36 盒
@@ -249,7 +253,7 @@ if DRY:
     ids = eip_ids()
     print(tc.put(f"/api/momo/eips/{ids['DC6']}", json={"eip_po": PO_A}).get_json(), tc.put(f"/api/momo/eips/{ids['SDC']}", json={"eip_po": PO_B}).get_json(), stages())
     zplan = lambda: [(g["inbound_no"], g["lines"], g["need"], g["ship"], g["short"], g["blocking"], g["dispatch_status"],          # noqa: E731
-                      [(x["code"], x["unit"], x["need"], x["ec"], x["qualified"], x["final"], x["short"], x["reasons"], x["alloc"], x["threshold"], x["problems"]) for x in g["items"]])
+                      [(x["code"], x["unit"], x["need"], x["ec"], x["qualified"], x["final"], x["short"], x["reasons"], x["alloc"], x["threshold"], x["threshold_src"], x["problems"]) for x in g["items"]])
                      for g in tc.get("/api/momo/ship/plan").get_json()["orders"]]
     print("zy 還沒丟庫存", zplan())
     print("kinds", up("/api/momo/kinds", [FEC, FLOTS]).get_json())
@@ -368,7 +372,7 @@ pg.wait_for_function("(() => { const t = document.querySelector('#tbl').innerTex
 W(900); s.shot(os.path.join(LIVE, "x_z_toast.png"))
 ztxt = pg.inner_text("#tbl"); print("  待產拋單檔：", " / ".join(ztxt.split("\n")))
 assert all(k in ztxt for k in ("要出", "EC 可用", "合格效期可出", "出貨量", "結果", "OK", "效期不足 24", "庫存不足 18", "缺 42")), ztxt
-pg.mouse.move(700, 560, steps=14); wheel(150)                                                  # 清單在畫面下緣被切掉，往下捲一點
+pg.mouse.move(700, 560, steps=14); wheel(185)                                                  # 清單在畫面下緣被切掉，往下捲一點（2026-11-18 版這一格的說明多兩行，多捲 35，下面那排「效期門檻」才看得到）
 s.move_to(f"{ZROW} + tr + tr td:nth-child(8)", steps=14)
 pg.wait_for_selector("#toasts .toast", state="detached", timeout=8000); W(200)
 box = pg.locator("#tbl").bounding_box(); assert box["y"] > 0 and box["y"] + box["height"] < 800, box   # 整張清單都在畫面裡
@@ -415,7 +419,11 @@ s.click("#stages .st[data-st='notice']"); pg.wait_for_selector(ROW(NO_A), timeou
 assert pg.evaluate("scrollY") == 0
 mark("s6_list", ["#stages", "#tbl"]); W(1600)
 drop("s6_drop", [FNT], [".dzbox"])
-pg.wait_for_selector(".pv a.btn", timeout=15000); pg.wait_for_selector("#tbl a.btn", timeout=8000); s.move_to(".pv a.btn", dx=.9, dy=.85); W(200)
+pg.wait_for_selector(".pv a.btn", timeout=15000); pg.wait_for_selector("#tbl a.btn", timeout=8000)
+assert pg.locator("#tbl tr.og").count() == 2 and "還沒收到" in pg.inner_text(ROW(NO_C)), pg.inner_text("#tbl")   # 2026-11-18 版：竹運出貨短出的 -1003 也在這一格，這次只丟 -1001 的通知單，它留著
+wheel(60, n=4)                                               # 清單現在有兩列，第二列被畫面下緣切掉：往下捲一點
+box = pg.locator("#tbl").bounding_box(); top = pg.locator(".pv").bounding_box()["y"]; assert top > 0 and box["y"] + box["height"] < 806, (top, box)
+s.move_to(".pv a.btn", dx=.9, dy=.85); W(200)
 mark("s6_done", [".pv", "#tbl"]); W(1600)
 with pg.expect_download(timeout=15000) as dl:
     pg.locator(".pv a.btn").click()
