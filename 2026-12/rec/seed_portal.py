@@ -4,8 +4,11 @@
 做法：把系統的時鐘（db._local_now）暫時換成假的，一天一天照真的流程打 API——
 匯入訂單彙總表、改數量、改交期、記「這一輪處理完成」、改 PO 狀態、拉單、驗收……
 所以歷程、建檔日、修改紀錄的時間都是系統自己寫的，不用直接改資料庫。灌完把時鐘換回來。
+
+酷澎的部分在這個檔；蝦皮特選、MOMO 的訂單和改單（通路修改、我方修改、系統自動下修）在 seed_channels.py，
+這裡一天一天叫它（chan.run）。
 """
-import datetime as dt, io, os, random, zipfile
+import datetime as dt, io, os, random
 
 import openpyxl
 
@@ -266,52 +269,9 @@ def build(s, verbose=True):
         return out
     nonlocal_no, today_k = [no + 40], [0]
 
-    # ---------------------------------------------------------- 其他系統的假檔
-    def shopee_file(prs):
-        hdr = ["PR ID", "PO ID", "Warehouse", "Expected Delivery Time", "Shopee SKU ID", "Supplier SKU ID", "Shopee SKU Name", "Shopee Requested Qty (unit)", "Selling Type", "EAN / UPC"]
-        wb = openpyxl.Workbook(); ws = wb.active; ws.append(hdr)
-        for pr, wh, d, items in prs:
-            for j, (sup, name, qty) in enumerate(items):
-                ws.append([pr, None, wh, d, f"{pr[-4:]}_{j + 1}", sup, name, str(qty), "Pcs", sup.split("_")[0]])
-        buf = io.BytesIO(); wb.save(buf); return buf.getvalue()
-    SHP_ITEMS = [("4719900000113_CNN", "幫寶適 清新幫 拉拉褲 L 38片", 240), ("4719900000120_CNN", "好自在 液體衛生棉 日用", 180), ("4719900000137_CNN", "飛柔 去屑洗髮精 750ml", 120),
-                 ("4719900000144_CNN", "潘婷 潤髮精華素 700ml", 84), ("4719900000151_CNN", "Ariel 洗衣精補充包 1100g", 150), ("4719900000168_RNN", "幫寶適 一級幫 紙尿褲 M 箱購", 26),
-                 ("4719900000175_CNN", "Downy 柔軟精補充包 1520ml", 96), ("4719900000182_CNN", "歐樂B 牙刷 6入", 60)]
-
-    def shopee_import(c, day, n_pr, serial, tweak=None):
-        prs = []
-        for i in range(n_pr):
-            it = [SHP_ITEMS[(serial * 3 + i * 2 + j) % len(SHP_ITEMS)] for j in range(2 + (serial + i) % 2)]
-            if tweak and i == 0:
-                it = [(a, b, tweak(q) if j == 0 else q) for j, (a, b, q) in enumerate(it)]
-            prs.append((f"PRTWCOTWA{day:%Y%m%d}{serial * 10 + i + 1:04d}", "TWA", (day + dt.timedelta(days=5 + i)).isoformat(), it))
-        pv = ok(c.post("/api/shopee/import/preview", data={"file": (io.BytesIO(shopee_file(prs)), f"PurchaseOrder_{day:%Y%m%d}.xlsx")}, content_type="multipart/form-data"), "shopee preview").get_json()
-        ok(c.post("/api/shopee/import/commit", json={"upload_id": pv["upload_id"], "fulfil": "竹運出貨"}), "shopee commit")
-
-    MOMO_ITEMS = [("11000001", "【彩豆豆】牛奶巧克力 40g*12", 48, "M89297484_QMN"), ("11000002", "【口香糖王】薄荷", 200, "M81232885_CMN"), ("11000003", "【喵愛餡】貓點心 化毛 箱購", 3, "M69072565_RMN")]
-
-    def momo_file(orders, day):
-        hdr = ["項次", "倉別", "到倉日", "採購日", "入庫單號", "入庫預定日期", "採購總量", "商品編號", "商品名稱", "單品編號", "單品詳細", "採購數量", "商品原廠編號"]
-        wb = openpyxl.Workbook(); ws = wb.active; ws.append(hdr)
-        for k, (wh, nom, exp, items) in enumerate(orders):
-            for j, (prod, nm, q, code) in enumerate(items):
-                ws.append([str(k + 1) if j == 0 else "", wh if j == 0 else "", "", f"{day:%Y/%m/%d}" if j == 0 else "", nom if j == 0 else "",
-                           f"{exp:%Y/%m/%d}" if j == 0 else "", str(sum(int(x[2]) for x in items)) if j == 0 else "", prod, nm, "001", "無", str(q), code])
-        buf = io.BytesIO(); wb.save(buf); return buf.getvalue()
-
-    def momo_import(c, day, n, serial):
-        orders = []
-        for i in range(n):
-            items = [MOMO_ITEMS[(serial + i + j) % 3] for j in range(1 + (serial + i) % 2)]
-            items = [(a, b, q * (1 + (serial + j) % 3), d) for j, (a, b, q, d) in enumerate(items)]
-            orders.append((["DC6", "SDC", "DC1(自)"][(serial + i) % 3], f"{day:%y%m%d}{57 + serial:02d}-{i + 1:04d}", day + dt.timedelta(days=6 + i), items))
-        pv = ok(c.post("/api/momo/import/preview", data={"file": [(io.BytesIO(momo_file(orders, day)), "UnsendList.xlsx")]}, content_type="multipart/form-data"), "momo preview").get_json()
-        ok(c.post("/api/momo/import/commit", json={"upload_id": pv["upload_id"]}), "momo commit")
-        return [o[1] for o in orders]
-
-    momo_new, momo_eip_day, momo_po = {}, {}, [0]
-    shp_days = {T - 19: 1, T - 15: 2, T - 11: 1, T - 8: 2, T - 5: 1, T - 3: 3, T - 1: 2, T: 2}
-    momo_days = {T - 17: 1, T - 13: 2, T - 10: 1, T - 6: 2, T - 4: 1, T - 2: 2, T: 2}
+    # ---------------------------------------------------------- 蝦皮特選、MOMO（劇本在 seed_channels.py）
+    import seed_channels
+    chan = seed_channels.Channels(app, db, ck, WD, T, {"alice": alice, "zhen": zhen}, today_at, verbose)
 
     # ---------------------------------------------------------- 一天一天演
     n_rounds = 0
@@ -345,28 +305,8 @@ def build(s, verbose=True):
             ck.add(25)
             ok(alice.post("/api/mars/products/import", data={"file": (open(os.path.join(OMS, "samples", "mars", "fake", "假_瑪氏商品總表.xlsx"), "rb"), "假_瑪氏商品總表.xlsx")},
                           content_type="multipart/form-data"), "mars products")
-        if k in momo_days and not is_today:
-            ck.add(14); momo_new[k] = momo_import(alice, D, momo_days[k], k)
-        if k - 1 in momo_new:                                               # 匯入隔天：產 EIP 採購單（其中一次有一張改竹運出貨）
-            if is_today:
-                today_at(0.26)
-            else:
-                ck.at(D, 10, rng.randint(35, 55))
-            nos = momo_new[k - 1]
-            if len(nos) > 1 and (k // 2) % 2 == 0:
-                ok(alice.post("/api/momo/ship_method", json={"inbound_nos": [nos[-1]], "ship_method": "竹運出貨"}), "momo ship"); nos = nos[:-1]; ck.add(3)
-            ok(alice.post("/api/momo/purchase/generate", json={"inbound_nos": nos}), "momo eip"); momo_eip_day[k] = True
-        if k - 1 in momo_eip_day:                                           # 再隔天：EIP 採購單號回填
-            if is_today:
-                today_at(0.30)
-            else:
-                ck.at(D, 11, rng.randint(5, 40))
-            for e in (alice.get("/api/momo/eips").get_json().get("eips") or []):
-                if not e["eip_po"]:
-                    momo_po[0] += 1
-                    ok(alice.put(f"/api/momo/eips/{e['id']}", json={"eip_po": f"PO{D:%Y%m}9{momo_po[0]:02d}"}), "momo eip_po"); ck.add(2)
-        if k in shp_days and not is_today:
-            ck.add(11); shopee_import(alice, D, shp_days[k], k)
+        if not is_today:
+            chan.run(k)                                                    # 蝦皮特選、MOMO 這一天的事（今天的分三段，排在下面）
 
         # 上午：我方手動改（今天要記那幾輪的）
         tm(0.12, 10, rng.randint(5, 30))
@@ -416,8 +356,7 @@ def build(s, verbose=True):
 
         if is_today:
             # 今天的後半段：各系統各做一點事（首頁「最近操作紀錄」才看得到不同系統）
-            today_at(0.34)                                                 # 蝦皮重傳上週五那份、數量有變 → 差異待確認
-            shopee_import(alice, WD[T - 1], shp_days[T - 1], T - 1, tweak=lambda q: q - 24)
+            chan.run(k, "am")                                              # MOMO 回填 EIP 單號；蝦皮重傳昨天那份、數量有變 → 差異待確認；填一筆缺貨
             today_at(0.42)
             for p in due_rounds:
                 stage, kinds, reasons, src, note = p["plan"].pop(0)
@@ -426,7 +365,7 @@ def build(s, verbose=True):
             if handled:
                 ok(zhen.post("/api/pos/review", json={"po_numbers": [p["no"] for p in handled]}), "review")
             today_at(0.50); move_date_manual(alice, afters[2], wh="TAO5" if afters[2]["wh"] != "TAO5" else "TAO3")
-            today_at(0.58); momo_import(alice, D, momo_days[T], T)
+            chan.run(k, "momo_new")                                        # 0.58：MOMO 今天新進兩張
             today_at(0.66)
             try:                                                           # 採購表轉換（repo 裡的假通知單）
                 fp = os.path.join(OMS, "samples", "purchase", "fake", "假_永豐Mars採購單(箱單位)-GUM糖_TAO3_13000000900002.xlsx")
@@ -438,7 +377,7 @@ def build(s, verbose=True):
             except Exception as e:      # noqa: BLE001
                 print("   （採購表轉換略過）", e)
             today_at(0.74); set_status(zhen, live, "修改中")
-            today_at(0.82); shopee_import(alice, D, shp_days[T], T)
+            chan.run(k, "shopee_new")                                      # 0.82：蝦皮特選今天新進兩張
             today_at(0.90)                                                 # 竹運拋檔：寶僑先產一個倉（下一個到貨日只有一個倉就產再下一天的，首頁才留得住「尚未產出」那一項）
             days_pg = sorted({p["dd"] for p in pos if p["line"] == "寶僑" and p["dd"] > today and p["born"] and p["status"] != "已取消"})
             if days_pg:
@@ -454,6 +393,8 @@ def build(s, verbose=True):
     left = [(p["no"], p["plan"]) for p in pos if p["plan"]]
     if left:
         print("   [注意] 還有沒演到的輪：", left)
+    if chan.fail:
+        print(f"   [注意] 蝦皮特選／MOMO 有 {chan.fail} 個動作沒成功，上面有列")
     info = {"today": today, "live": live["no"], "after": [p["no"] for p in afters], "stuck": stuck["no"], "rounds": n_rounds, "pos": len(pos)}
     if verbose:
         print("seed:", info)
