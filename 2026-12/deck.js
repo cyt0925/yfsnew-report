@@ -28,7 +28,7 @@ class Rec {
   constructor(events, host) {
     this.host = host; this.t0 = events[0].timestamp; this.end = events[events.length - 1].timestamp - this.t0;
     this.marks = {}; events.filter(e => e.type === 5).forEach(e => this.marks[e.data.payload.id] = { t: e.timestamp - this.t0, ...e.data.payload });
-    this.rp = new rrweb.Replayer(events, { root: host, mouseTail: false, skipInactive: false, speed: 1, showWarning: false, triggerFocus: false, insertStyleRules: ['#admin-box{visibility:hidden !important}'] });
+    this.rp = new rrweb.Replayer(events, { root: host, mouseTail: false, skipInactive: false, speed: 1, showWarning: false, triggerFocus: false, insertStyleRules: ['#admin-box{visibility:hidden !important}', '.ch-f .ch-go{white-space:nowrap;flex:none}'] });   // 第二條：首頁通路卡片的「進入後台」不要折行（系統在某些時間字串下會折成兩行）
     this.rp.pause(0); this.timer = null; this.at = null;
     host.inert = true; try { this.rp.iframe.setAttribute('tabindex', '-1'); } catch (e) {}
   }
@@ -85,7 +85,7 @@ class Demo {
     this.ring.style.borderWidth = (3 / this.z) + 'px'; this.ring.style.borderRadius = (12 / this.z) + 'px'; return box; }
   spot(sels) { const b = this.cur && sels && sels.length ? this.cur.box(sels) : null; this.ring.classList.toggle('on', !!b);
     if (b) Object.assign(this.ring.style, { left: b[0] - 8 + 'px', top: b[1] - 8 + 'px', width: b[2] + 16 + 'px', height: b[3] + 16 + 'px' }); return b; }
-  say(note, box, at) {                                     // at: 'br' = 固定放右下角（框佔滿畫面、上下都放不下時用）
+  say(note, box, at) {                                     // at: 'br' = 固定放右下角、'tl' = 左上角（框佔滿畫面、上下都放不下時用）
     const s = this.sayEl; if (!note) { s.classList.remove('on'); return; }
     s.innerHTML = `<b>${note[0]}</b>${note[1]}`;
     const b = box ? [(box[0] - this.x) * this.z, (box[1] - this.y) * this.z, box[2] * this.z, box[3] * this.z] : [30, 30, 0, 0];
@@ -94,6 +94,7 @@ class Demo {
     if (top < 16) top = Math.max(16, this.vh - h - 24);
     let left = Math.max(20, Math.min(this.vw - w - 20, b[0]));
     if (at === 'br') { left = this.vw - w - 24; top = this.vh - h - 24; }
+    if (at === 'tl') { left = 24; top = 24; }
     s.style.left = left + 'px'; s.style.top = top + 'px'; s.classList.add('on');
   }
 }
@@ -245,7 +246,7 @@ const STATS = [
   { play: 'r_filled', sub: '用點選的方式記錄，不必打字。', note: ['記下這一次處理', '選擇處理的階段、做了什麼、主要原因。幾個點選就完成。'] },
   { play: 'r_done', sub: '沒有記錄，就不能結案。', note: ['處理完成', '紀錄填完才能按「處理完成」。這一步由系統把關，不靠同仁自己記得。'] },
   { play: 't_cards', sub: '一筆一筆的紀錄，累積成統計。', note: ['改單統計', '這段期間有幾張訂單、其中幾張被修改過、總共處理了幾次。'] },
-  { play: 't_lines', sub: '哪一條線別改單最多。', note: ['各線別', '每條線別的處理次數、平均每張訂單改幾次、最常見的原因，一眼就能比較。'] },
+  { play: 't_lines', noteAt: 'tl', sub: '哪一條線別改單最多。', note: ['各線別', '每條線別改了幾次、最常見的原因，以及原始下單與目前出貨差了多少金額，一眼就能比較。'] },
   { play: 't_reasons', sub: '改單的原因是什麼。', note: ['主因與階段', '原因看得出來，才能回頭和通路、廠商討論如何減少改單。'] },
   { auto: 3000, play: 'c_shopee', ring: ['#cx-kpi'], sub: '蝦皮特選與 MOMO 也有各自的統計。', note: ['蝦皮特選', '改單分成三種來源：蝦皮自己改的、我方改的、系統自動下修的，各有幾次分開計算。'] },
   { play: 'c_shopee_why', sub: '通路改了什麼、我方為什麼改，分開列出。', note: ['修改內容與原因', '左邊是蝦皮改了什麼，右邊是我方修改的原因，以及因此少出的數量。'] },
