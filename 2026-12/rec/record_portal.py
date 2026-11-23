@@ -134,12 +134,16 @@ def rec_stats(r, info):
 
     # 改單統計：期間拉到十月，把灌的那幾個星期都算進來
     r.go("/portal/stats", "#st-kpi .kpi"); pg.wait_for_timeout(900)
-    s.move_to("#st-from"); pg.wait_for_timeout(250)
-    first = pg.evaluate("document.querySelector('#st-months tbody tr td').innerText")
-    pg.evaluate("v => { const e = document.querySelector('#st-from'); e.value = v; e.dispatchEvent(new Event('change', { bubbles: true })); }",
-                "2026-10" if info["today"].isoformat()[:7] > "2026-10" else info["today"].isoformat()[:7])
-    pg.wait_for_function("f => document.querySelectorAll('#st-months tbody tr').length > 1 || document.querySelector('#st-months tbody tr td').innerText !== f", arg=first, timeout=10000)
-    pg.wait_for_timeout(700)
+    # 期間是 seed_portal 算的（info["period"]）：起始拉到十月；月底錄的時候有幾張 PO 下個月才到貨，結束月份也要往後拉，不然那幾張不算
+    # （2026-11-23 錄的那次：56 張裡有 3 張十二月到貨）。等的是統計那支 API 回來，不看表格列數（十月沒有 PO 的時候表格不會多一列）。
+    for sel, v in (("#st-from", info["period"][0]), ("#st-to", info["period"][1])):
+        if pg.input_value(sel) == v:
+            continue
+        s.move_to(sel); pg.wait_for_timeout(250)
+        with pg.expect_response(lambda x: "/api/master/stats?" in x.url and x.status == 200, timeout=10000):
+            pg.evaluate("([q, v]) => { const e = document.querySelector(q); e.value = v; e.dispatchEvent(new Event('change', { bubbles: true })); }", [sel, v])
+        pg.wait_for_timeout(700)
+    assert (pg.input_value("#st-from"), pg.input_value("#st-to")) == tuple(info["period"]), "改單統計的期間沒設成"
     s.move_to("#st-kpi .kpi", nth=1); pg.wait_for_timeout(250); s.move_to("#st-kpi .kpi", nth=2)
     r.mark("t_cards", focus=["#st-kpi"])
     r.scroll_to("#pending", top=78)
@@ -150,6 +154,12 @@ def rec_stats(r, info):
     r.mark("t_monthly", focus=["section:has(#st-months)"])
     r.scroll_to("section:has(#st-lines)", top=78)
     s.move_to("#st-lines tbody tr", nth=0)
+    # 2026-11-20 版各線別多了原始下單、目前出貨、少出三欄：1440 寬放得下（字會折行），哪天再加欄位放不下、要左右捲了，這裡會講
+    over = pg.evaluate("(() => { const w = document.querySelector('#st-lines').closest('.tbl-wrap'); return w.scrollWidth - w.clientWidth; })()")
+    heads = pg.evaluate("[...document.querySelectorAll('#st-lines thead th')].map(x => x.innerText.trim())")
+    assert heads[-3:] == ["原始下單", "目前出貨", "少出"], ("各線別最後三欄不是金額那三欄", heads)
+    if over > 1:
+        print(f"  [警告] 各線別的表格比卡片寬 {over}px，右邊的欄位在畫面外")
     r.mark("t_lines", focus=["section:has(#st-lines)"])
     r.scroll_to("section:has(#st-reasons)", top=78)
     s.move_to("#st-reasons tbody tr", nth=1)

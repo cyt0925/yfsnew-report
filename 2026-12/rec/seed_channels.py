@@ -79,6 +79,20 @@ class Channels:
             d += dt.timedelta(days=1)
         return d
 
+    def after(self, d, n=1):
+        """d 再過 n 個日曆天，落在週末就順延到星期一。通路「改到貨日」用：從原本那天往後推，一定跟原本不一樣
+        （用 plus(off, 6) → plus(off, 7) 的寫法，原本那天是星期六、日的時候兩個都會順延到同一個星期一，等於沒改）。"""
+        d += dt.timedelta(days=n)
+        while d.weekday() >= 5:
+            d += dt.timedelta(days=1)
+        return d
+
+    def lead_last_month(self, off, lead):
+        """「上個月到貨、沒改」的那張單要等幾天到貨：照 lead，但到貨日會跨進這個月的話就縮短到還在上個月
+        （首頁「本月改單」的訂單張數、改單統計每月統計的兩個月才不會因為今天是幾號而變）。下單那天已經是這個月就照 lead。"""
+        first = self.day(0).replace(day=1)
+        return next((n for n in range(lead, 0, -1) if self.plus(off, n) < first), lead)
+
     def tick(self, minutes=1):
         self.ck.t += dt.timedelta(minutes=minutes, seconds=self.rng.randint(2, 50))
 
@@ -347,7 +361,7 @@ class Channels:
         new, up, qty = self.s_new, self.s_up, self.s_qty
 
         # ---------------- 蝦皮特選：15 張十一月到貨的單（加一張十月的），改單 17 次（蝦皮修改 5、我方修改 8、系統自動下修 4）----------------
-        new("SA", -19, SHIP, 6, [("P1", 120), ("P3", 60)])                               # 十月到貨那張，沒改
+        new("SA", -19, SHIP, self.lead_last_month(-19, 6), [("P1", 120), ("P3", 60)])    # 十月到貨那張，沒改
         S += [(-19, "09:40", "alice", lambda c: up(c, ["SA"])), (-19, "10:05", "alice", self.refs),
               (-18, "10:20", "zhen", seq(self.stock, lambda c: self.s_ship(c, "SA")))]
         new("S1", -15, SHIP, 5, [("P1", 240), ("P3", 120), ("P8", 20)])                  # 竹運出貨；歐樂B 竹運倉只剩 8 個（少於 12 件蝦皮拒收）→ 人改成 0
@@ -400,7 +414,7 @@ class Channels:
 
         # ---------------- MOMO：14 張十一月到貨的單（加一張十月的），改單 16 次（MOMO 修改 4、我方修改 8、系統自動下修 4）----------------
         mn, mu, mq = self.m_new, self.m_up, self.m_qty
-        mn("M0", -18, "DC6", 5, [("A", 48), ("C", 3)])                                   # 十月到貨那張，沒改
+        mn("M0", -18, "DC6", self.lead_last_month(-18, 5), [("A", 48), ("C", 3)])        # 十月到貨那張，沒改
         M += [(-18, "09:50", "alice", lambda c: mu(c, ["M0"])), (-17, "10:45", "alice", lambda c: self.m_eip(c, "M0")), (-16, "11:20", "alice", self.m_eip_po)]
         mn("M1", -16, "SDC", 6, [("A", 60), ("E", 36)])                                  # 彩豆豆 60 盒、24 盒一箱 → 系統捨去成 48
         mn("C1", -16, "DC1(自)", 7, [("C", 4), ("D", 48)])                               # 沒改的
@@ -414,7 +428,7 @@ class Channels:
         mn("M4", -10, "DC6", 6, [("A", 72), ("D", 60), ("E", 48)])                       # MOMO 上修又改到貨日、我方改下採、系統捨去、勇信少出改成不出貨
         mn("C2", -10, "DC1(自)", 7, [("I", 48), ("J", 60)])                              # 潔品，沒改的
         M += [(-10, "09:50", "alice", lambda c: mu(c, ["M4", "C2"])),
-              (-9, "09:35", "alice", lambda c: (mq("M4", "A", 96), self.mm["M4"].update(date=self.plus(-10, 7)), mu(c, ["M4"], "UnsendList(1).xlsx"))),
+              (-9, "09:35", "alice", lambda c: (mq("M4", "A", 96), self.mm["M4"].update(date=self.after(self.mm["M4"]["date"])), mu(c, ["M4"], "UnsendList(1).xlsx"))),
               (-9, "10:20", "zhen", lambda c: self.m_confirm(c, "M4")),
               (-9, "10:45", "alice", seq(lambda c: self.m_adjust(c, "M4", "E", 24, "原廠通知缺貨，先下 2 箱"), lambda c: self.m_eip(c, "M4", "C2"))),
               (-8, "11:20", "alice", self.m_eip_po),
@@ -422,7 +436,7 @@ class Channels:
         mn("M5", -6, "SDC", 6, [("D", 100), ("C", 5)])                                   # MOMO 改到貨日；貓餐包 100 盒、24 盒一箱 → 系統捨去成 96
         mn("M6", -6, "DC6", 7, [("G", 40), ("H", 90)])                                   # 紙品改竹運出貨；人改兩品的出貨量（庫存不足、效期不足）
         M += [(-6, "09:45", "alice", lambda c: mu(c, ["M5", "M6"])),
-              (-5, "09:30", "alice", lambda c: (self.mm["M5"].update(date=self.plus(-6, 7)), mu(c, ["M5"], "UnsendList(1).xlsx"))),
+              (-5, "09:30", "alice", lambda c: (self.mm["M5"].update(date=self.after(self.mm["M5"]["date"])), mu(c, ["M5"], "UnsendList(1).xlsx"))),
               (-5, "10:15", "zhen", seq(lambda c: self.m_confirm(c, "M5"), lambda c: self.m_zhuyun(c, "M6"))),
               (-5, "10:50", "alice", lambda c: self.m_eip(c, "M5")),
               (-4, "11:10", "zhen", seq(lambda c: self.m_ship_qty(c, "M6", "G", 36, "庫存不足"), lambda c: self.m_ship_qty(c, "M6", "H", 60, "效期不足"), lambda c: self.m_ship(c, "M6"))),

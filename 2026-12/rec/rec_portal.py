@@ -32,7 +32,7 @@ def numbers(s, info):
               [(x["name"], x["count"]) for x in c["top"]])
     for r in d["recent"]:
         print("  最近:", r["at"][5:16], r["who"], "|", r["system"], "|", r["what"], r["po"], "|", r["old"][:30], "→", r["new"][:40])
-    m0 = "2026-10"; m1 = d["today"][:7]
+    m0, m1 = info["period"]
     st = tc.get(f"/api/master/stats?month={m0}&month_to={m1}").get_json()
     t = st["total"]
     print(f"\n== 改單統計 {m0}～{m1} ==")

@@ -158,7 +158,13 @@ def build(s, verbose=True):
         return p
     cut = idx_of(due.cutoff(today))
     live = pick("寶僑", T - 5, T - 3, "live", cut)                     # 留著現場記的那張：酷澎今天下修、還沒記過處理完成、到貨日剩 3 天
-    afters = [pick("寶僑", T - 7, T - 4, "after", T + 2), pick("瑪氏", T - 7, T - 4, "after", T + 4), pick("CPG-紙品", T - 9, T - 3, "after", T + 5)]
+    def this_month(i, room=2, lo=T + 3):
+        """到貨日盡量留在這個月：首頁「本月改單」只算這個月到貨的 PO，跨到下個月那張的處理次數、「處理完成後又有改動」就不在裡面
+        （跟今日事項的張數對不起來）。之後改交期最多再往後 room 個工作天；會跨月就往前挪，最多挪到 lo。"""
+        while i > lo and WD[min(i + room, len(WD) - 1)].month != today.month:
+            i -= 1
+        return i
+    afters = [pick("寶僑", T - 7, T - 4, "after", T + 2), pick("瑪氏", T - 7, T - 4, "after", T + 4), pick("CPG-紙品", T - 9, T - 3, "after", this_month(T + 5))]
     afters[0]["plan"] = [("1", ["qty"], ["庫存不足"], "m", "")]
     afters[1]["plan"] = [("1", ["qty"], ["未達出貨數"], "m", "")]
     afters[2]["plan"] = [("1", ["date"], ["車趟考量"], "m", "")]
@@ -395,7 +401,10 @@ def build(s, verbose=True):
         print("   [注意] 還有沒演到的輪：", left)
     if chan.fail:
         print(f"   [注意] 蝦皮特選／MOMO 有 {chan.fail} 個動作沒成功，上面有列")
-    info = {"today": today, "live": live["no"], "after": [p["no"] for p in afters], "stuck": stuck["no"], "rounds": n_rounds, "pos": len(pos)}
+    # 改單統計要看的期間（照到貨月份算）：從十月起；有 PO 下個月才到貨（月底灌的時候）就把結束月份往後拉，灌的每一張才都算得到
+    this = today.isoformat()[:7]
+    info = {"today": today, "live": live["no"], "after": [p["no"] for p in afters], "stuck": stuck["no"], "rounds": n_rounds, "pos": len(pos),
+            "period": (min("2026-10", this), max([this] + [p["dd"].isoformat()[:7] for p in pos if p["born"]]))}
     if verbose:
         print("seed:", info)
     return info
