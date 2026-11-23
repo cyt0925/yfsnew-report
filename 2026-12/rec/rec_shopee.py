@@ -302,7 +302,7 @@ pg.wait_for_function("document.querySelector('#z-tbl').innerText.includes('缺�
 s.click("#z-tbl tr.og .tog"); pg.wait_for_selector("#z-tbl tr.sub table.it-sub tbody tr", timeout=10000)
 sub = pg.inner_text("#z-tbl tr.sub")
 assert "庫存不足" in sub and "效期不足" in sub, sub
-s.move_to("#z-tbl tr.sub table.it-sub tbody tr", nth=1, dx=.6)
+s.move_to("#z-tbl tr.sub table.it-sub tbody tr", nth=1, dx=.5)     # 2026-11-20 版品項表多一欄「差額」，各欄往左移；.6 會讓游標壓在「120」上，改停在品名和數量中間的空白
 mark("s5_result", ["#z-tbl"])
 W(1000)
 s.click("#z-tbl input.z-ck"); W(300)
